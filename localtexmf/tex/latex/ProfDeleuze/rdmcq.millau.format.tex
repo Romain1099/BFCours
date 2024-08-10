@@ -1,0 +1,112 @@
+%%%%%%%%%%%%%   Millau
+
+
+\definecolor{millau1}{HTML}{607D8B}% Bordure
+\definecolor{millau2}{HTML}{6a8494}%	couleur de fond des questions
+\definecolor{millau3}{HTML}{2096F3}%	bonne réponse
+\definecolor{millau4}{HTML}{FF9801}% 	bonne réponse (check box)
+
+
+\newQuestionFormat{Millau}{% boîte externe
+    colframe=millau1, boxrule=1pt, bottomrule=0pt,
+    colback=boston1,
+    opacityback=0,
+    title=Question \rdmcqQuestioncount,
+    toptitle=2pt, bottomtitle=2pt, lefttitle=2em, fonttitle=\sffamily\bfseries,
+    sharp corners, arc=3mm, auto outer arc, rounded corners=north,
+}%
+{%   boîte interne
+    %sidebyside, boxsep=4pt,
+    %sidebyside gap=4pt,
+    %lefthand width=2em,
+    %sidebyside align=top seam, halign upper=center, halign lower=justify,	
+    %before upper={\tikz[baseline=(x.base), inner sep=1pt, outer sep=0pt] \node[circle, fill=white, opacity=0.75, text=black, font=\sffamily\bfseries\tiny, minimum width=1.2em] (x) {\rdmcqQuestioncount};
+    %\tcblower
+	%}
+	boxsep=5pt, fontupper=\sffamily
+}
+
+\newAnswerFormat{Millau}{vertical}%
+        {%  Zone Réponse
+        enhanced jigsaw, colframe=millau1, boxrule=1pt, toprule=0pt,
+        boxsep=3pt, opacityback=0, colback=boston1,
+        sharp corners, arc=3mm, auto outer arc, rounded corners=south,
+        }
+        [%  Mode Correction
+        colback=millau3, opacityback=1,
+        ]%
+        {%  Réponses
+        enhanced jigsaw, frame hidden, colframe=boston2, colback=millau2, opacityback=0.7,
+		coltext=white, fontupper=\sffamily,
+        rounded corners, arc=3mm, auto outer arc, boxrule=0pt,
+        boxsep=3pt,
+        valign=center, halign=left,
+        before upper={\rdmcqrb[color=white, check color=millau4]{}\hspace*{0.5em}}
+        }
+
+
+\newAnswerFormat{Millau}{horizontal}%
+        {%  Zone Réponse
+        enhanced jigsaw, colframe=millau1, boxrule=1pt, toprule=0pt,
+        boxsep=3pt, opacityback=0, colback=boston1,
+        sharp corners, arc=3mm, auto outer arc, rounded corners=south,        
+        }
+        [%  Mode Correction
+        colback=millau3, opacityback=1,
+        ]%
+        {%  Réponses
+        enhanced jigsaw, frame hidden, colframe=boston2, colback=millau2, opacityback=0.7,
+		coltext=white, fontupper=\sffamily,
+        rounded corners, arc=3mm, auto outer arc, boxrule=0pt,
+        boxsep=3pt,
+        valign=center, halign=left,
+        before upper={\rdmcqrb[color=white, check color=millau4]{}\hspace*{0.5em}}        
+        }
+
+\newMessageFormat{Millau}%
+    {%  Left message
+    boxsep=5pt, colback=boston3, left=1em, frame engine=empty,
+    opacityback=1,
+    sharp corners, arc=3mm, auto outer arc, rounded corners=west,
+    overlay={
+        \begin{tcbclipinterior}
+            \fill[boston4] (interior.north west) rectangle ([xshift=1em]interior.south west)
+                node[midway, rotate=90, text=white, font=\sffamily\tiny\bfseries] {Info} ;
+        \end{tcbclipinterior}
+            }%
+    }
+    [%  Right message
+    boxsep=5pt, colback=boston3, right=1em, frame engine=empty,
+    opacityback=1,
+    sharp corners, arc=3mm, auto outer arc, rounded corners=east,
+    overlay={
+        \begin{tcbclipinterior}
+            \fill[boston4] (interior.south east) rectangle ([xshift=-1em]interior.north east) ;
+        \end{tcbclipinterior}
+            }%
+    ]
+
+\newFooterFormat{Millau}%
+    {%  Left footer
+    enhanced jigsaw,
+    boxsep=5pt, colback=boston4,
+    sharp corners, arc=3mm, rounded corners=south, auto outer arc,% l'ordre est important
+    halign=center, valign=center, fontupper=\sffamily\bfseries\footnotesize,
+    coltext=white,
+    fuzzy shadow={0pt}{1mm}{0mm}{0.1mm}{boston4}
+    }
+
+\newHeaderFormat{Millau}%
+    {%  Left header
+    enhanced jigsaw,
+    boxsep=5pt, colback=millau1,
+    sharp corners, arc=3mm, rounded corners=north, auto outer arc,% l'ordre est important
+    halign=center, valign=center, fontupper=\sffamily\bfseries\footnotesize,
+    coltext=white,
+    fuzzy shadow={0pt}{-1mm}{0mm}{0.1mm}{boston4}
+    }%
+
+\newMcqFormat[gather=Millau, same width, row sep=1em,
+        question answer sep=-0.1pt,
+        answer columns=2, answer column sep=1em, answer row sep=0.5em]{Millau}{0pt}
+

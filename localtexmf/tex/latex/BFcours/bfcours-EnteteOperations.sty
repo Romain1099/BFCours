@@ -1,0 +1,69 @@
+\ProvidesPackage{bfcours-EnteteOperations}[2024/06/29 v1.0 Macros pour les opérations dans bfcours]
+
+
+\newcommand{\salut}{salut}
+\newcommand{\nocarf}[1]{
+    \ifnumequal{\value{profseyescounter}}{1}
+        {#1}
+        {\phantom{a}}
+}
+
+\newcommand\nodispM[1]{\masquer{#1\phantom{a}}}
+\newcommand\nodispT[1]{\trouver{#1}}
+\newcommand\nodispC[1]{\color{red}{\textbf{\nocarf{#1}}}\quad\phantom{a}}
+\newcommand\hole[1]{\vspace{0.2cm} \  \masquer{\phantom{a}\phantom{a}\phantom{a}} \  }
+\newcommand{\opaddsol}[3][Calcul]{
+\tcboxmath[colback=white,colbacktitle=blue!75!white,colframe=blue!75!white,right=1pt,left=1pt,top=1pt,bottom=1pt,coltitle=white,fonttitle=\scriptsize,title=\textbf{#1}]{\opadd[intermediarystyle=\nodispM,decimalsepsymbol={ ,},voperator=center,lineheight=2.3\baselineskip,resultstyle=\nodispM,carrystyle=\nodispC ,operandstyle=\nodispM,columnwidth=1.5em]%,operandstyle.1.1=\hole,
+%operandstyle.1.-2=\hole,
+%operandstyle.2.3=\hole,
+%resultstyle.2=\hole]
+{#2}{#3}
+}
+}
+
+\newcommand{\opaddsolB}[3][Calcul]{
+\tcboxmath[colback=white, colbacktitle=blue!75!white,colframe=blue!75!white,right=1pt,left=1pt,top=1pt,bottom=1pt,coltitle=white,fonttitle=\scriptsize,title=\textbf{#1}]
+{\opadd[intermediarystyle=\nodispM,decimalsepsymbol={ ,},voperator=center,lineheight=2.3\baselineskip,resultstyle=\nodispM,carrystyle=\nodispC ,operandstyle=\textbf,columnwidth=1.5em]%,operandstyle.1.1=\hole,
+%operandstyle.1.-2=\hole,
+%operandstyle.2.3=\hole,
+%resultstyle.2=\hole]
+{#2}{#3}
+}
+}
+
+% Définition de la commande pour la soustraction
+\newcommand{\opsubsol}[3][Calcul]{
+    \tcboxmath[colback=white,colbacktitle=blue!75!white,right=1pt,left=1pt,top=1pt,bottom=1pt,colframe=blue!75!white,coltitle=white,fonttitle=\scriptsize,title=\textbf{#1}]{\opsub[intermediarystyle=\nodispM,decimalsepsymbol={,},voperator=center,lineheight=2.3\baselineskip,resultstyle=\nodispM,carrystyle=\nodispC,operandstyle=\nodispM,columnwidth=1.5em]{#2}{#3}
+}
+}
+
+\newcommand{\opsubsolB}[3][Calcul]{
+    \tcboxmath[colback=white,colbacktitle=blue!75!white,right=1pt,left=1pt,top=1pt,bottom=1pt,colframe=blue!75!white,coltitle=white,fonttitle=\scriptsize,title=\textbf{#1}]{\opsub[intermediarystyle=\nodispM,decimalsepsymbol={,},voperator=center,lineheight=2.3\baselineskip,resultstyle=\nodispM,carrystyle=\nodispC,operandstyle=\textbf,columnwidth=1.5em]{#2}{#3}
+}
+}
+
+
+% Définition de la commande pour la multiplication
+\newcommand{\opmulsol}[3][Calcul]{
+    \tcboxmath[colback=white,colbacktitle=blue!75!white,right=1pt,left=1pt,top=1pt,bottom=1pt,colframe=blue!75!white,coltitle=white,fonttitle=\scriptsize,title=\textbf{#1}]{\opmul[displayshiftintermediary=all,hrulewidth=0.8pt,intermediarystyle=\nodispM,voperation=top,decimalsepsymbol={,},voperator=center,lineheight=2.3\baselineskip,resultstyle=\nodispM,carrystyle=\nodispC,operandstyle=\nodispM,columnwidth=1.5em]{#2}{#3}
+}
+}
+% Définition de la commande pour la multiplication avec trouver
+\newcommand{\opmulsolT}[3][Calcul]{
+    \tcboxmath[colback=white,colbacktitle=blue!75!white,right=1pt,left=1pt,top=1pt,bottom=1pt,colframe=blue!75!white,coltitle=white,fonttitle=\scriptsize,title=\textbf{#1}]{\opmul[displayshiftintermediary=all,intermediarystyle=\nodispT,voperation=top,decimalsepsymbol={,},voperator=center,lineheight=2.3\baselineskip,resultstyle=\nodispT,carrystyle=\nodispC,operandstyle=\nodispT,columnwidth=1.5em]{#2}{#3}
+}
+}
+
+% Définition de la commande pour la division
+\newcommand{\opdivsol}[3][Calcul]{
+    \tcboxmath[colback=white,colbacktitle=blue!75!white,right=1pt,left=1pt,top=1pt,bottom=1pt,colframe=blue!75!white,coltitle=white,fonttitle=\scriptsize,title=\textbf{#1}]{\opdiv[displayintermediary=all,remainderstyle=\nodispM,intermediarystyle=\nodispM,maxdivstep=5,decimalsepsymbol={,},voperator=bottom,lineheight=2.3\baselineskip,resultstyle=\nodispM,carrystyle=\nodispC,operandstyle=\nodispM,columnwidth=1.5em]{#2}{#3}
+}
+}
+
+% Définition de la commande pour la division entière
+\newcommand{\opidivsol}[3][Calcul]{
+    \tcboxmath[colback=white,colbacktitle=blue!75!white,right=1pt,left=1pt,top=1pt,bottom=1pt,colframe=blue!75!white,coltitle=white,fonttitle=\scriptsize,title=\textbf{#1}]{\opidiv[displayintermediary=all,remainderstyle=\nodispM,intermediarystyle=\nodispM,decimalsepsymbol={,},voperator=bottom,lineheight=2.3\baselineskip,resultstyle=\nodispM,carrystyle=\nodispC,operandstyle=\nodispM,columnwidth=1.5em]{#2}{#3}
+}
+}
+
+\endinput

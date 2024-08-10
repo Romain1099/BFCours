@@ -1,0 +1,1808 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{rdexo}[2023/12/12 rdexo.sty]
+
+\RequirePackage{calc}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins}
+\tcbuselibrary{hooks}
+\tcbuselibrary{breakable}
+\tcbuselibrary{xparse}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{babel}% sinon bug avec \rdexostars pour une valeur d�cimale du niveau
+\RequirePackage{pifont}
+\RequirePackage{ifluatex}
+\ifluatex
+\RequirePackage{pdftexcmds}
+\let\pdfstrcmp\pdf@strcmp
+\fi
+
+\tcbsetmanagedlayers{8}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Bo�tes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newsavebox{\rdexo@boxA}
+\newsavebox{\rdexo@boxB}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Bool�ens
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newif\ifrdexo@numexo
+\newif\ifrdexo@score
+\newif\ifrdexo@level
+\newif\ifrdexo@title
+\newif\ifrdexo@lower
+\newif\ifrdexo@creploaded
+\newif\ifrdexo@mirror
+\newif\ifrdexo@savelower
+\newif\ifrdexo@slower@mirror
+\newif\ifrdexo@slower@resetnumstart
+\newif\ifrdexo@tags
+\newif\ifrdexo@displayexo
+\newif\ifrdexo@notover
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   longueurs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newlength{\rdexoheaderskip}
+\newlength{\rdexo@tmplength}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Compteurs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcounter{rdexo@numexo}
+\newcounter{rdexo@real@numexo}
+\newcounter{rdexo@lower@startnum}% En cas d'utilisation de \rdexodisplaylower{0}, ce compteur donne le num�ro du premier exercice de la liste
+\setcounter{rdexo@lower@startnum}{1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Couleurs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\definecolor{starcolor}{HTML}{FFDD00}%
+\definecolor{rdexored}{HTML}{940B20}%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Macros auxiliaires
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\NewDocumentCommand{\rdexonofrench}{ s +m }{%
+\IfBooleanTF{#1}%
+{%
+% Test "paresseux" pour d�terminer si utilisation d'un moteur LuaLaTeX (ou XeLateX) (test sur juste un caract�re)
+\ifnum\catcode`:=\active\edef\rdexo@frenchactivechar{1}\shorthandoff{;:!?}\else\edef\rdexo@frenchactivechar{0}\fi%
+\scantokens\expandafter{#2\noexpand}\relax% Ne fonctionne pas en l'absence du \relax... pourquoi ??
+\ifnum\rdexo@frenchactivechar=1 \shorthandon{;:!?}\fi%
+}%
+{%
+\begingroup\NoAutoSpacing%
+\scantokens\expandafter{#2\noexpand}\endgroup}%
+}
+
+
+\def\TFNumexo{%
+ \ifrdexo@numexo%
+   \expandafter\@firstoftwo%
+ \else%
+   \expandafter\@secondoftwo%
+ \fi%
+}
+
+\def\TFScore{%
+ \ifrdexo@score%
+   \expandafter\@firstoftwo%
+ \else%
+   \expandafter\@secondoftwo%
+ \fi%
+}
+
+\def\TFLevel{%
+ \ifrdexo@level%
+   \expandafter\@firstoftwo%
+ \else%
+   \expandafter\@secondoftwo%
+ \fi%
+}
+
+\def\TFTitle{%
+ \ifrdexo@title%
+   \expandafter\@firstoftwo%
+ \else%
+   \expandafter\@secondoftwo%
+ \fi%
+}
+
+\def\TFTags{%
+ \ifrdexo@tags%
+   \expandafter\@firstoftwo%
+ \else%
+   \expandafter\@secondoftwo%
+ \fi%
+}
+
+
+%%%%%%%%%%%%%%%%%
+
+
+
+
+\newcommand{\thelabel}{\rdexo@label}
+
+
+\NewDocumentCommand{\rdexonumexo}{}{\value{rdexo@numexo}}
+
+
+\NewDocumentCommand{\thenumexo}{ s O{} O{} }{%
+\IfBooleanTF{#1}%
+{%
+\TFNumexo{#2\therdexo@numexo#3}{}%
+}%
+{\therdexo@numexo}%
+}
+
+\newcommand{\the@score}{%
+\begingroup%
+\pgfkeys{/pgf/number format/set decimal separator={,}}%
+\pgfmathparse{\rdexo@score}%
+\pgfmathprintnumber[assume math mode=true]{\pgfmathresult}%
+\endgroup%
+}
+
+\newcommand{\the@Score}{%
+\thescore~%
+\ifdim\rdexo@score pt>1pt %
+    \rdexo@score@plural%
+\else%
+    \rdexo@score@singular%
+\fi%
+}
+
+
+\NewDocumentCommand{\thescore}{ s O{} O{} }{%
+\IfBooleanTF{#1}%
+{%
+\TFScore{#2\the@score#3}{}%
+}%
+{\the@score}%
+}
+
+\NewDocumentCommand{\theScore}{ s O{} O{} }{%
+\IfBooleanTF{#1}%
+{%
+\TFScore{#2\the@Score#3}{}%
+}%
+{\the@Score}%
+}
+
+\NewDocumentCommand{\rdexoscore}{}{\rdexo@score}
+
+\NewDocumentCommand{\theexotitle}{ s O{} O{} }{%
+\IfBooleanTF{#1}%
+{%
+\TFTitle{#2\rdexo@title#3}{}%
+}%
+{\rdexo@title}%
+}
+
+\newcommand{\the@Exotitle}{\begingroup\rdexo@titlefont\color{rdexotitlecol}\rdexo@title\endgroup}
+
+\NewDocumentCommand{\theExotitle}{ s O{} O{} }{%
+\IfBooleanTF{#1}%
+{%
+\TFTitle{#2\the@Exotitle#3}{}%
+}%
+{\the@Exotitle}%
+}
+
+
+\def\rdexotitlefont{\rdexo@titlefont}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Lowerbox d�port�e
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NewTColorBox{rdexo@savedlower}{ O{} }{%
+    saved lower default style,
+    /tcb/rdexo/\rdexo@skin/saved lower style/.try,
+    #1
+}
+
+\NewTColorBox{rdexo@savedlower@mirror}{}{%
+    blankest,
+    rdexo/saved lower/mirror@style,
+    rotate=180,
+}
+
+
+\def\rdexolowerfolder#1{\def\rdexo@lowerfolder{#1}}
+\rdexolowerfolder{rdexo}
+
+\def\rdexolowerprefix#1{\def\rdexo@lowerprefix{#1}}
+\rdexolowerprefix{\jobname}
+
+
+\tcbset{%
+    rdexo/saved lower/.cd,
+    num/.store in=\thelowernum,
+    columns/.store in=\rdexo@slower@columns,
+    columns=1,
+    raster/.code=\tcbset{rdexo@slower@raster/.style={#1}},
+    raster=,
+    mirror/.is if=rdexo@slower@mirror,
+    mirror=false,
+    mirror style/.code=\tcbset{rdexo/saved lower/mirror@style/.style={#1}},
+    mirror style=,
+    reset num start/.is if=rdexo@slower@resetnumstart,
+    reset num start=true,
+    /tcb/rdexo/saved lower/.search also={/tcb}
+}
+
+
+\NewDocumentCommand{\setlowerstyle}{mm}{%
+\def\rdexo@tmp{}%
+\foreach \n in {#1} {%
+\edef\next{\noexpand\g@addto@macro\noexpand\rdexo@tmp{\noexpand\tcbset{rdexo/saved lower/saved lower \n/.style={\unexpanded{#2}}}}}%
+\next%
+}%
+\rdexo@tmp%
+}
+
+
+
+\NewDocumentCommand{\rdexodisplaylower}{ O{} m }{%
+\begingroup%
+\tcbset{rdexo/saved lower/.cd,#1}%
+% Test pour savoir si #2 = 0 (et uniquement 0 !)
+\ifnum\pdfstrcmp{#2}{0}=0 %
+    \def\rdexo@range{\therdexo@lower@startnum,...,\therdexo@numexo}%
+\else%
+    \def\rdexo@range{#2}%
+\fi%
+%
+\ifrdexo@slower@mirror\begin{rdexo@savedlower@mirror}\fi%
+\begin{tcbraster}[raster valign=top, rdexo@slower@raster, raster columns=\rdexo@slower@columns]
+\foreach \n in \rdexo@range {%
+\IfFileExists{\rdexo@lowerfolder/\rdexo@lowerprefix_\n.rdexo}%
+{%
+\begin{rdexo@savedlower}[rdexo/saved lower/.cd, #1, saved lower \n/.try, num=\n]
+\input{\rdexo@lowerfolder/\rdexo@lowerprefix_\n.rdexo}%
+\end{rdexo@savedlower}%
+}{}%
+}%
+\end{tcbraster}%
+\ifrdexo@slower@mirror\end{rdexo@savedlower@mirror}\fi%
+%
+\ifrdexo@slower@resetnumstart%
+\setcounter{rdexo@lower@startnum}{\therdexo@numexo}\stepcounter{rdexo@lower@startnum}%
+\fi%
+\endgroup%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Gestion des tags
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pgfkeys{%
+    /rdexo tags/.is family,
+    /rdexo tags/.cd,
+    tag filter/.store in=\rdexo@tagfilter,
+    tag filter=\empty,
+    match case/.is choice,
+    match case/true/.code=\edef\rdexo@tags@matchcase{1},
+    match case/false/.code=\edef\rdexo@tags@matchcase{0},
+    match case/.default=true,
+    match case=false
+}
+
+\def\rdexofilter{%
+\edef\rdexo@catcode@exclamation{\the\catcode`\! }%
+\edef\rdexo@catcode@textbar{\the\catcode`\| }%
+\catcode`\!=12%
+\catcode`\|=12%
+\rdexofilter@i%
+}
+
+\NewDocumentCommand { \rdexofilter@i } { O{} m }
+{%
+\pgfkeys{/rdexo tags/.cd, #1, tag filter=#2}%
+\catcode`\!=\rdexo@catcode@exclamation%
+\catcode`\|=\rdexo@catcode@textbar%
+}
+
+\NewDocumentCommand { \rdexoresetfilter } { } {\pgfkeys{/rdexo tags/tag filter=\empty}}
+
+% listes
+
+\pgfkeys{%
+  /rdexo hlist/.is family,
+  /rdexo hlist/.cd,
+  list sep/.code=\edef\rdexo@list@listseparator{#1},
+  list sep={,},
+  sep/.code=\def\rdexo@list@separator{#1},
+  sep={\hspace*{0.5em};\hspace*{0.5em}},
+  before/.code=\def\rdexo@list@before{#1},
+  before=\relax,
+  after/.code=\def\rdexo@list@after{#1},
+  after=\relax,
+  macro/.code=\def\rdexo@list@macro{#1},
+  macro=\relax%
+}
+
+
+
+\NewDocumentCommand{\rdexohlist}{ O{} m }
+{%
+\if\relax\detokenize\expandafter{\romannumeral-`\Q#2}\relax% Liste vide
+\else%
+\begingroup%
+    \pgfkeys{/rdexo hlist/.cd, #1}%
+    % transfer control to an internal function
+    \rdexo@list@before\rdexo@hlist{#2}\rdexo@list@after%
+\endgroup%
+\fi%
+}
+
+
+
+% Code � matexmatics : https://tex.stackexchange.com/a/706073/30654
+
+\ExplSyntaxOn
+\clist_new:N \l__searching_tags_clist
+\tl_new:N \l__searching_accumulate_text_tl
+\tl_new:N \l__searching_boolean_expression_tl
+\tl_new:N \l__searching_text_item_tl
+\tl_new:N \l__searching_userinput_tl
+\cs_new:Npn \__searching_if_in:
+  {
+    \tl_trim_spaces:N \l__searching_accumulate_text_tl
+    \tl_if_empty:NF \l__searching_accumulate_text_tl
+      {
+        \clist_if_in:NVTF \l__searching_tags_clist \l__searching_accumulate_text_tl
+          { \tl_put_right:Nn \l__searching_boolean_expression_tl { \c_true_bool } }
+          { \tl_put_right:Nn \l__searching_boolean_expression_tl { \c_false_bool } }
+      }
+    \tl_clear:N \l__searching_accumulate_text_tl
+  }
+
+
+
+\NewDocumentCommand { \TF@tagtest } { m m m m m }
+  {
+    \int_compare:nNnTF #1 = 0
+     {
+        \tl_set:Ne \l__searching_userinput_tl { \text_lowercase:n { #2 } }
+        \clist_set:Ne \l__searching_tags_clist { \text_lowercase:n { #3 } }
+     }
+     {
+        \tl_set:Ne \l__searching_userinput_tl #2
+        \clist_set:NV \l__searching_tags_clist #3
+     }
+    \tl_clear:N \l__searching_accumulate_text_tl
+    \tl_clear:N \l__searching_boolean_expression_tl
+    \str_map_inline:Nn \l__searching_userinput_tl
+      {
+        \tl_set_rescan:Nnn \l__searching_text_item_tl {  \char_set_catcode_other:N ! \char_set_catcode_other:N | } {##1}
+        \tl_if_in:nVTF { | & ( ) ! } \l__searching_text_item_tl
+          {
+            \__searching_if_in:
+            \tl_put_right:NV \l__searching_boolean_expression_tl \l__searching_text_item_tl
+          }
+          {
+            \int_compare:nNnTF #1 = 1
+              { \tl_put_right:NV \l__searching_accumulate_text_tl \l__searching_text_item_tl }
+              { \tl_put_right:Ne \l__searching_accumulate_text_tl { \text_lowercase:n { \l__searching_text_item_tl } } }
+          }
+      }
+    \__searching_if_in:
+    \bool_if:nTF { \l__searching_boolean_expression_tl } {#4} {#5}
+  }
+
+
+%%%%%%%%%%%
+
+
+% Code expl3 d'apr�s : https://tex.stackexchange.com/a/173427/30654
+
+\def\rdexo@hlist#1{\rdexo_hlist:n { #1 }}
+
+\seq_new:N \l__rdexo_list_items_seq
+\seq_new:N \l__rdexo_list_output_seq
+
+\cs_new_protected:Npn \rdexo_hlist:n #1
+ {
+  % clear the output sequence
+  \seq_clear:N \l__rdexo_list_output_seq
+  % split the input at \rdexo@list@listseparator
+  \seq_set_split:Nee \l__rdexo_list_items_seq { \rdexo@list@listseparator } { #1 }
+  % append each item to the output sequence
+  \seq_map_inline:Nn \l__rdexo_list_items_seq
+   {
+    % #1 is the given argument, ##1 represents the current item
+    \seq_put_right:Nn \l__rdexo_list_output_seq { \rdexo@list@macro { ##1 } }
+   }
+  % output the sequence with something between items
+  \seq_use:Nn \l__rdexo_list_output_seq { \rdexo@list@separator } %
+ }
+
+
+% D'apr�s : https://tex.stackexchange.com/a/308244/30654
+% Nombres d'�l�ments d'une liste
+% Pour une liste "simple" : \rdexocountlist{a,b,c,} = 3
+% Pour une liste implicite, utiliser la version �toil�e
+%   \def\liste{a,b,c}
+%   \rdexocountlist*{\liste} = 3 (tandis que \rdexocountlist{\liste} = 1 !)
+
+
+\DeclareExpandableDocumentCommand{\rdexocountlist}{sm}
+ {
+  \IfBooleanTF{#1}
+   {
+    \clist_count:o { #2 }
+   }
+   {
+    \clist_count:n { #2 }
+   }
+ }
+\cs_generate_variant:Nn \clist_count:n { o }
+\ExplSyntaxOff
+
+
+
+\newcommand\rdexoMod[2]{\fpeval{((#1)-(#2)*floor((#1)/(#2)))}}% Modulo
+
+% Construction de la macro \rdexo@matrixcontent destin�e � �tre ins�r�e dans \matrix
+% #1 = nb colonnes
+\def\rdexo@tikzlist@macrobuilder#1{%
+\def\rdexo@matrixcontent{}%
+\foreach \n [count=\y] in \rdexo@tikzlist {%
+    \edef\reste{\rdexoMod{\y}{#1}}%
+    \ifnum\reste=0 %
+        \def\my@sep{\noexpand\\}%
+    \else%
+        \ifnum\y=\rdexo@nbelem %
+            \def\my@sep{\noexpand\\}%
+        \else%
+            \def\my@sep{\&}%
+        \fi%
+    \fi%
+    \xdef\rdexo@matrixcontent{%
+        \unexpanded\expandafter{\rdexo@matrixcontent}% the previous value
+        \noexpand\node (rdexotl-\y) {\expandonce{\rdexo@tikzlist@macro}{\n}};%
+        \my@sep%
+    }%
+}%
+}
+
+
+\def\rdexo@tikzlist@matrixbuilder{%
+\begin{lrbox}{\rdexo@boxA}
+\begin{tikzpicture}[inner sep=0pt, outer sep=0pt, every node/.style={anchor=center}, rdexo@tikzlist@tikzpicture]
+\matrix [ampersand replacement=\&,
+            column sep={\rdexo@tikzlist@colsep, between borders},
+            row sep={\rdexo@tikzlist@rowsep, between borders},
+            rdexo@tikzlist@matrixstyle
+        ]
+{
+    \rdexo@matrixcontent
+} ;
+\end{tikzpicture}%
+\end{lrbox}%
+}
+
+
+
+
+\pgfkeys{%
+  /rdexo tikz list/.is family,
+  /rdexo tikz list/.cd,
+  col sep/.store in=\rdexo@tikzlist@colsep,
+  col sep=2em,
+  row sep/.store in=\rdexo@tikzlist@rowsep,
+  row sep=1ex,
+  macro/.code=\def\rdexo@tikzlist@macro{#1},
+  macro=\relax,%
+  max cols/.store in=\rdexo@tikzlist@maxcols,
+  max cols=0,
+  tikzpicture/.code=\tikzset{rdexo@tikzlist@tikzpicture/.style={#1}},
+  tikzpicture=,
+  matrix style/.code=\tikzset{rdexo@tikzlist@matrixstyle/.style={#1}},
+  matrix style=
+}
+
+
+
+\NewDocumentCommand{\rdexotikzlist}{ O{} m }
+% #1 = options
+% #2 = liste (s�parateur = {,})
+{%
+\if\relax\detokenize\expandafter{\romannumeral-`\Q#2}\relax% Liste vide
+\else%
+\begingroup%
+\pgfkeys{/rdexo tikz list/.cd, #1}%
+%
+% Nombre d'�l�ments de la liste
+\edef\rdexo@nbelem{\rdexocountlist*{#2}}%
+% Sauvegarde de la liste dans \rdexo@tikzlist
+% (on d�veloppe #2 car sinon, #2 est consid�r� comme un seul �l�ment dans la boucle \foreach de \rdexo@tikzlist@macrobuilder)
+\expandafter\def\expandafter\rdexo@tikzlist\expandafter{#2}%
+% Nombre maximal de colonnes
+\ifnum\rdexo@tikzlist@maxcols=0 \edef\rdexo@tikzlist@maxcols{\rdexo@nbelem}\fi%
+%
+\loop%
+% Construction de la macro interne � \matrix
+\rdexo@tikzlist@macrobuilder{\rdexo@tikzlist@maxcols}%
+% Construction de la bo�te
+\rdexo@tikzlist@matrixbuilder%
+% On mesure la largeur de la bo�te
+\settowidth{\rdexo@tmplength}{\usebox{\rdexo@boxA}}%
+% Si nbcols=1 ou si largeur < \linewidth => termin�
+\edef\rdexo@tikzlist@maxcols{\fpeval{\rdexo@tikzlist@maxcols-1}}%
+%
+\ifnum\rdexo@tikzlist@maxcols= 0 \rdexo@notoverfalse%
+\else%
+    \ifdim\rdexo@tmplength<\linewidth %
+        \rdexo@notoverfalse%
+    \else%
+        \rdexo@notovertrue%
+    \fi%
+\fi%
+\ifrdexo@notover%
+\repeat%
+% On affiche la matrice
+\usebox{\rdexo@boxA}%
+\endgroup%
+\fi%
+}
+
+
+\NewDocumentCommand{\rdexo@thetags}{ m }
+{% #1 = max cols
+\rdexotikzlist[max cols=#1, macro=\tcbox[/tcb/rdexo/\rdexo@skin/tag style/.try]]{\rdexo@exotags}%
+}
+
+\NewDocumentCommand{\thetags}{ s O{0} }
+{%
+\IfBooleanTF{#1}%
+{\TFTags{\rdexo@thetags{#2}}{}}%
+{\rdexo@thetags{#2}}%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Styles /tcb
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\tcbset{%
+    rdexo resest padding/.style={
+        top=0pt, bottom=0pt,
+        right=0pt, left=0pt,
+        middle=0pt
+    },
+    exo default style/.style={
+        enhanced jigsaw,
+        rdexo resest padding,
+        boxsep=0pt,
+        boxrule=0pt,
+        sharp corners,
+        frame engine=empty,
+        opacityback=0,
+        halign=justify,
+        breakable,
+        pad at break=0pt,
+        after skip=10pt plus 2pt minus 2pt
+    },
+    lower default style/.style={
+        enhanced jigsaw,
+        rdexo resest padding,
+        boxsep=0pt,
+        boxrule=0pt,
+        sharp corners,
+        frame engine=empty,
+        opacityback=0.5,
+        halign=justify,
+        fontupper=\small
+    },
+    saved lower default style/.style={
+        blankest,
+        halign=justify,
+        valign=top
+    },
+    rdexo blankest/.style={
+        blankest
+    }
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Environnement rdexo
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\newcommand{\setrdexo}[1]{%
+    \tcbset{rdexo/.cd, #1}%
+}
+
+\tcbset{%
+    rdexo/.cd,
+    skin/.store in=\rdexo@skin,
+    skin=default,
+    exo header/.is choice,
+    exo header/none/.code=\edef\rdexo@header@mode{0},
+    exo header/tcbox/.code=\edef\rdexo@header@mode{1},
+    exo header/tcolorbox/.code=\edef\rdexo@header@mode{2},
+    exo header/.default=none,
+    exo header=tcolorbox,
+    header skip/.code=\setlength{\rdexoheaderskip}{#1},
+    header skip=6pt plus 2pt minus 2pt,
+    %
+    label/.store in=\rdexo@label,
+    label=Exercice,
+    %
+    display numexo/.is if=rdexo@numexo,
+    display numexo=true,
+    numexo/.code=\setcounter{rdexo@numexo}{#1},
+    %
+    display score/.is if=rdexo@score,
+    display score=false,
+    score/.store in=\rdexo@score,
+    score=0,
+    score label/.code 2 args=\def\rdexo@score@singular{#1}\def\rdexo@score@plural{#2},
+    score label={point}{points},
+    %
+    display level/.is if=rdexo@level,
+    display level=false,
+    level/.store in=\thelevel,
+    level=0,
+    %
+    display exotitle/.is if=rdexo@title,
+    exotitle/.store in=\rdexo@title,
+    exotitle=\empty,
+    exotitle color/.code=\colorlet{rdexotitlecol}{#1},
+    exotitle color=black,
+    exotitle font/.store in=\rdexo@titlefont,
+    exotitle font=\sffamily\bfseries\footnotesize,
+    %
+    display lower/.is if=rdexo@lower,
+    display lower=false,
+    lower/.code=\tcbset{/tcb/rdexo/lower/.cd, #1},
+    %
+    save lower/.is if=rdexo@savelower,
+    save lower=false,
+    %
+    tags/.store in=\rdexo@exotags,
+    tags=\empty,
+    display tags/.is if=rdexo@tags,
+    %
+    file@options/.code=\setrdexo{file@options@style/.style={#1}},
+    file@options=,
+    rdexo@inside@raster/.code={%
+        %   � l'int�rieur d'un raster, les bo�tes sont mal align�es si breakable=true
+        \ifdefined\tcb@raster@box@width\pgfkeysalso{breakable=false}\fi%
+    },
+    %
+    rdexo@setheader/.code={%
+            \ifnum\rdexo@header@mode=0 %
+                \pgfkeysalso{\rdexo@skin/exo title style/.try}%
+            \else%
+                \ifnum\rdexo@header@mode=1 %
+                    \pgfkeysalso{before upper pre=\expandafter\csname rdexo@\rdexo@skin @tcbox\endcsname\kern\rdexoheaderskip}%
+                \else%
+                    \pgfkeysalso{before upper pre=\expandafter\csname rdexo@\rdexo@skin @tcolorbox\endcsname\kern\rdexoheaderskip}%
+                \fi%
+            \fi%
+        },
+    %
+    /tcb/rdexo/.search also={/tcb},
+    %
+    % Gestion de la lower box
+    /tcb/rdexo/lower/.cd,
+    position/.is choice,
+    position/bottom/.code=\edef\rdexo@lower@position{0},
+    position/left/.code=\edef\rdexo@lower@position{1},
+    position/right/.code=\edef\rdexo@lower@position{2},
+    position/.default=bottom,
+    position=bottom,
+    width/.store in=\rdexo@lower@width,
+    width=0.4\linewidth,
+    skip/.store in=\rdexo@lower@skip,
+    skip=3mm,
+    box/.is choice,
+    box/default/.code=\edef\rdexo@lower@box{0},
+    box/crep/.code=\edef\rdexo@lower@box{1},
+    box/.default=default,
+    box=default,
+    style/.code=\tcbset{rdexo/rdexo@lower@style/.style={#1}},
+    style=,
+    raster/.code=\tcbset{rdexo@user@raster/.style={#1}},
+    raster=,
+    mirror/.is if=rdexo@mirror,
+    mirror=false,
+    %mirror/.code=\tcbset{rdexo/rdexo@lower@style/.append style={tikz={rotate around={180:(frame.center)},transform shape}}},
+    %
+    left/.style={position=left, width=#1},
+    left/.default=0.4\linewidth,
+    right/.style={position=right, width=#1},
+    right/.default=0.4\linewidth,
+    seyes left/.style={position=left, box=crep, style=seyes, width=#1},
+    seyes left/.default=0.4\linewidth,
+    seyes right/.style={position=right, box=crep, style=seyes, width=#1},
+    seyes right/.default=0.4\linewidth,
+}
+
+\NewTColorBox{rdexo@exo}{ O{} }{%
+    exo default style,
+    rdexo/.cd,
+    \rdexo@skin/exo style/.try,
+    #1,
+    exo \therdexo@numexo/.try,
+    lowerbox=ignored,
+    rdexo@inside@raster,
+    rdexo@setheader
+}
+
+
+% Bo�te de sauvegarde
+% Note : J'ai essay� avec des \begin{tcolorbox} ou avec des \NewTColorBox ou ...
+% mais, c'est la seule fa�on de d�finir la bo�te de sauvegarde qui fonctionne
+% lorsque l'exercice est inclus dans une bo�te personnalis�e (d�finie par un \NewTColorBox)
+\newenvironment{rdexo@savebox}{%
+\tcolorbox[savedelimiter=rdexo@savebox,lowerbox=ignored, nirvana, savelowerto=\rdexo@savefile]
+}%
+{\endtcolorbox}
+
+
+% Bo�te pour rotation � 180�
+\NewTColorBox{rdexo@mirrorbox}{}{%
+blankest, rdexo@boxlower@width
+}
+
+
+
+\NewDocumentEnvironment{exo}{ O{} +b }
+{%
+% Filtre sur les tags ?
+\if\relax\detokenize\expandafter{\romannumeral-`\Q\rdexo@tagfilter}\relax% \rdexo@tagfilter = \empty ?
+    \rdexo@displayexotrue%
+\else%
+    \begingroup%
+    % On r�cup�re la liste des tags dans \rdexotmp
+        \tcbset{rdexo/.cd, #1}%
+        \xdef\rdexo@tmp{\rdexo@exotags}%
+    \endgroup%
+    % Recherche
+    \TF@tagtest{\rdexo@tags@matchcase}{\rdexo@tagfilter}{\rdexo@tmp}{\rdexo@displayexotrue}{\rdexo@displayexofalse}\ifhmode\unskip\fi%
+    % note : dans un tcbraster, il peut y avoir des espaces superflus introduits lorsque \rdexo@displayexofalse
+    % d'o� le \unskip (note de la note : impossible de trouver l'origine de ces espaces superflus !)
+\fi%
+%
+%
+\ifrdexo@displayexo%
+\begingroup%
+\stepcounter{rdexo@numexo}% pas de refstepcounter qui provoque un retour � la ligne dans un tcbraster
+\stepcounter{rdexo@real@numexo}% compteur unique (la cl� "numexo" a pu �tre employ�e pour red�finir rdexo@numexo)
+\tcbset{rdexo/.cd, #1, file@options@style, exo \therdexo@numexo/.try}%
+\expandafter\def\expandafter\rdexotags\expandafter{\rdexo@exotags}% Commande \rdexotags publique
+%
+\ifrdexo@lower%
+%   Exercice avec lowerbox
+\begin{tcolorbox}[rdexo blankest]
+%
+%
+% Sauvegarde du contenu de la lowerbox dans le fichier \jobname.rdexo
+\def\rdexo@savefile{\jobname.rdexo}%
+\scantokens{\begin{rdexo@savebox}#2\end{rdexo@savebox}}%
+%
+\tcbset{rdexo@raster@style/.style={}}%
+\@ifpackageloaded{rdcrep}{\rdexo@creploadedtrue}{\rdexo@creploadedfalse}%
+%
+%   Type de bo�te pour la lowerbox : default ou crep
+%   Bo�te : default
+\let\rdexo@lowerbox\tcolorbox%
+\let\endrdexo@lowerbox\endtcolorbox%
+%
+\ifnum\rdexo@lower@box=0 %
+    \tcbset{rdexo/rdexo@lower@style/.prefix style={lower default style, /tcb/rdexo/\rdexo@skin/lower style/.try}}%
+\else%
+\ifrdexo@creploaded%
+%   Bo�te : crep
+    \let\rdexo@lowerbox\crep%
+    \let\endrdexo@lowerbox\endcrep%
+\fi%
+\fi%
+%
+%
+\ifnum\rdexo@lower@position>0 % lowerbox en position left ou right
+    \edef\rdexo@raster@columns{2}%
+    \tcbset{%
+        rdexo@boxexo@width/.style={width=\linewidth-\rdexo@lower@skip-\rdexo@lower@width},
+        rdexo@boxlower@width/.style={width=\rdexo@lower@width},
+        rdexo@raster@style/.append style={%
+            raster column skip=\rdexo@lower@skip, raster equal height,
+            raster force size=false
+        }
+    }%
+\else%
+    \edef\rdexo@raster@columns{1}%  lowerbox en position bottom
+    \tcbset{%
+        rdexo@boxexo@width/.style={},
+        rdexo@boxlower@width/.style={},
+        rdexo@raster@style/.append style={raster row skip=\rdexo@lower@skip}
+        }%
+\fi%
+%
+%
+\tcbset{rdexo@raster@style/.append style={rdexo@user@raster}}%
+%
+%   lowerbox par d�faut (quand mirror=false)
+\def\rdexo@LOWERBOX{%
+\begingroup%
+\rdexo@lowerbox[/tcb/rdexo/rdexo@lower@style, rdexo@boxlower@width]
+\input{\jobname.rdexo}%
+\endrdexo@lowerbox%
+\endgroup%
+}
+%
+\ifrdexo@mirror%
+%
+% Bo�te tourn�e !
+%
+% Comme les solutions bas�es sur la cl� /tcb/rotate=180 ou /tcb/ticz={...} ne fonctionnent pas en toutes circonstances,
+% l'id�e consiste � sauvegarder la lowerbox dans une bo�te (\rdexo@boxA) et � faire subir � cette bo�te une rotation de 180�.
+% MAIS, il faut d'abord obtenir les dimensions de la bo�te affich�e dans le raster. Pour cela, on utilise un raster "cach�"
+% (=> contenu dans une bo�te) et on r�cup�re la hauteur de la lowerbox (sauvegard�e dans rdexo@rastergroup).
+% De surcro�t, en cas d'utilisation de "seyes", il faut forcer la trac� des lignes Seyes avec l'option "forced height".
+%
+% Raster cach� (raster equal height group=rdexo@rastergroup n'a aucun effet si raster equal height=none, ce qui nous arrange !)
+\begin{lrbox}{\rdexo@boxA}%
+\begin{tcbraster}[raster columns=\rdexo@raster@columns, rdexo@raster@style, raster equal height group=rdexo@rastergroup@\therdexo@real@numexo]
+\begin{rdexo@exo}[#1, rdexo@boxexo@width]
+#2%
+\end{rdexo@exo}%
+%
+\rdexo@LOWERBOX%
+\end{tcbraster}%
+\end{lrbox}%
+%
+% Construction de la bo�tes aux bonnes dimensions (use height from group=rdexo@rastergroup + "forced height" n'a aucun effet
+% si le style "seyes" n'est pas activt�).
+\begin{lrbox}{\rdexo@boxB}%
+\begingroup%
+\rdexo@lowerbox[/tcb/rdexo/rdexo@lower@style, rdexo@boxlower@width, /tcb/crep/forced height/.try, use height from group=rdexo@rastergroup@\therdexo@real@numexo]
+\input{\jobname.rdexo}%
+\endrdexo@lowerbox%
+\endgroup%
+\end{lrbox}%
+%
+% Red�finition de \rdexo@LOWERBOX qu'on encapsule dans une bo�te vide pour ne pas perturber le tcbraster � venir
+\def\rdexo@LOWERBOX{%
+\begin{rdexo@mirrorbox}
+\rotatebox{180}{\usebox{\rdexo@boxB}}%
+\end{rdexo@mirrorbox}%
+}%
+%
+\fi%    Fin "mirror=true"
+%
+%
+\begin{tcbraster}[raster columns=\rdexo@raster@columns, rdexo@raster@style]
+%
+\ifnum\rdexo@lower@position=1 %
+% Bo�te lower � gauche
+\rdexo@LOWERBOX%
+%
+\begin{rdexo@exo}[#1, rdexo@boxexo@width]
+#2%
+\end{rdexo@exo}%
+%
+\else%
+%
+% Bo�te lower � droite ou dessous
+\begin{rdexo@exo}[#1, rdexo@boxexo@width]
+#2%
+\end{rdexo@exo}%
+%
+\rdexo@LOWERBOX%
+\fi%
+\end{tcbraster}%
+%
+%
+\end{tcolorbox}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\else%
+%   Exercice sans lowerbox
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifrdexo@savelower%
+% Sauvegarde du contenu de la lowerbox dans le fichier \jobname.rdexo
+\def\rdexo@savefile{\rdexo@lowerfolder/\rdexo@lowerprefix_\therdexo@numexo.rdexo}%
+\scantokens{\begin{rdexo@savebox}#2\end{rdexo@savebox}}%
+\fi%
+\begin{rdexo@exo}[#1]
+#2%
+\end{rdexo@exo}%
+\fi%
+\endgroup%
+\else%
+\fi% \ifrdexo@displayexo
+}%
+{}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Chargement des exercices
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\def\rdexopath#1{\def\rdexoinput@path{#1}}
+
+\rdexopath{{./}}%   path par d�faut
+
+\ifx\rdexoinput@path\@undefined%
+  \let\rdexoinput@path\input@path%
+\fi%
+
+\def\rdexopathapp#1{%
+\g@addto@macro\rdexoinput@path{#1}%
+}
+
+\def\include@exo#1{%
+\let\rdexo@oldinput@path\input@path%
+\let\input@path\rdexoinput@path%
+\input{#1}%
+\let\input@path\rdexo@oldinput@path%
+}
+
+\NewDocumentCommand{\rdexoinclude}{ s O{} m}{%
+\IfBooleanTF{#1}%
+{%star
+\setrdexo{file@options={#2}}%
+\include@exo{#3}%
+}%
+{%no star
+\begin{exo}[#2]%
+\include@exo{#3}%
+\end{exo}%
+}\ifhmode\unskip\fi%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Cr�ation des skins
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\NewDocumentCommand{\rdexoSkin}{m m m}{%
+\expandafter\newcommand\csname rdexo@#1@tcbox\endcsname{#2}%
+\expandafter\newcommand\csname rdexo@#1@tcolorbox\endcsname{#3}%
+}
+
+
+\NewDocumentCommand{\setSkinColors}{m > { \TrimSpaces } m}{%
+\tcbset{%
+    rdexo/#1/.cd, #2%
+}%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Skins
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Skin : default
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\tcbset{%
+    % les styles pour un skin doivent �tre rang�s dans la branche /tcb/rdexo/<nom du skin>
+    rdexo/default/.cd,
+    % Couleurs
+    bg color/.initial=gray!10,
+    fg color/.initial=black,
+    frame color/.initial=black,
+    star fg color/.initial=starcolor,
+    star bg color/.initial=gray!20,
+    star line color/.initial=black,
+    score fg color/.initial=white,
+    score bg color/.initial=black,
+    tags bg color/.initial=black!70,
+    tags fg color/.initial=white,
+    title color/.forward to=/tcb/rdexo/exotitle color,
+    % Style optionnel
+    %exo style/.style={},
+    exo title style/.style={
+        adjusted title=\ding{113}~\thelabel\thenumexo*[~]\theExotitle*[~--~],
+        fonttitle=\sffamily\bfseries,
+        coltitle=\pgfkeysvalueof{/tcb/rdexo/default/fg color},
+        colbacktitle=\pgfkeysvalueof{/tcb/rdexo/default/bg color},
+        lefttitle=3pt, righttitle=3pt, toptitle=3pt, bottomtitle=3pt,
+        titlerule=\rdexoheaderskip,
+        overlay={
+            \path (title.east) coordinate (x) ;
+            \TFScore{%
+                \node[anchor=east, inner xsep=2pt] (y) at (title.east) {\tcbox[rdexo/default/score style]{\theScore}} ;
+                \path (y.west) coordinate (x) ;
+                }{}
+            \TFLevel{%
+                \node[anchor=east] at (x) {\rdexostars[star color=\pgfkeysvalueof{/tcb/rdexo/default/star fg color},
+                        star background=\pgfkeysvalueof{/tcb/rdexo/default/star bg color},
+                        line color=\pgfkeysvalueof{/tcb/rdexo/default/star line color}]{\thelevel}{3}};
+                }{}
+        },
+        before upper pre=\TFTags{%
+                    \begin{tcolorbox}[rdexo/default/tags tcolorbox, before=\vspace*{-\rdexoheaderskip+1ex}, after skip=\rdexoheaderskip]
+                    \thetags%
+                    \end{tcolorbox}}{}%
+    },
+    %   style optionnel pour la bo�te destin�e � contenir la lowerbox
+    lower style/.style={
+        boxsep=3pt
+    },
+    %   style optionnel pour les bo�tes lowerbox d�port�es
+    saved lower style/.style={
+        enhanced jigsaw,
+        opacityback=0,
+        fontupper=\footnotesize,
+        adjusted title=\ding{113}~\thelabel~\thelowernum~:,
+        coltitle=black,
+        fonttitle=\sffamily\footnotesize,
+        opacitybacktitle=0,
+        titlerule=0.6pt,
+        bottomtitle=1pt, toptitle=0pt,
+        top=5pt
+    },
+    % style optionnel pour les tags
+    tag style/.style={
+        enhanced jigsaw, on line, boxsep=3pt,
+        rdexo resest padding,
+        frame engine=empty, boxrule=0pt,
+        colback=\pgfkeysvalueof{/tcb/rdexo/default/tags bg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/default/tags fg color},
+        fontupper=\sffamily\bfseries\tiny,
+        before upper=\vphantom{\'Ey}
+    },
+    % Styles pour exo header=tcbox ou tcolorbox
+    header tcolorbox/.style={
+        enhanced jigsaw,
+        rdexo resest padding,
+        fontupper=\sffamily\bfseries,
+        colback=\pgfkeysvalueof{/tcb/rdexo/default/bg color},
+        colframe=\pgfkeysvalueof{/tcb/rdexo/default/frame color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/default/fg color},
+        boxsep=3pt, boxrule=0.8pt,
+        rounded corners, arc=6pt,
+        after skip=0pt,% ! Important !
+        rdexo/default/score and level
+    },
+    header tcbox/.style={
+        enhanced jigsaw,
+        on line,
+        rdexo resest padding,
+        fontupper=\sffamily\bfseries,
+        colback=\pgfkeysvalueof{/tcb/rdexo/default/bg color},
+        colframe=\pgfkeysvalueof{/tcb/rdexo/default/frame color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/default/fg color},
+        boxsep=3pt, boxrule=0.8pt,
+        rounded corners, arc=6pt,
+        width=\TFScore{\TFLevel{5.2cm}{4cm}}{\TFLevel{4cm}{2.8cm}},
+        tcbox width=forced left,
+        rdexo/default/score and level,
+        overlay app={
+            \TFTags{%
+                \node[anchor=north east, inner sep=0pt, outer sep=0pt] at ([xshift=-1em]saved frame nw) {\thetags[1]};
+                    }{}
+        }
+    },
+    % Styles auxiliaires
+    tags tcolorbox/.style={
+        blankest,
+        after skip=0pt,
+        before skip=1ex,
+        halign=right
+    },
+    %
+    score and level/.style={
+        overlay={
+            \path (frame.east) coordinate (x) (frame.north west) coordinate (saved frame nw) ;
+            % Quand on inclut le score, une nouvelle bo�te \tcbox est cr��e ce qui implique (bug ?) que
+            % (frame) fait d�sormais r�f�rence � la bo�te contenant le score. D'o� la n�cessit� de
+            % sauvegarder la position (frame.north west) utilis�e pour les tags.
+            \TFScore{%
+                \node[anchor=east, inner xsep=2pt] (y) at (frame.east) {\tcbox[rdexo/default/score style]{\theScore}} ;
+                \path (y.west) coordinate (x) ;
+                }{}
+            \TFLevel{%
+                \node[anchor=east] at (x) {\rdexostars[star color=\pgfkeysvalueof{/tcb/rdexo/default/star fg color},
+                             star background=\pgfkeysvalueof{/tcb/rdexo/default/star bg color},
+                             line color=\pgfkeysvalueof{/tcb/rdexo/default/star line color}]{\thelevel}{3}};
+                }{}
+        }
+    },
+    score style/.style={
+        enhanced jigsaw,
+        on line,
+        rdexo resest padding,
+        frame engine=empty,
+        colback=\pgfkeysvalueof{/tcb/rdexo/default/score bg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/default/score fg color},
+        boxsep=2pt,
+        fontupper=\sffamily\bfseries\tiny
+    },
+    exotitle tcbox/.style={
+        enhanced jigsaw,
+        on line,
+        rdexo resest padding,
+        boxsep=1.5pt,
+        sharp corners,
+        frame engine=empty,
+        interior engine=empty,
+        fontupper=\rdexotitlefont\itshape,
+        coltext=rdexotitlecol
+    }
+}
+
+\rdexoSkin{default}%
+{%
+\tcbox[rdexo/default/header tcbox]{\ding{113}~\thelabel\thenumexo*[~]}\TFTitle{~\tcbox[rdexo/default/exotitle tcbox]{\frquote{\theexotitle}}}{}%
+}%
+{%
+\begin{tcolorbox}[rdexo/default/header tcolorbox]
+\ding{113}~\thelabel\thenumexo*[~]\theExotitle*[~--~]
+\end{tcolorbox}%
+\TFTags{%
+\begin{tcolorbox}[rdexo/default/tags tcolorbox]
+\thetags%
+\end{tcolorbox}}{}%
+}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Skin : pooja
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\tcbset{%
+    % les styles pour un skin doivent �tre rang�s dans la branche /tcb/rdexo/<nom du skin>
+    rdexo/pooja/.cd,
+    % Couleurs
+    bg color/.initial=gray!20,
+    fg color/.initial=black,
+    frame color/.initial=black,
+    star fg color/.initial=starcolor,
+    star bg color/.initial=gray!20,
+    star line color/.initial=black,
+    score fg color/.initial=white,
+    score bg color/.initial=black,
+    tags bg color/.initial=black!70,
+    tags fg color/.initial=white,
+    title color/.forward to=/tcb/rdexo/exotitle color,
+    % Style optionnel
+    %exo style/.style={},
+    exo title style/.style={
+        adjusted title=\ding{110}~\thelabel\thenumexo*[~]\theExotitle*[~--~],
+        fonttitle=\sffamily\bfseries,
+        coltitle=\pgfkeysvalueof{/tcb/rdexo/pooja/fg color},
+        colbacktitle=\pgfkeysvalueof{/tcb/rdexo/pooja/bg color},
+        lefttitle=3pt, righttitle=3pt, toptitle=3pt, bottomtitle=3pt,
+        attach boxed title to top={yshift=-\tcboxedtitleheight+\rdexoheaderskip},
+        boxed title style={frame engine=empty, sharp corners, rounded corners=east, arc=6pt, rdexo/pooja/score and level},
+        before upper pre=\TFTags{%
+                        \begin{tcolorbox}[rdexo/pooja/tags tcolorbox, before=\vspace*{-\rdexoheaderskip+1ex}, after skip=\rdexoheaderskip]
+                        \thetags%
+                        \end{tcolorbox}}{}%
+    },
+    %   style optionnel pour la bo�te destin�e � contenir la lowerbox
+    lower style/.style={
+        boxsep=3pt
+    },
+    %   style optionnel pour les bo�tes lowerbox d�port�es
+    saved lower style/.style={
+        enhanced jigsaw,
+        opacityback=0,
+        fontupper=\footnotesize,
+        adjusted title=\ding{110}~\thelabel~\thelowernum~:,
+        coltitle=black,
+        fonttitle=\sffamily\footnotesize,
+        opacitybacktitle=0,
+        titlerule=0.6pt,
+        bottomtitle=1pt, toptitle=0pt,
+        top=5pt
+    },
+    % style optionnel pour les tags
+    tag style/.style={
+        enhanced jigsaw, on line, boxsep=3pt,
+        rdexo resest padding,
+        frame engine=empty, boxrule=0pt,
+        colback=\pgfkeysvalueof{/tcb/rdexo/pooja/tags bg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/pooja/tags fg color},
+        fontupper=\sffamily\bfseries\tiny,
+        before upper=\vphantom{\'Ey}
+    },
+    % Styles pour exo header=tcbox ou tcolorbox
+    header tcolorbox/.style={
+        bicolor jigsaw,
+        rdexo resest padding,
+        sidebyside, sidebyside align=center seam,
+        sidebyside gap=0pt, righthand width=1.8cm,
+        before upper=\vphantom{\'Ep},
+        before lower=\hspace*{3pt},
+        fontupper=\sffamily\bfseries,
+        colback=\pgfkeysvalueof{/tcb/rdexo/pooja/bg color},
+        colbacklower=\pgfkeysvalueof{/tcb/rdexo/pooja/score bg color},
+        colframe=\pgfkeysvalueof{/tcb/rdexo/pooja/frame color},
+        colupper=\pgfkeysvalueof{/tcb/rdexo/pooja/fg color},
+        collower=\pgfkeysvalueof{/tcb/rdexo/pooja/score fg color},
+        sharp corners,
+        halign lower=center,
+        fontlower=\TFScore{\sffamily\bfseries\scriptsize}{},
+        boxsep=3pt, arc=6pt, rounded corners=east,
+        frame engine=empty, boxrule=0pt,
+        after skip=0pt,% ! Important !
+    },
+    header tcbox/.style={
+        enhanced jigsaw,
+        on line,
+        rdexo resest padding,
+        fontupper=\sffamily\bfseries,
+        colback=\pgfkeysvalueof{/tcb/rdexo/pooja/bg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/pooja/fg color},
+        boxsep=3pt, boxrule=0pt, frame engine=empty,
+        sharp corners,
+        rounded corners=east, arc=6pt,
+        width=\TFScore{\TFLevel{6cm}{5cm}}{5cm},
+        tcbox width=forced left,
+        rdexo/pooja/score and level,
+        overlay app={
+            \TFTags{%
+                \node[anchor=north east, inner sep=0pt, outer sep=0pt] at ([xshift=-1em]frame.north west) {\thetags[1]};
+                    }{}
+        }
+    },
+    % Styles auxiliaires
+    tags tcolorbox/.style={
+        blankest,
+        after skip=0pt,
+        before skip=1ex,
+        halign=right
+    },
+    score and level/.style={
+        overlay={
+            \begin{tcbclipframe}
+                \fill[\pgfkeysvalueof{/tcb/rdexo/pooja/score bg color}] ([xshift=-1.8cm]frame.north east) rectangle (frame.south east) coordinate[pos=0.5] (x);
+                \TFScore{%
+                    \node[inner sep=0pt, node font=\sffamily\bfseries\scriptsize, text=\pgfkeysvalueof{/tcb/rdexo/pooja/score fg color}] at (x) {\theScore};
+                    \TFLevel{%
+                        \node[inner sep=0pt, inner xsep=3pt, anchor=east] at ([xshift=-1.8cm]frame.east) {%
+                                \rdexostars[star color=\pgfkeysvalueof{/tcb/rdexo/pooja/star fg color},
+                                    star background=\pgfkeysvalueof{/tcb/rdexo/pooja/star bg color},
+                                    line color=\pgfkeysvalueof{/tcb/rdexo/pooja/star line color}]{\thelevel}{3}%
+                            };
+                    }
+                    {}
+                }{%
+                    \TFLevel{%
+                        \node[inner sep=0pt] at (x) {%
+                            \rdexostars[line width=0pt, star color=\pgfkeysvalueof{/tcb/rdexo/pooja/star fg color},
+                                star background=\pgfkeysvalueof{/tcb/rdexo/pooja/star bg color},
+                                line color=\pgfkeysvalueof{/tcb/rdexo/pooja/star line color}]{\thelevel}{3}};
+                            }%
+                            {}
+                }
+            \end{tcbclipframe}
+        }
+    },
+    exotitle tcbox/.style={
+        enhanced jigsaw,
+        on line,
+        rdexo resest padding,
+        boxsep=1.5pt,
+        sharp corners,
+        frame engine=empty,
+        interior engine=empty,
+        fontupper=\rdexotitlefont\itshape,
+        coltext=rdexotitlecol
+    }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Skin : rikid
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\tcbset{%
+    % les styles pour un skin doivent �tre rang�s dans la branche /tcb/rdexo/<nom du skin>
+    rdexo/rikid/.cd,
+    % Couleurs
+    bg color/.initial=rdexored,
+    fg color/.initial=white,
+    frame color/.initial=black,
+    star fg color/.initial=starcolor,
+    star bg color/.initial=gray!20,
+    star line color/.initial=black,
+    score fg color/.initial=rdexored,
+    score bg color/.initial=white,
+    lower bg color/.initial=orange,
+    tags bg color/.initial=rdexored!70,
+    tags fg color/.initial=white,
+    title color/.forward to=/tcb/rdexo/exotitle color,
+    % Style optionnel
+    %exo style/.style={},
+    exo title style/.style={
+        adjusted title=\theExotitle*,
+        fonttitle=\sffamily\bfseries,
+        coltitle=\pgfkeysvalueof{/tcb/rdexo/rikid/fg color},
+        colbacktitle=\pgfkeysvalueof{/tcb/rdexo/rikid/bg color},
+        lefttitle=3.5em, righttitle=0pt, toptitle=0pt, bottomtitle=0pt,
+        attach boxed title to top={yshift=0pt, yshifttext=-\rdexoheaderskip},
+        boxed title style={
+            interior code={
+                \fill[left color=\pgfkeysvalueof{/tcb/rdexo/rikid/bg color}!10, right color=white] ([xshift=2.75em]frame.north west) rectangle (frame.south east);
+                },
+            rdexo/rikid/score and level
+        },
+        before upper pre=\TFTags{%
+                                \begin{tcolorbox}[rdexo/rikid/tags tcolorbox,
+                                before=\vspace*{-\rdexoheaderskip+1ex},
+                                after skip=\rdexoheaderskip]
+                                \thetags%
+                                \end{tcolorbox}}{}%
+    },
+    %   style optionnel pour la bo�te destin�e � contenir la lowerbox
+    lower style/.style={
+        boxsep=3pt
+    },
+    %   style optionnel pour les bo�tes lowerbox d�port�es
+    saved lower style/.style={
+        enhanced jigsaw,
+        opacityback=0,
+        fontupper=\footnotesize,
+        before upper=\begin{tcolorbox}[rdexo/rikid/header lowerbox]\end{tcolorbox}
+    },
+    header lowerbox/.style={
+        enhanced jigsaw,
+        rdexo resest padding,
+        fontupper=\sffamily\bfseries\footnotesize,
+        left=3.5em,
+        before upper=\vphantom{\'Ep},
+        interior code={
+            \fill[left color=\pgfkeysvalueof{/tcb/rdexo/rikid/lower bg color}!10, right color=white]
+                         ([xshift=3em]frame.north west) rectangle (frame.south east);
+            },
+        sharp corners,
+        boxsep=0pt,
+        frame engine=empty, boxrule=0pt,
+        after skip=5pt,
+        overlay={
+            \node[anchor=west, inner sep=0pt] at (frame.west) {\tcbox[rdexo/rikid/header tcbox, no overlay, colback=\pgfkeysvalueof{/tcb/rdexo/rikid/lower bg color}]{\thelowernum}};
+        }
+    },
+    % style optionnel pour les tags
+    tag style/.style={
+        enhanced jigsaw, on line, boxsep=3pt,
+        rdexo resest padding,
+        frame engine=empty, boxrule=0pt,
+        colback=\pgfkeysvalueof{/tcb/rdexo/rikid/tags bg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/rikid/tags fg color},
+        fontupper=\sffamily\bfseries\tiny,
+        before upper=\vphantom{\'Ey}
+    },
+    % Styles pour exo header=tcbox ou tcolorbox
+    header tcolorbox/.style={
+        enhanced jigsaw,
+        rdexo resest padding,
+        left=3.5em,
+        before upper=\vphantom{\'Ep},
+        fontupper=\sffamily\bfseries,
+        interior code={
+            \fill[left color=\pgfkeysvalueof{/tcb/rdexo/rikid/bg color}!10, right color=white]
+                         ([xshift=2.75em]frame.north west) rectangle (frame.south east);
+            },
+        sharp corners,
+        boxsep=0pt,
+        frame engine=empty, boxrule=0pt,
+        after skip=0pt,% ! Important !
+        rdexo/rikid/score and level
+    },
+    header tcbox/.style={
+        enhanced jigsaw,
+        on line,
+        rdexo resest padding,
+        fontupper=\sffamily\bfseries,
+        colback=\pgfkeysvalueof{/tcb/rdexo/rikid/bg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/rikid/fg color},
+        boxsep=2pt, boxrule=0pt, frame engine=empty,
+        rounded corners, arc=2pt,
+        width=0.6cm,
+        tcbox width=forced center,
+        fuzzy shadow={0.5ex}{-0.5ex}{0mm}{0.075mm}{black},
+        overlay={
+                \TFTags{%
+                    \node[anchor=north east, inner sep=0pt, outer sep=0pt]
+                            at ([xshift=-1em]frame.north west) {\thetags[1]};
+                }{}
+        }
+    },
+    % Styles auxiliaires
+    tags tcolorbox/.style={
+        blankest,
+        after skip=0pt,
+        before skip=1ex,
+        halign=right
+    },
+    score style/.style={
+        enhanced jigsaw,
+        nobeforeafter,
+        tcbox raise=-1.5pt,
+        rdexo resest padding,
+        sharp corners,
+        boxrule=0.4pt,
+        colframe=\pgfkeysvalueof{/tcb/rdexo/rikid/score fg color},
+        opacityback=0,
+        coltext=\pgfkeysvalueof{/tcb/rdexo/rikid/score fg color},
+        boxsep=2pt,
+        fontupper=\sffamily\bfseries\tiny
+    },
+    score and level/.style={
+        overlay={
+            \path (frame.east) coordinate (x) ;
+            \TFScore{%
+                \node[anchor=east, inner xsep=2pt] (y) at (frame.east) {\tcbox[rdexo/rikid/score style]{\theScore}} ;
+                \path (y.west) coordinate (x) ;
+                }{}
+            \TFLevel{%
+                \node[anchor=east] at (x) {\rdexostars[star color=\pgfkeysvalueof{/tcb/rdexo/rikid/star fg color},
+                             star background=\pgfkeysvalueof{/tcb/rdexo/rikid/star bg color},
+                             line color=\pgfkeysvalueof{/tcb/rdexo/rikid/star line color}]{\thelevel}{3}};
+                }{}
+            \node[anchor=west, inner sep=0pt] at (frame.west) {\tcbox[rdexo/rikid/header tcbox, no overlay]{\TFNumexo{\thenumexo}{\phantom{0}}}};
+        }
+    },
+    exotitle tcbox/.style={
+        enhanced jigsaw,
+        on line,
+        rdexo resest padding,
+        boxsep=1.5pt,
+        sharp corners,
+        frame engine=empty,
+        interior engine=empty,
+        fontupper=\rdexotitlefont\itshape,
+        coltext=rdexotitlecol
+    }
+}
+
+\rdexoSkin{rikid}%
+{%
+\tcbox[rdexo/rikid/header tcbox]{\thenumexo*}%
+\TFLevel{\hspace*{0.75em}\rdexostars[raise=-1.5pt, star color=\pgfkeysvalueof{/tcb/rdexo/rikid/star fg color},
+                        star background=\pgfkeysvalueof{/tcb/rdexo/rikid/star bg color},
+                        line color=\pgfkeysvalueof{/tcb/rdexo/rikid/star line color}]{\thelevel}{3}}{}%
+\TFScore{\hspace*{0.75em}\tcbox[rdexo/rikid/score style]{\theScore}}{}%
+\TFTitle{\hspace*{0.75em}\tcbox[rdexo/rikid/exotitle tcbox]{\frquote{\theexotitle}}}{}%
+}%
+{%
+\begin{tcolorbox}[rdexo/rikid/header tcolorbox]
+\theExotitle*%
+\end{tcolorbox}%
+\TFTags{%
+\begin{tcolorbox}[rdexo/rikid/tags tcolorbox]
+\thetags%
+\end{tcolorbox}}{}%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Skin : griba
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\tcbset{%
+    % les styles pour un skin doivent �tre rang�s dans la branche /tcb/rdexo/<nom du skin>
+    rdexo/griba/.cd,
+    % Couleurs
+    bg color/.initial=black,
+    fg color/.initial=white,
+    frame color/.initial=black,
+    star fg color/.initial=starcolor,
+    star bg color/.initial=gray!20,
+    star line color/.initial=black,
+    score fg color/.initial=white,
+    score bg color/.initial=purple,
+    lower bg color/.initial=gray,
+    tags bg color/.initial=teal!70,
+    tags fg color/.initial=white,
+    title color/.forward to=/tcb/rdexo/exotitle color,
+    % Style optionnel
+    %exo style/.style={},
+    exo title style/.style={
+        adjusted title=\tcbox[rdexo/griba/header label]{\thelabel\TFNumexo{~\tcbox[rdexo/griba/numexo style]{\thenumexo}}{}}%
+            \TFLevel{~\rdexostars[raise=-1pt,
+                                    star color=\pgfkeysvalueof{/tcb/rdexo/griba/star fg color},
+                                    star background=\pgfkeysvalueof{/tcb/rdexo/griba/star bg color},
+                                    line color=\pgfkeysvalueof{/tcb/rdexo/griba/star line color}]{\thelevel}{3}}{}%
+                                \hfill\theExotitle*%
+                                \TFScore{\hspace*{0.75em}\tcbox[rdexo/griba/score style]{\theScore}}{},
+        fonttitle=\sffamily\bfseries,
+        coltitle=\pgfkeysvalueof{/tcb/rdexo/griba/fg color},
+        lefttitle=0pt, righttitle=0pt,  toptitle=0pt, bottomtitle=1.5pt,
+        attach boxed title to top={yshift=0pt, yshifttext=-\rdexoheaderskip},
+        boxed title style={sharp corners, boxsep=0pt, colframe=\pgfkeysvalueof{/tcb/rdexo/griba/frame color},
+            opacityback=0, bottomrule=1pt},
+        before upper pre=\TFTags{%
+                                    \begin{tcolorbox}[rdexo/griba/tags tcolorbox, before=\vspace*{-\rdexoheaderskip+1ex},
+                                        after skip=\rdexoheaderskip]
+                                    \thetags%
+                                    \end{tcolorbox}}{}%
+    },
+    % style optionnel pour la bo�te destin�e � contenir la lowerbox
+    lower style/.style={
+        boxsep=3pt
+    },
+    % style optionnel pour les bo�tes lowerbox d�port�es
+    saved lower style/.style={
+        enhanced jigsaw,
+        opacityback=0,
+        fontupper=\footnotesize,
+        adjusted title={\tcbox[rdexo/griba/header label, colback=\pgfkeysvalueof{/tcb/rdexo/griba/lower bg color}, boxsep=1pt]%
+            {\thelabel~\tcbox[rdexo/griba/numexo style, coltext=\pgfkeysvalueof{/tcb/rdexo/griba/lower bg color}]{\thelowernum}}},
+        coltitle=black,
+        fonttitle=\sffamily\footnotesize,
+        opacitybacktitle=0,
+        titlerule=0.6pt,
+        titlerule style=\pgfkeysvalueof{/tcb/rdexo/griba/lower bg color},
+        bottomtitle=1pt, toptitle=0pt,
+        top=5pt
+    },
+    % style optionnel pour les tags
+    tag style/.style={
+        enhanced jigsaw, on line, boxsep=3pt,
+        rdexo resest padding,
+        frame engine=empty, boxrule=0pt,
+        colback=\pgfkeysvalueof{/tcb/rdexo/griba/tags bg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/griba/tags fg color},
+        fontupper=\sffamily\bfseries\tiny,
+        before upper=\vphantom{\'Ey}
+    },
+    % Styles pour exo header=tcbox ou tcolorbox
+    header tcolorbox/.style={
+        enhanced jigsaw,
+        rdexo resest padding,
+        boxsep=1.5pt,
+        left=-1.5pt, right=-1.5pt,
+        fontupper=\sffamily\bfseries,
+        colback=\pgfkeysvalueof{/tcb/rdexo/griba/bg color},
+        colbacklower=\pgfkeysvalueof{/tcb/rdexo/griba/score bg color},
+        colframe=\pgfkeysvalueof{/tcb/rdexo/griba/frame color},
+        colupper=\pgfkeysvalueof{/tcb/rdexo/griba/fg color},
+        collower=\pgfkeysvalueof{/tcb/rdexo/griba/score fg color},
+        sharp corners,
+        opacityback=0,
+        boxrule=0pt, bottomrule=1pt,
+        after skip=0pt,% ! Important !
+    },
+    %
+    % Styles auxiliaires
+    tags tcolorbox/.style={
+        blankest,
+        after skip=0pt,
+        before skip=1ex,
+        halign=right
+    },
+    tags tcbox/.style={
+        overlay={
+            \TFTags{%
+            \node[anchor=north east, inner sep=0pt, outer sep=0pt]
+            at ([xshift=-1em]frame.north west) {\thetags[1]};
+            }{}
+        }
+    },
+    score style/.style={
+        enhanced jigsaw,
+        tcbox raise=-3pt, nobeforeafter,
+        rdexo resest padding,
+        frame engine=empty,
+        colback=\pgfkeysvalueof{/tcb/rdexo/griba/score bg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/griba/score fg color},
+        boxsep=2pt,
+        fontupper=\sffamily\bfseries\tiny
+    },
+    exotitle tcbox/.style={
+        enhanced jigsaw,
+        on line,
+        rdexo resest padding,
+        boxsep=1.5pt,
+        sharp corners,
+        frame engine=empty,
+        interior engine=empty,
+        fontupper=\rdexotitlefont\itshape,
+        coltext=rdexotitlecol
+    },
+    header label/.style={
+        enhanced jigsaw,
+        rdexo resest padding,
+        left=2pt, right=2pt,
+        fontupper=\sffamily\bfseries,
+        on line,
+        colback=\pgfkeysvalueof{/tcb/rdexo/griba/bg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/griba/fg color},
+        frame engine=empty, boxrule=0pt,
+        sharp corners=west
+    },
+    numexo style/.style={
+        enhanced jigsaw,
+        rdexo resest padding,
+        on line,
+        colback=\pgfkeysvalueof{/tcb/rdexo/griba/fg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/griba/bg color},
+        boxsep=1pt,
+        sharp corners=west, arc=2pt,
+        frame engine=empty, boxrule=0pt
+    }
+}
+
+
+
+\rdexoSkin{griba}%
+{%
+\tcbox[rdexo/griba/header label, rdexo/griba/tags tcbox]{\thelabel\TFNumexo{~\tcbox[rdexo/griba/numexo style]{\thenumexo}}{}}%
+\TFLevel{\hspace*{0.5em}\rdexostars[raise=-3.5pt, display mode=vertical, scale=0.5,
+    star color=\pgfkeysvalueof{/tcb/rdexo/griba/star fg color},
+    star background=\pgfkeysvalueof{/tcb/rdexo/griba/star bg color},
+    line color=\pgfkeysvalueof{/tcb/rdexo/griba/star line color}]{\thelevel}{3}}{}%
+\TFScore{\hspace*{0.5em}\tcbox[rdexo/griba/score style]{\theScore}}{}%
+\TFTitle{~\tcbox[rdexo/griba/exotitle tcbox]{\frquote{\theexotitle}}}{}%
+}%
+{%
+\begin{tcolorbox}[rdexo/griba/header tcolorbox]
+\tcbox[rdexo/griba/header label]{\thelabel\TFNumexo{~\tcbox[rdexo/griba/numexo style]{\thenumexo}}{}}%
+\TFLevel{~\rdexostars[raise=-1pt,
+    star color=\pgfkeysvalueof{/tcb/rdexo/griba/star fg color},
+    star background=\pgfkeysvalueof{/tcb/rdexo/griba/star bg color},
+    line color=\pgfkeysvalueof{/tcb/rdexo/griba/star line color}]{\thelevel}{3}}{}%
+\hfill\theExotitle*%
+\TFScore{\hspace*{0.75em}\tcbox[rdexo/griba/score style]{\theScore}}{}
+\end{tcolorbox}%
+\TFTags{%
+\begin{tcolorbox}[rdexo/griba/tags tcolorbox]
+\thetags%
+\end{tcolorbox}}{}%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   \rdexoStars
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+% Inspir� de https://tex.stackexchange.com/a/11395/30654
+
+\newlength{\rdexostars@raise}
+
+\tikzset{%
+  rdexostars/.is family,
+  rdexostars/.cd,
+  star color/.code=\colorlet{rdexostars@starcolor}{#1},
+  star background/.code=\colorlet{rdexostars@starbackground}{#1},
+  line color/.code=\colorlet{rdexostars@linecolor}{#1},
+  line width/.store in=\rdexostars@linewidth,
+  raise/.code=\setlength{\rdexostars@raise}{#1},
+  scale/.store in=\rdexostars@scale,
+  show bg/.is choice,
+  show bg/true/.code=\def\rdexostars@showbg{1},
+  show bg/false/.code=\def\rdexostars@showbg{0},
+  show bg/.default=true,
+  display mode/.is choice,
+  display mode/horizontal/.code=\edef\rdexostars@displaymode{0},
+  display mode/vertical/.code=\edef\rdexostars@displaymode{1},
+  display mode/.default=horizontal,
+  background/.code=\tcbset{rdexostars@background/.style={#1}},
+  background app/.code=\tcbset{rdexostars@background/.append style={#1}},
+  tikzpicture/.code=\tikzset{rdexostars@tikzpicture/.style={#1}},
+%
+    default/.style={%
+        star color=yellow,
+        star background=gray,
+        line color=black,
+        line width=0.6pt,
+        raise=0pt,
+        scale=1,
+        show bg=false,
+        background=,
+        tikzpicture=,
+        display mode=horizontal
+    },
+    default
+}
+
+
+\newcommand{\setrdexostars}[1]{%
+\tikzset{rdexostars/.cd, #1}%
+}
+
+\newcommand\rdexostars[3][]{%
+\begingroup%
+\tikzset{rdexostars/.cd, #1}%
+  \pgfmathsetmacro\pgfxa{#2 + 1}%
+  \ifnum\rdexostars@showbg=1 %
+    \ifdim\rdexostars@raise=0pt %
+        \tcbset{rdexostars@background/.prefix style={on line}}%
+    \else
+        \edef\rdexostars@tmpraise{\fpeval{\rdexostars@raise} pt}%
+        \tcbset{rdexostars@background/.prefix style={baseline=-\rdexostars@tmpraise}}%
+        \setlength{\rdexostars@raise}{0pt}%
+    \fi%
+    \tcbox[blankest, nobeforeafter, rdexostars@background]{\rdexo@drawstars{#2}{#3}}%
+  \else%
+    \rdexo@drawstars{#2}{#3}%
+  \fi%
+\endgroup%
+}
+
+
+\def\rdexo@drawstars#1#2{%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{tikzpicture}[baseline=-\rdexostars@raise, scorestars/.style={star, star points=5, star point ratio=2.25, draw=rdexostars@linecolor,
+         line width=\rdexostars@linewidth, inner sep=0.15em, anchor=outer point 3}, scale=\rdexostars@scale, transform shape, rdexostars@tikzpicture]
+    \foreach \i in {1, ..., #2} {
+      \pgfmathparse{\i<=#1 ? "rdexostars@starcolor" : "rdexostars@starbackground"}
+      \edef\starcolor{\pgfmathresult}
+      \ifnum\rdexostars@displaymode=0 %
+        \path (\i*1em, 0) coordinate (x) ;
+      \else
+        \path (0,{(\i-1)*1em}) coordinate (x) ;
+      \fi
+      \draw (x) node[name=star\i, scorestars, fill=\starcolor]  {};
+    }
+    \pgfmathparse{#1>int(#1) ? int(#1+1) : 0}
+    \let\partstar=\pgfmathresult
+    \ifnum\partstar>0
+      \pgfmathsetmacro\starpart{#1-(int(#1)}
+      \ifnum\rdexostars@displaymode=0 %
+          \path [clip] ($(star\partstar.outer point 3)!(star\partstar.outer point 2)!(star\partstar.outer point 4)$) rectangle
+          ($(star\partstar.outer point 2 |- star\partstar.outer point 1)!\starpart!(star\partstar.outer point 1 -| star\partstar.outer point 5)$);
+          \fill (\partstar*1em, 0) node[scorestars, fill=rdexostars@starcolor]  {};
+      \else % en mode vertical, l'aire repr�sent�e n'est pas vraiment correcte... mais pas compl�tement fausse non plus
+            % Utilisation de GeoGebra pour approcher le calcul de \starpart en fonction du pourcentage de l'aire � repr�senter
+            \edef\starpart{\fpeval{15.7*\starpart^5-36.7*\starpart^4+31.15*\starpart^3-11.9*\starpart^2+2.7*\starpart}}
+          \path [clip] ($(star\partstar.outer point 3)!(star\partstar.outer point 2)!(star\partstar.outer point 4)$)
+                    rectangle
+                ($(star\partstar.outer point 4 -| star\partstar.outer point 5)!\starpart!(star\partstar.outer point 1 -| star\partstar.outer point 5)$);
+            \fill (0,{(\partstar-1)*1em}) node[scorestars, fill=rdexostars@starcolor]  {};
+      \fi
+    \fi
+  \end{tikzpicture}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+}

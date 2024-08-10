@@ -1,0 +1,678 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{rdtime}[2021/04/25 rdtime]
+\RequirePackage{calc, fp, xfp, etoolbox}
+\RequirePackage{xifthen}
+\RequirePackage{pgfkeys}
+\RequirePackage{tikz}
+\usetikzlibrary{calc}
+\usetikzlibrary{tikzmark}
+\usetikzlibrary{matrix}
+\RequirePackage{listofitems}
+
+
+
+\newboolean{rdtime@addition}
+\setboolean{rdtime@addition}{true}
+
+\newboolean{rdtime@intermediary}%   affichage ou non des calcul intermédiaires
+\setboolean{rdtime@intermediary}{true}
+
+\newboolean{rdtime@visible}
+\setboolean{rdtime@visible}{true}
+
+\newboolean{rdtime@modecorrectif}% mode correctif en lien avec le package myexos
+
+\newcounter{rdtime@nbrows}% Nombres total de lignes de la matrice
+
+\newlength{\rdtime@digitwidth}% Largeur occupée par chaque chiffre
+
+\tikzset{
+  shadowed/.style={preaction={
+      transform canvas={shift={(0.45pt,-0.3pt)}},draw opacity=.2,#1,preaction={
+        transform canvas={shift={(0.5pt,-0.35pt)}},draw opacity=.1,  #1,  preaction={
+          transform canvas={shift={(0.55pt,-0.4pt)}},draw opacity=.05,#1,
+        }}}},
+}
+
+\tikzset{%
+    rdtime@matrix@defaultstyle/.style={%
+        ampersand replacement=\&,
+        matrix of nodes,%
+        nodes in empty cells,
+        row sep=0mm,
+        column sep=\rdtime@columnsep,
+        nodes={left, outer sep=0pt, inner sep=0pt, minimum width=1.5ex, text height=6mm, text depth=2mm, rdtime@matrix@nodes@style}
+    },
+    rdtime@sign@internal/.style={%
+        /utils/exec={\xdef\rdtime@numlignopp{\the\pgfmatrixcurrentrow}}%    permet de stocker le numéro de ligne de la matrice du 2ème terme (utile pour tracer le trait horizontal)
+    },
+%
+    stroke out/.style={%
+%   Marche pô : ça dessine en dessous du node !
+%                        path picture={%
+%                            \path ([yshift=-0.5ex]path picture bounding box.center) coordinate (x) ;
+%                            \draw[#1] ([shift={(-0.5em,-1.5ex)}]x)--([shift={(0.5em,1.5ex)}]x);
+%                        }%
+     		append after command={%
+     			\pgfextra{\let\mynode\tikzlastnode}% 	                   		
+     				[overlay] ([shift={(-0.5em,-1.5ex-0.5ex)}]\mynode.center) edge[#1] ([shift={(0.5em,1.5ex-0.5ex)}]\mynode.center)
+     		     }
+            },
+}
+
+
+\pgfkeys{%
+    /rdtime/.is family,
+    /rdtime/.cd,
+    operation/.is choice,
+    operation/add/.code=\setboolean{rdtime@addition}{true},
+    operation/sub/.code=\setboolean{rdtime@addition}{false},
+    operation/.default=add
+    operation=add,
+    sub/.style={operation=sub},
+    digit width/.code=\setlength{\rdtime@digitwidth}{#1},
+    digit width=1.5ex,
+    column sep/.store in=\rdtime@columnsep,
+    column sep=0.5em,
+    hour label/.store in=\rdtime@hourlabel,
+    hour label=h,
+    min label/.store in=\rdtime@minlabel,
+    min label=min,
+    sec label/.store in=\rdtime@seclabel,
+    sec label=s,
+    minus sign/.store in=\rdtime@minussign,
+    minus sign=$-$,
+    plus sign/.store in=\rdtime@plussign,
+    plus sign=$+$,
+    name/.store in=\rdtime@name,
+    name=timematrix,
+    baseline/.store in=\rdtime@baseline,
+    baseline=0,
+    display intermediary/.is choice,
+    display intermediary/true/.code=\setboolean{rdtime@intermediary}{true},
+    display intermediary/false/.code=\setboolean{rdtime@intermediary}{false},
+    display intermediary/.default=true,
+    display intermediary=true,
+    visible/.is choice,
+    visible/true/.code=\setboolean{rdtime@visible}{true},
+    visible/false/.code=\setboolean{rdtime@visible}{false},
+    visible/.default=true,
+    visible=true,
+    mode correctif/.is choice,%   en lien avec le package myexos : les résultats sont affichés/masqués selon que la correction est demandée ou non
+    mode correctif/false/.code=\setboolean{rdtime@modecorrectif}{false},
+    mode correctif/true/.code=\setboolean{rdtime@modecorrectif}{true},
+    mode correctif/.default=true,
+    mode correctif=false,
+    %
+    %   Styles
+    matrix/.code=\tikzset{rdtime@matrix@style/.style={#1}},
+    matrix=,
+    nodes/.code=\tikzset{rdtime@matrix@nodes@style/.style={#1}},
+    nodes=,
+    sign/.code=\tikzset{rdtime@sign@nodestyle/.style={#1}},
+    sign=,
+    rule/.code=\tikzset{rdtime@rule@style/.style={#1}},
+    rule=,
+    special cell/.code=\tikzset{rdtime@specialcell/.style={#1}},
+    special cell={stroke out={line width=0.8pt, red, shadowed={draw=black}}},%
+    result H/.code=\tikzset{rdtime@R@H/.style={#1}},
+    result Min/.code=\tikzset{rdtime@R@M/.style={#1}},
+    result Sec/.code=\tikzset{rdtime@R@S/.style={#1}},
+    result/.code=\tikzset{rdtime@R/.style={#1}},
+    %
+    first number H/.code=\tikzset{rdtime@A@H/.style={#1}},
+    first number Min/.code=\tikzset{rdtime@A@M/.style={#1}},
+    first number Sec/.code=\tikzset{rdtime@A@S/.style={#1}},
+    first number/.code=\tikzset{rdtime@A/.style={#1}},
+    %
+    second number H/.code=\tikzset{rdtime@B@H/.style={#1}},
+    second number Min/.code=\tikzset{rdtime@B@M/.style={#1}},
+    second number Sec/.code=\tikzset{rdtime@B@S/.style={#1}},
+    second number/.code=\tikzset{rdtime@B/.style={#1}},
+    %
+    intermediary/.code=\tikzset{rdtime@RR/.style={#1}, rdtime@RI/.style={#1}, rdtime@SS/.style={#1}, rdtime@SI/.style={#1}},
+    %
+    hours label/.code=\tikzset{%
+                rdtime@A@H@label/.style={#1}, rdtime@B@H@label/.style={#1}, rdtime@R@H@label/.style={#1},%
+                rdtime@RR@H@label/.style={#1}, rdtime@RI@H@label/.style={#1}%, rdtime@SS@H@label/.style={#1}, rdtime@SI@H@label/.style={#1}
+             },
+    minutes label/.code=\tikzset{%
+                rdtime@A@M@label/.style={#1}, rdtime@B@M@label/.style={#1}, rdtime@R@M@label/.style={#1},%
+                rdtime@RR@M@label/.style={#1}, rdtime@RI@M@label/.style={#1}%, rdtime@SS@M@label/.style={#1}, rdtime@SI@M@label/.style={#1}
+             },
+    seconds label/.code=\tikzset{%
+                rdtime@A@S@label/.style={#1}, rdtime@B@S@label/.style={#1}, rdtime@R@S@label/.style={#1},%
+                rdtime@RR@S@label/.style={#1}, rdtime@RI@S@label/.style={#1}%, rdtime@SS@S@label/.style={#1}, rdtime@SI@S@label/.style={#1}
+             },
+    labels/.style={hours label={#1}, minutes label={#1}, seconds label={#1}},
+%
+    correction/.style={%
+        mode correctif,
+        result={text=crepcorrectioncol, font=\bfseries},
+        intermediary={text=crepcorrectioncol!75},
+        special cell={stroke out={line width=0.8pt, crepcorrectioncol, shadowed={draw=black}}}
+    }
+}
+
+
+
+
+
+\newcommand{\setrdtime}[1]{\pgfkeys{%
+  /rdtime/.cd,%
+  #1%
+}}
+
+
+% Gestion de la baseline
+\def\rdtime@baseline@c{c}
+\def\rdtime@baseline@t{t}
+\def\rdtime@baseline@b{b}
+\def\rdtime@baseline@sign{sign}
+\def\rdtime@baseline@result{result}
+
+
+
+
+\NewExpandableDocumentCommand{\digitlength}{O{10}m}{%   utilisée dans \rdtime@NumberToBox / obsolète
+\ifnum #2=0 %
+    1%
+\else%
+%   Pour obtenir le nombre de chiffres d'un nombre != 0
+\fpeval{ ceil(ln(#2+1)/ln(#1)) }%
+\fi%
+}
+
+
+%   À conserver au cas où... ça peut toujours servir !
+%\newcommand{\rdtime@NumberToBox}[2]{%
+%   Pour placer un nombre, chiffre à chiffre, dans des boîtes de largeur donnée et avec un nombre de colonnes données
+%   #1 = Nombre de "colonnes" pour la boîte finale
+%   #2 = Nombre (et, forcément, dont le nombre de chiffres est inférieur à #1)
+%
+%\edef\mt@NumberOfDigits{\digitlength{#2}}%  Nombre de chiffres de #2
+%%   Oui... MAIS... on peut avoir #2 = 04 qui va renvoyer un seul chiffre ! (car =4)...D'où :
+%\ifnum\mt@NumberOfDigits<2 \edef\mt@NumberOfDigits{2}\fi%
+%%
+%\ifnum #1>\mt@NumberOfDigits %
+%    \makebox[\numexpr#1-\mt@NumberOfDigits\relax\rdtime@digitwidth][c]{}% boîte vide pour compenser l'écrat entre le nombre de chiffres du nombre et le nombre de colonnes à atteindre
+%\fi%
+%\@tfor\next:=#2\do{\makebox[\rdtime@digitwidth]{\next}}%
+%}
+
+
+\newcommand{\rdtime@NumberToBox}[1]{%
+\@tfor\next:=#1\do{\makebox[\rdtime@digitwidth]{\next}}%
+}
+
+
+%   On stocke tous les résultats dans une "matrice" \rdtime@RawMatrix-row-col-
+\def\mt@matrixSet#1#2#3{\expandafter\def\csname rdtime@RawMatrix-#1-#2-\endcsname{#3}}%
+\def\mt@matrixGet#1#2{\csname rdtime@RawMatrix-#1-#2-\endcsname}%
+%   On stocke les nombres qui doivent être barrés dans une "matrice" "parallèle" à \rdtime@RawMatrix-row-col-
+\def\mt@matrixABarrer#1#2#3{\expandafter\def\csname rdtime@ABarrerMatrix-#1-#2-\endcsname{#3}}%
+\def\mt@matrixEstBarre#1#2{\csname rdtime@ABarrerMatrix-#1-#2-\endcsname}%
+
+\newcommand{\rdtime@ContenuCellule}[2]{%
+%   Contenu d'une seule cellule
+%   #1 = row
+%   #2 = col
+%
+\edef\mt@tmpval{\mt@matrixGet{#1}{#2}}% contenu brut de la cellule (à ce stade, forcément un nombre)
+\ifnum\mt@tmpval<10 \edef\mt@tmpval{0\mt@tmpval}\fi%    Minimum deux chiffres
+%\ifnum\mt@matrixEstBarre{#1}{#2}=1 %
+%    %\tikzset{toto/.append style/.expanded={row 1\space column 1/.style={draw=red}}}%
+%\fi% |[rdtime@stroke]|
+%   Bricolage ici pour arriver à développer \mt@tmpval (sinon, ça ne fonctionne pas à cause de la boucle \@tfor dans \rdtime@NumberToBox)
+%\def\rdtime@tmp@cmd{\rdtime@NumberToBox{\csname rdtime@#2@nbcol\endcsname}}%    macro intermédiaire
+%\expandafter\rdtime@tmp@cmd\expandafter{\mt@tmpval}%    on développe \mt@tmpval avant d'envoyer le "résultat" dans \rdtime@NumberToBox
+\expandafter\rdtime@NumberToBox\expandafter{\mt@tmpval}% on développe \mt@tmpval avant d'envoyer le "résultat" dans \rdtime@NumberToBox
+}
+
+
+\newcommand{\rdtime@FormerLigne}[1]{%
+%   #1 = nom de la ligne (A, B, R ou RR, RI, ou encore SS, SI)
+%
+\expandafter\def\csname rdtime@Ligne#1\endcsname{}%
+\ifnum\fpeval{\mt@matrixGet{#1}{H}+\mt@matrixGet{#1}{M}+\mt@matrixGet{#1}{S}}>0 %
+    %   Ligne non vide (ie, non remplie de 0)
+    %
+    \stepcounter{rdtime@nbrows}%
+    %
+    \edef\rdtime@flag@lignespeciale{0}%
+    %
+    %   Le signe
+    \ifnum\pdf@strcmp{\unexpanded{#1}}{B}=0 %
+        %
+        \ifthenelse{\boolean{rdtime@addition}}%
+            {\edef\tmpsign{\rdtime@plussign}}%
+            {\edef\tmpsign{\rdtime@minussign}}%
+        \expandafter\edef\csname rdtime@Ligne#1\endcsname{|[rdtime@sign@internal, rdtime@sign@nodestyle]| \tmpsign}%
+    \else%
+        \ifnum\pdf@strcmp{\unexpanded{#1}}{SS}=0 %
+            \edef\rdtime@flag@lignespeciale{1}%
+        \else%
+            \ifnum\pdf@strcmp{\unexpanded{#1}}{SI}=0 %
+                \edef\rdtime@flag@lignespeciale{1}%
+            \fi%
+        \fi%
+    \fi%
+    %
+    %   Les heures
+    \ifnum\rdtime@H@nbcol>0 %   seulement s'il y en a !
+        \csappto{rdtime@Ligne#1}{\pgfmatrixnextcell}%
+        \ifnum\mt@matrixEstBarre{#1}{H}=1 %
+            \cseappto{rdtime@Ligne#1}{|[rdtime@#1/.try, rdtime@#1@H/.try, rdtime@specialcell]|}%
+        \else%
+            \cseappto{rdtime@Ligne#1}{|[rdtime@#1/.try, rdtime@#1@H/.try]|}%
+        \fi%
+        \ifthenelse{\mt@matrixGet{#1}{H}=0\AND\rdtime@flag@lignespeciale=1}%
+            {%
+                \csappto{rdtime@Ligne#1}{ \pgfmatrixnextcell |[rdtime@#1/.try, rdtime@#1@H@label/.try]| }%
+            }%
+            {%
+                \csappto{rdtime@Ligne#1}{\rdtime@ContenuCellule{#1}{H} \pgfmatrixnextcell |[rdtime@#1/.try, rdtime@#1@H@label/.try]| \rdtime@hourlabel}%
+            }%
+    \fi%
+    %
+    %   Les minutes
+        \csappto{rdtime@Ligne#1}{\pgfmatrixnextcell}%
+        \ifnum\mt@matrixEstBarre{#1}{M}=1 %
+            \cseappto{rdtime@Ligne#1}{|[rdtime@#1/.try, rdtime@#1@M/.try, rdtime@specialcell]|}%
+        \else%
+            \cseappto{rdtime@Ligne#1}{|[rdtime@#1/.try, rdtime@#1@M/.try]|}%
+        \fi%
+        \ifthenelse{\mt@matrixGet{#1}{M}=0\AND\rdtime@flag@lignespeciale=1}%
+            {%
+                \csappto{rdtime@Ligne#1}{ \pgfmatrixnextcell |[rdtime@#1/.try, rdtime@#1@M@label/.try]| }%
+            }%
+            {%
+                \csappto{rdtime@Ligne#1}{\rdtime@ContenuCellule{#1}{M} \pgfmatrixnextcell |[rdtime@#1/.try, rdtime@#1@M@label/.try]| \rdtime@minlabel}%
+            }%
+    %
+    %
+    %   Les secondes
+    \ifnum\rdtime@S@nbcol>0 %
+        \csappto{rdtime@Ligne#1}{\pgfmatrixnextcell}%
+        \ifnum\mt@matrixEstBarre{#1}{S}=1 %
+            \cseappto{rdtime@Ligne#1}{|[rdtime@#1/.try, rdtime@#1@S/.try, rdtime@specialcell]|}%
+        \else%
+            \cseappto{rdtime@Ligne#1}{|[rdtime@#1/.try, rdtime@#1@S/.try]|}%
+        \fi%
+        \ifthenelse{\mt@matrixGet{#1}{S}=0\AND\rdtime@flag@lignespeciale=1}%
+            {%
+                \csappto{rdtime@Ligne#1}{ \& |[rdtime@#1/.try, rdtime@#1@S@label/.try]| }%
+            }%
+            {%
+                \csappto{rdtime@Ligne#1}{\rdtime@ContenuCellule{#1}{S} \& |[rdtime@#1/.try, rdtime@#1@S@label/.try]| \rdtime@seclabel}%
+            }%
+    \fi%
+    %
+    \csappto{rdtime@Ligne#1}{\\}%
+    %
+    %   Gestion de la visibilité (clé visible=true/false)
+    %
+    \ifthenelse{\boolean{rdtime@visible}}%
+        {}% visible = true => on ne change rien
+        {%  visible = false => on fait "disparaître" les lignes autres que A et B mais on ne les rend surtout pas vides pour qu'elles occupent l'espace
+            \tikzset{rdtime@specialcell/.style={}}% les cellules des lignes A ou B peuvent être barrées : on annule !
+            \ifnum\pdf@strcmp{\unexpanded{#1}}{A}=0 %
+            \else%
+                \ifnum\pdf@strcmp{\unexpanded{#1}}{B}=0 %
+                \else%
+                    \expandafter\def\csname rdtime@Ligne#1\endcsname{ \pgfmatrixnextcell \\}%
+                \fi%
+            \fi%
+        }%
+\fi%
+}
+
+
+
+
+
+
+
+
+
+\NewDocumentCommand{\rdtime}{ O{} m m }%
+{%
+%   #2 et #3 sont des durées
+%   #2 = XX h YY min ZZ s (avec ou sans espaces)
+%   #3 = XX h YY min ZZ s (avec ou sans espaces)
+%   La seule obligation : les durées sont "ordonnées", d'abord les heures, ensuite les minutes et enfin les secondes
+%
+\begingroup%
+%
+\setcounter{rdtime@nbrows}{0}%
+\pgfkeys{/rdtime/.cd, #1}%
+%
+%
+%   Mode correctif (pour une utilisation conjointe du package myexos)
+\ifthenelse{\boolean{rdtime@modecorrectif}}%
+    {%
+            \@ifundefined{ifcrep@correction}%
+                {%  Pas défini / package pas chargé !
+                    \textcolor{red}{\bfseries ERREUR rdtime}%
+                }%
+                {%  Défini
+                    \ifcrep@correction\setboolean{rdtime@visible}{true}\else\setboolean{rdtime@visible}{false}\fi%
+                    %\ifthenelse{\boolean{MyExo@Correction}}{\setboolean{rdtime@visible}{true}}{\setboolean{rdtime@visible}{false}}%
+                }%
+    }%
+    {}%
+%
+%
+%   Utilisation de listofitems pour séparer les heures des minutes des secondes
+%   1er terme => \myHA h \myMinA min \mySecA s
+%   2eme terme => \myHB h \myMinB min \mySecB s
+%   On commence par chercher la présence d'heures
+\setsepchar{h}%
+\readlist*\hourA{#2}%
+\readlist*\hourB{#3}%
+\ifnum\hourAlen>1 \itemtomacro\hourA[1]\myHA\else\edef\myHA{0}\fi%   \myHA contient les heures du premier argument
+\ifnum\hourBlen>1 \itemtomacro\hourB[1]\myHB\else\edef\myHB{0}\fi%   \myHB contient les heures du second argument
+%   l'utilisateur a pu entrer un nombre d'heures sous la forme 0005 : ci-dessous, ça permet de supprimer les zéros inutiles
+\ifnum\myHA<10 \edef\myHA{\fpeval{\myHA}}\fi%
+\ifnum\myHB<10 \edef\myHB{\fpeval{\myHB}}\fi%
+%   En présence ou non d'heures, les min/s sont dans le dernier élément de la liste \hourA ou \hourB
+%   Bizarrement (?), \readlist*\minA{\hourA[-1]} ne fonctionne pas, d'où l'utilisation de macros intermédiaires
+\itemtomacro\hourA[-1]\endofHourA%
+\itemtomacro\hourB[-1]\endofHourB%
+\setsepchar{min}%
+%   En cas d'éléments vides
+\ifdefempty{\endofHourA}{\edef\endofHourA{0min0s}}{}%   \ifdefempty : package etoolbox
+\ifdefempty{\endofHourB}{\edef\endofHourB{0min0s}}{}%
+%
+\readlist*\minA{\endofHourA}%
+\readlist*\minB{\endofHourB}%
+\ifnum\minAlen>1 \itemtomacro\minA[1]\myMinA\else\edef\myMinA{0}\fi%   \myMinA contient les minutes du premier argument
+\ifnum\minBlen>1 \itemtomacro\minB[1]\myMinB\else\edef\myMinB{0}\fi%   \myMinB contient les minutes du second argument
+\ifnum\myMinA<10 \edef\myMinA{\fpeval{\myMinA}}\fi%
+\ifnum\myMinB<10 \edef\myMinB{\fpeval{\myMinB}}\fi%
+%%
+%%  Les (éventuelles) secondes sont dans le dernier élément de la liste \minA ou \minB
+\itemtomacro\minA[-1]\endofMinA%
+\itemtomacro\minB[-1]\endofMinB%
+\setsepchar{s}%
+%
+\ifdefempty{\endofMinA}%
+    {\edef\mySecA{0}}%
+    {%
+        \readlist*\secA{\endofMinA}%
+        \itemtomacro\secA[1]\mySecA%
+    }%
+\ifdefempty{\endofMinB}%
+    {\edef\mySecB{0}}%
+    {%
+        \readlist*\secB{\endofMinB}%
+        \itemtomacro\secB[1]\mySecB%
+    }%
+\ifnum\mySecA<10 \edef\mySecA{\fpeval{\mySecA}}\fi%
+\ifnum\mySecB<10 \edef\mySecB{\fpeval{\mySecB}}\fi%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Calcul du résultat
+%   On commence par convertir en seoncdes
+\edef\mydureeA{\fpeval{3600*\myHA+60*\myMinA+\mySecA}}%
+\edef\mydureeB{\fpeval{3600*\myHB+60*\myMinB+\mySecB}}%
+%
+% En cas de soustraction avec un 2e terme plus grand que le 1er :
+\ifthenelse{\NOT\boolean{rdtime@addition}\AND\mydureeB > \mydureeA}%
+    {\rlap{\textcolor{red}{\bfseries Soustraction impossible !}}}%
+    {}%
+%   Opération
+\ifthenelse{\boolean{rdtime@addition}}%
+    {\edef\rdtime@result{\fpeval{\mydureeA+\mydureeB}}}%
+    {\edef\rdtime@result{\fpeval{\mydureeA-\mydureeB}}}%
+%   Conversion inverse en h/min/s
+\edef\myHR{\fpeval{trunc(\rdtime@result/3600)}}%
+\edef\mySecR{\fpeval{\rdtime@result-3600*\myHR}}%
+\edef\myMinR{\fpeval{trunc(\mySecR/60)}}%
+\edef\mySecR{\fpeval{\mySecR-60*\myMinR}}%
+%%
+%%
+%%
+%%
+\mt@matrixABarrer{SI}{H}{0}\mt@matrixABarrer{SI}{M}{0}\mt@matrixABarrer{SI}{S}{0}%
+\mt@matrixABarrer{SS}{H}{0}\mt@matrixABarrer{SS}{M}{0}\mt@matrixABarrer{SS}{S}{0}%
+\mt@matrixABarrer{A}{H}{0}\mt@matrixABarrer{A}{M}{0}\mt@matrixABarrer{A}{S}{0}%
+\mt@matrixABarrer{B}{H}{0}\mt@matrixABarrer{B}{M}{0}\mt@matrixABarrer{B}{S}{0}%
+\mt@matrixABarrer{R}{H}{0}\mt@matrixABarrer{R}{M}{0}\mt@matrixABarrer{R}{S}{0}%
+\mt@matrixABarrer{RR}{H}{0}\mt@matrixABarrer{RR}{M}{0}\mt@matrixABarrer{RR}{S}{0}%
+\mt@matrixABarrer{RI}{H}{0}\mt@matrixABarrer{RI}{M}{0}\mt@matrixABarrer{RI}{S}{0}%
+%
+\mt@matrixSet{SI}{H}{0}\mt@matrixSet{SI}{M}{0}\mt@matrixSet{SI}{S}{0}%
+\mt@matrixSet{SS}{H}{0}\mt@matrixSet{SS}{M}{0}\mt@matrixSet{SS}{S}{0}%
+\mt@matrixSet{A}{H}{\myHA}\mt@matrixSet{A}{M}{\myMinA}\mt@matrixSet{A}{S}{\mySecA}% Her terme
+\mt@matrixSet{B}{H}{\myHB}\mt@matrixSet{B}{M}{\myMinB}\mt@matrixSet{B}{S}{\mySecB}% Mème terme
+\mt@matrixSet{R}{H}{\myHR}\mt@matrixSet{R}{M}{\myMinR}\mt@matrixSet{R}{S}{\mySecR}% Résultat final
+\mt@matrixSet{RR}{H}{0}\mt@matrixSet{RR}{M}{0}\mt@matrixSet{RR}{S}{0}%  Résultat "brut" != Résultat final en cas d'addition
+\mt@matrixSet{RI}{H}{0}\mt@matrixSet{RI}{M}{0}\mt@matrixSet{RI}{S}{0}%  Résultat intermédiaire (rrésulat intermédiaire en cas d'addition et de retenue sur les s puis sur les min)
+%%
+%%
+%%
+\ifthenelse{\boolean{rdtime@addition}}%
+    {%  Addition
+        %   Résultat de l'addition "brute" => ligne "RR"
+        \edef\mySecRR{\fpeval{\mySecA+\mySecB}}%
+        \edef\myMinRR{\fpeval{\myMinA+\myMinB}}%
+        \edef\myHRR{\fpeval{\myHA+\myHB}}%
+        %
+        %   Ici, on cherche uniquement le nombre de chiffres par colonne (h/min/s)
+        %       => on stocke dans \rdtime@H@nbcol / \rdtime@M@nbcol /\rdtime@S@nbcol
+        %
+        %   Secondes
+        \ifnum\mySecRR>99 %
+            \edef\rdtime@S@nbcol{3}%
+        \else%
+            \ifnum\mySecRR=0 %
+                \edef\rdtime@S@nbcol{0}%
+            \else%
+                \edef\rdtime@S@nbcol{2}%
+            \fi%
+        \fi%
+        %   Minutes
+        \ifnum\fpeval{\myMinRR*60+\mySecRR}>5999 % nb de secondes > 5999 dans le résultat brut (pour les cas comme 40 min 14 s + 59 min 50 s = 99 min 64 s)
+            \edef\rdtime@M@nbcol{3}%
+        \else%
+            \edef\rdtime@M@nbcol{2}%    on affiche toujours les minutes (pas de cas =0)
+        \fi%
+        %   Heures
+        \ifnum\myHR>99 %
+            \edef\rdtime@H@nbcol{\digitlength{\myHR}}%
+        \else%
+            \ifnum\myHR=0 %
+                \edef\rdtime@H@nbcol{0}%
+            \else%
+                \edef\rdtime@H@nbcol{2}%
+            \fi%
+        \fi%
+        %
+        %   Ok, c'est redondant, mais au moins on y voit plus clair...
+        %   Ici, on stocke les résultats intermédiaires de l'addition
+        %
+        %
+        %   Secondes
+        \ifnum\mySecRR>59 %
+            %   La ligne RR ne sera pas vide :
+            \mt@matrixSet{RR}{H}{\myHRR}\mt@matrixSet{RR}{M}{\myMinRR}\mt@matrixSet{RR}{S}{\mySecRR}%
+            %   On barre les secondes et les minutes de la ligne RR
+            \mt@matrixABarrer{RR}{S}{1}\mt@matrixABarrer{RR}{M}{1}%
+            \ifnum\myMinRR<59 % <59 et non <60 à cause de la retenue engendrée par les secondes
+            \else%
+                %   La ligne RI ne sera pas vide :
+                \mt@matrixSet{RI}{S}{\fpeval{\mySecRR-60}}% s
+                \mt@matrixSet{RI}{M}{\fpeval{\myMinRR+1}}% min
+                \mt@matrixSet{RI}{H}{\fpeval{\myHRR}}% h
+                %   On barre les minutes et les  heures de la ligne RI
+                \mt@matrixABarrer{RI}{M}{1}\mt@matrixABarrer{RI}{H}{1}%
+            \fi
+        \else%
+            %   Mintues
+            \ifnum\myMinRR>59 %
+                %   La ligne RR ne sera pas vide :
+                \mt@matrixSet{RR}{H}{\myHRR}\mt@matrixSet{RR}{M}{\myMinRR}\mt@matrixSet{RR}{S}{\mySecRR}%
+                %   On barre les minutes et les heures de la ligne RR
+                \mt@matrixABarrer{RR}{M}{1}\mt@matrixABarrer{RR}{H}{1}%
+            \fi%
+        \fi%
+    }%
+    {%  Soustraction
+        \ifnum\fpeval{\mySecA+\mySecB+\mySecR}=0 %
+            \edef\rdtime@S@nbcol{0}%
+        \else%
+            \edef\rdtime@S@nbcol{1}%
+        \fi%
+        \edef\rdtime@M@nbcol{1}%
+        \ifnum\fpeval{\myHA+\myHB+\myHR}=0 %
+            \edef\rdtime@H@nbcol{0}%
+        \else%
+            \edef\rdtime@H@nbcol{1}%
+        \fi%
+%%%
+%%%
+        \edef\myMinTmpA{\myMinA}%
+        %   secondes
+        \ifnum\mySecA<\mySecB %
+            %%   On barre les secondes et les minutes de la ligne A
+            \mt@matrixABarrer{A}{S}{1}\mt@matrixABarrer{A}{M}{1}%
+            \ifnum\myMinA=0 %   Cas "tordu" : 00 min => on doit piocher dans les heures pour aovir assez de minutes dans lesquelles piocher à nouveau
+                % on barre les heures de la ligne A
+                \mt@matrixABarrer{A}{H}{1}%
+                \mt@matrixSet{SS}{H}{\fpeval{\myHA-1}}%
+                \mt@matrixSet{SS}{M}{60}%
+                \mt@matrixABarrer{SS}{M}{1}%    minutes ligne SS barrées puisqu'on doit y piocher 1 min
+                \mt@matrixSet{SI}{M}{59}%
+                \edef\myMinTmpA{59}%
+                \mt@matrixSet{SI}{S}{\fpeval{\mySecA+60}}%
+            \else%
+                \mt@matrixSet{SS}{S}{\fpeval{\mySecA+60}}%
+                \mt@matrixSet{SS}{M}{\fpeval{\myMinA-1}}%
+                \edef\myMinTmpA{\fpeval{\myMinA-1}}%
+            \fi%
+        \fi%
+        %
+        %   minutes
+        \ifnum\myMinTmpA<\myMinB % pas assez de minutes sur la ligne A pour effectuer la soustraction
+            % on barre les heures de la ligne A
+                \mt@matrixABarrer{A}{H}{1}%
+                \ifnum\mt@matrixEstBarre{A}{M}=1 %
+                    \mt@matrixABarrer{SS}{M}{1}%
+                    \mt@matrixSet{SI}{M}{\fpeval{\myMinTmpA+60}}%
+                    \mt@matrixSet{SI}{H}{\fpeval{\myHA-1}}%
+                \else%
+                    \mt@matrixABarrer{A}{M}{1}%
+                    \mt@matrixSet{SS}{M}{\fpeval{\myMinTmpA+60}}% normalement, ici, \myMinTmpA = \myMinA
+                    \mt@matrixSet{SS}{H}{\fpeval{\myHA-1}}%
+                \fi%
+        \fi%
+    }%
+%%
+%%
+%%
+        %
+        %
+        %
+        \ifthenelse{\boolean{rdtime@intermediary}}{%    affichage conditionnel des calculs intermédiaires (clé : display intermediary=true/false)
+            \rdtime@FormerLigne{SI}%
+            \rdtime@FormerLigne{SS}%
+            }%
+            {%
+                \def\rdtime@LigneSI{}%
+                \def\rdtime@LigneSS{}%
+            }%
+        \rdtime@FormerLigne{A}\edef\rdtime@firstnumber@row{\therdtime@nbrows}%
+        \rdtime@FormerLigne{B}\edef\rdtime@secondnumber@row{\therdtime@nbrows}%
+        \ifthenelse{\boolean{rdtime@intermediary}}{%
+            \rdtime@FormerLigne{RR}%
+            \rdtime@FormerLigne{RI}%
+            }%
+            {%
+                \def\rdtime@LigneRR{}%
+                \def\rdtime@LigneRI{}%
+            }%
+        \rdtime@FormerLigne{R}%
+        %
+        %   Fusion des lignes obtenues
+        %   Ca n'a quasi aucun intérêt sauf dans le cas d'une soustraction impossible
+        %   Car si soustraction impossible, \rdtime@LigneR contient du vide et comme c'est la dernière ligne de la matrice, ça entraîne une erreur (merci TikZ !)
+        \let\rdtime@Matrix@Content\relax%
+        %   J'ai bien tenté une boucle... mais trop galère avec les problèmes d'expansion...
+        \if\relax\detokenize\expandafter{\romannumeral-`\Q\rdtime@LigneSI}\relax\else\appto{\rdtime@Matrix@Content}{\rdtime@LigneSI}\fi%
+        \if\relax\detokenize\expandafter{\romannumeral-`\Q\rdtime@LigneSS}\relax\else\appto{\rdtime@Matrix@Content}{\rdtime@LigneSS}\fi%
+        \if\relax\detokenize\expandafter{\romannumeral-`\Q\rdtime@LigneA}\relax\else\appto{\rdtime@Matrix@Content}{\rdtime@LigneA}\fi%
+        \if\relax\detokenize\expandafter{\romannumeral-`\Q\rdtime@LigneB}\relax\else\appto{\rdtime@Matrix@Content}{\rdtime@LigneB}\fi%
+        \if\relax\detokenize\expandafter{\romannumeral-`\Q\rdtime@LigneRR}\relax\else\appto{\rdtime@Matrix@Content}{\rdtime@LigneRR}\fi%
+        \if\relax\detokenize\expandafter{\romannumeral-`\Q\rdtime@LigneR}\relax\else\appto{\rdtime@Matrix@Content}{\rdtime@LigneR}\fi%
+        %
+        %
+        %   Détermination du n° de colonne pour les heures      ( => \rdtime@matrix@H@numcol )
+        %                                       les minuutes    ( => \rdtime@matrix@M@numcol )
+        %                                       les seconeds    ( => \rdtime@matrix@S@numcol )
+        %       (prévu, à la base, pour les styles... mais, finalement, je ne m'en sers pas)
+        %   Détermination, au passage, du numéro max de colonne (utile pour tirer le trait)
+        %
+        \edef\rdtime@matrix@maxcol{5}% nombre max de colonnes (par défaut 5, sinon, modifié si après s'il y a des h/min/s)
+        \ifnum\rdtime@H@nbcol>0 %
+            \edef\rdtime@matrix@H@numcol{3}%
+            \edef\rdtime@matrix@M@numcol{5}%
+            \ifnum\rdtime@S@nbcol>0 %
+                \edef\rdtime@matrix@S@numcol{7}%
+                \edef\rdtime@matrix@maxcol{7}%
+            \else%
+                \edef\rdtime@matrix@S@numcol{0}%
+            \fi%
+        \else%
+            \edef\rdtime@matrix@H@numcol{0}%
+            \edef\rdtime@matrix@M@numcol{3}%
+            \edef\rdtime@matrix@S@numcol{5}%
+        \fi%
+        %
+        %
+        %
+%
+%   ligne de base
+\ifx\rdtime@baseline\rdtime@baseline@c%   alignement center
+    \def\base@coordinate{current bounding box.center}%
+\else%
+    \ifx\rdtime@baseline\rdtime@baseline@t%   alignement top
+        \def\base@coordinate{current bounding box.north}%
+    \else%
+        \ifx\rdtime@baseline\rdtime@baseline@b%   alignement bottom
+            \def\base@coordinate{current bounding box.south}%
+        \else%
+            \ifx\rdtime@baseline\rdtime@baseline@sign%   alignement sur le second terme
+                \edef\base@coordinate{\rdtime@name-\rdtime@secondnumber@row-2.base}%
+            \else%
+                \ifx\rdtime@baseline\rdtime@baseline@result%   alignement sur le résultat
+                    \def\base@coordinate{\rdtime@name-\therdtime@nbrows-2.base}%
+                \else%
+                            \ifthenelse{\rdtime@baseline > 0\AND\rdtime@baseline < \numexpr\therdtime@nbrows+1\relax}
+                                {\def\base@coordinate{\rdtime@name-\rdtime@baseline-2.base}}%
+                                {%  Par défaut, alignement sur le 1er terme
+                                        \def\base@coordinate{\rdtime@name-\rdtime@firstnumber@row-2.base}%
+                                }%
+                \fi%
+            \fi%
+        \fi%
+    \fi%
+\fi%
+        %
+        %
+        %
+                \begin{tikzpicture}[baseline=(\base@coordinate)]
+                    \matrix (\rdtime@name)
+                        [rdtime@matrix@defaultstyle,
+                            rdtime@matrix@style]
+                        \bgroup
+                            \rdtime@Matrix@Content
+                        \egroup;
+                        %
+                        \draw[line width=0.8pt, rdtime@rule@style] (\rdtime@name-\rdtime@numlignopp-2.south west) --
+                                                    (\rdtime@name-\rdtime@numlignopp-\rdtime@matrix@maxcol.south east);
+                \end{tikzpicture}%
+%
+%
+\endgroup%
+}

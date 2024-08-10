@@ -1,0 +1,297 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{rdratio}[2023/06/04 rdratio]
+
+\RequirePackage{tikz}
+\usetikzlibrary{decorations.pathreplacing, fit}
+\RequirePackage{xfp}
+\RequirePackage{listofitems}
+
+
+
+\newcommand\sumlist[1]{\the\numexpr\sumlistaux#1,\relax\relax}
+\def\sumlistaux#1,#2\relax{#1\ifx\relax#2\else+\sumlistaux#2\relax\fi}
+
+
+
+\newcounter{rdratio@counter}
+\newcount\rdratio@tmp
+
+\pgfkeys{%
+    /rdratio/.is family,
+    /rdratio/.cd,
+    width/.store in=\rdratio@width,
+    height/.store in=\rdratio@height,
+    brace amplitude/.store in=\rdratio@braceamplitude,
+    auto width/.is choice,
+    auto width/true/.code=\def\rdratio@autowidth{1},
+    auto width/false/.code=\def\rdratio@autowidth{0},
+    auto width/.default=true,
+    auto height/.is choice,
+    auto height/true/.code=\def\rdratio@autoheight{1},
+    auto height/false/.code=\def\rdratio@autoheight{0},
+    auto height/.default=true,
+    line width/.store in=\rdratio@lw,
+    rounded corners/.store in=\rdratio@roundedcorners,
+    colframe/.code=\colorlet{ratiocolframe}{#1},
+    leftcol/.code=\colorlet{ratioleftcol}{#1},
+    rightcol/.code=\colorlet{ratiorightcol}{#1},
+    colors/.store in=\rdratio@colors,
+    align/.is choice,
+    align/top/.code=\def\rdratio@align{ratioTL},
+    align/center/.code=\def\rdratio@align{ratioML},
+    align/bottom/.code=\def\rdratio@align{ratioBL},
+    align/.default=center,
+    raise/.store in=\rdratio@raise,
+    label above/.store in=\rdratio@labelabove,
+    label above font/.store in=\rdratio@labelabovefont,
+    label above color/.code=\colorlet{rdratio@labelabove@color}{#1},
+    label above sep/.store in=\rdratio@labelabove@sep,
+    label above node sep/.store in=\rdratio@nodesepabove,
+    label above line width/.store in=\rdratio@labelabove@lw,
+    label above decoration/.code=\tikzset{labelabove@decoration@style/.style={#1}},
+    label below sep/.store in=\rdratio@labelbelow@sep,
+    label below node sep/.store in=\rdratio@nodesepbelow,
+    label below line width/.store in=\rdratio@labelbelow@lw,
+    label below font/.store in=\rdratio@labelbelowfont,
+    label below auto/.store in=\rdratio@labelbelow@auto,% liste {singulier/pluriel}
+    label below/.store in=\rdratio@labelbelow,
+    label below color/.code=\colorlet{rdratio@labelbelow@color}{#1},
+    label below auto colors/.is choice,
+    label below auto colors/true/.code=\def\rdratio@autocolors{1},
+    label below auto colors/false/.code=\def\rdratio@autocolors{0},
+    label below auto colors/.default=true,
+    label below decoration/.code=\tikzset{labelbelow@decoration@style/.style={#1}},
+    labels/.is choice,
+    labels/above/.code=\def\rdratio@drawlabelabove{1}\def\rdratio@drawlabelbelow{0},
+    labels/below/.code=\def\rdratio@drawlabelabove{0}\def\rdratio@drawlabelbelow{1},
+    labels/all/.code=\def\rdratio@drawlabelabove{1}\def\rdratio@drawlabelbelow{1},
+    labels/none/.code=\def\rdratio@drawlabelabove{0}\def\rdratio@drawlabelbelow{0},
+    labels/.default=all,
+    code after/.store in=\rdratio@codeafter,
+    remember/.is choice,
+    remember/true/.code=\tikzset{rdratio@remember/.style={remember picture}},
+    remember/false/.code=\tikzset{rdratio@remember/.style={}},
+    remember/.default=true,
+    default/.style={
+        width=6cm,
+        height=0.8cm,
+        brace amplitude=2.5pt,
+        auto width=false,
+        auto height=false,
+        line width=1pt,
+        rounded corners=3pt,
+        colframe=black,
+        leftcol=red,
+        rightcol=blue,
+        colors=,
+        align=center,
+        raise=0pt,
+        label above=,
+        label above font=\footnotesize,
+        label above color=black,
+        label above sep=2mm,
+        label above node sep=2pt,
+        label below node sep=2pt,
+        label above line width=0.7pt,
+        label above decoration=,
+        label below sep=2mm,
+        label below line width=0.7pt,
+        label below font=\footnotesize,
+        label below auto={part,parts},
+        label below=,
+        label below color=black,
+        label below auto colors=false,
+        label below decoration=,
+        labels=all,
+        code after=\empty,
+        remember=false
+    },
+    default
+}
+
+
+
+
+\newcommand{\setrdratio}[1]{%
+\pgfkeys{/rdratio/.cd,#1}%
+}
+
+
+\def\rdratio@dratio@sep{:}
+
+\ExplSyntaxOn
+
+\seq_new:N \l__rdratio_list_items_seq
+\tl_new:N \l__rdratio_tl_items_sep
+
+\NewDocumentCommand{\dratio}{m}
+  {
+    \cs_if_exist_use:NTF \NoAutoSpacing
+        { \tl_set:Nn \l__rdratio_tl_items_sep { \,{\NoAutoSpacing :}\, } }
+        { \tl_set:Nn \l__rdratio_tl_items_sep { \,:\, } }
+    \seq_set_split:Nee \l__rdratio_list_items_seq { \rdratio@dratio@sep } {#1}
+    \seq_use:Nn \l__rdratio_list_items_seq { \l__rdratio_tl_items_sep }
+  }
+
+\ExplSyntaxOff
+
+
+
+\NewDocumentCommand{\ratio}{O{} m}{%
+\begingroup%
+\pgfkeys{/rdratio/.cd,#1}%
+\edef\rdratio@nbbox{\sumlist{#2}}% Nombre total de rectangles à dessiner
+\edef\rdratio@nbbox@moinsun{\fpeval{\rdratio@nbbox-1}}%
+\edef\rdratio@box@height{\fpeval{\rdratio@height-2*\rdratio@lw}}%
+\edef\rdratio@box@width{\fpeval{(\rdratio@width-(\rdratio@nbbox+1)*\rdratio@lw)/\rdratio@nbbox}}%
+%
+\ifnum\rdratio@autoheight=1 %
+    \edef\rdratio@box@height{\rdratio@box@width}%
+    \edef\rdratio@height{\fpeval{\rdratio@box@height+2*\rdratio@lw} pt}%
+\fi%
+\ifnum\rdratio@autowidth=1 %
+    \edef\rdratio@box@width{\rdratio@box@height}%
+    \edef\rdratio@width{\fpeval{\rdratio@lw+\rdratio@nbbox*(\rdratio@box@width+\rdratio@lw)} pt}%
+\fi%
+%
+\edef\innerroundedcorners{\fpeval{max(0,\rdratio@roundedcorners-\rdratio@lw)}}%
+%   Lecture des couleurs (clé colors={blue, red, ...})
+%   Les couleurs personnelles, s'il y en a, sont stockées dans la liste \rdratio@user@colorlist
+%   et la longueur de cete liste est \mycolorslen
+\setsepchar{,}%
+\ignoreemptyitems%
+\ifx\rdratio@colors\@empty%
+    \def\rdratio@user@colorlistlen{0}%
+\else
+    \readlist*\rdratio@user@colorlist\rdratio@colors%
+\fi
+%   Lecture des différents ratios (paramètre #2 de la commande)
+%   La liste des ratios est stockée dans \rdratio@list
+\readlist*\rdratio@list{#2}%
+\setcounter{rdratio@counter}{0}%
+%
+%   Parcours de la liste des ratios et affectation/calcul des couleurs
+\foreachitem\rdratio@item\in\rdratio@list{%
+    % Dans la suite :  \rdratio@itemcnt = indice du ratio en cours de traitement dans la liste \rdratio@list
+    \ifnum\rdratio@user@colorlistlen>0 %
+        % La liste des couleurs utilisateurs n'est pas vide (clé colors={...})
+        % Mais il peut y avoir moins de couleurs définies que de "ratios" à représenter.
+        % On a donc recours à la fonction modulo pour déterminer l'indice de la couleur.
+        \pgfmathtruncatemacro{\indice@col}{mod(\rdratio@itemcnt,\rdratio@user@colorlistlen)}%
+        \ifnum\indice@col=0 %
+            % Si le reste vaut 0, c'est qu'on a à faire à la dernière couleur.
+            \edef\indice@col{\rdratio@user@colorlistlen}%
+        \fi%
+        \itemtomacro\rdratio@user@colorlist[\indice@col]\rdratio@currentcolor%
+        \colorlet{ratiocol\rdratio@itemcnt}{\rdratio@currentcolor}%
+    \else
+        % La liste des couleurs utilisateurs est vide.
+        % La couleur est calculée de manière automatique à partir de leftcolor et de rightcolor
+        \edef\mypercent{\fpeval{100-100*(\rdratio@itemcnt-1)/(\rdratio@listlen-1)}}%
+        \colorlet{ratiocol\rdratio@itemcnt}{ratioleftcol!\mypercent!ratiorightcol}%
+    \fi%
+    %
+    %   Maintenant que la couleur à utiliser est définie, on définit un style basé sur cette
+    %   couleur pour tous les rectangles à afficher (il y a \rdratio@item rectangles à construire pour la couleur donnée)
+    %   Les styles sont nommés : rdratio@box1, rdratio@box2, etc.
+    \rdratio@tmp=\rdratio@item%
+    \loop%
+        \stepcounter{rdratio@counter}%
+        \tikzset{rdratio@box\therdratio@counter/.estyle={fill=ratiocol\rdratio@itemcnt}}%
+        %
+        %
+        \advance \rdratio@tmp by -1%
+        \ifnum \rdratio@tmp>1 %
+    \repeat%
+}%
+%
+\begin{tikzpicture}[baseline=(rdratio@refalign), rdratio@remember]
+    %   Quelques coordonnées (éventuellement) utiles
+    %   BL=bottom left, etc.
+    \path (0,0) coordinate (ratioBL) ++(\rdratio@width,0) coordinate (ratioBR)
+        ++(0,\rdratio@height) coordinate (ratioTR) ++(-\rdratio@width,0) coordinate (ratioTL)
+        ++(0,-0.5*\rdratio@height) coordinate (ratioML)
+        (\rdratio@align) ++ (0,-\rdratio@raise) coordinate (rdratio@refalign)
+        ;
+    \node[inner sep=0pt, outer sep=0pt, fit=(ratioBL) (ratioTR)] (rdframe) {};
+    %   Dessin du cadre
+    \fill[ratiocolframe, rounded corners=\rdratio@roundedcorners] (0,0) rectangle (ratioTR) ;
+    %   Dessin des rectangles
+    \foreach \n [count=\i] in {0,...,\rdratio@nbbox@moinsun} {
+        \path (\rdratio@lw,\rdratio@lw)--(\rdratio@width,\rdratio@lw) coordinate[pos=\n/\rdratio@nbbox] (x\n)
+            (x\n) --++ (-0.5*\rdratio@lw, 0.5*\rdratio@box@height pt) coordinate (rdmid\n)  ;
+        \fill[rdratio@box\i,rounded corners=\innerroundedcorners pt, /rdratio/ratiobox \i/.try] (x\n)
+                rectangle ++(\rdratio@box@width pt,\rdratio@box@height pt) coordinate (y\n) ;
+        \node[inner sep=0pt, outer sep=0pt, fit=(x\n) (y\n)] (rdbox\i) {};
+    }
+    %
+    \path (rdframe.south east)--(rdframe.north east) coordinate[pos=0.5, xshift=-0.5*\rdratio@lw] (rdmid\rdratio@nbbox) ;
+    %
+    \path (0.5*\rdratio@lw,0) coordinate (ratioB1)
+            (0.5*\rdratio@lw,\rdratio@height) coordinate (ratioT1)
+            (\rdratio@width-0.5*\rdratio@lw,\rdratio@height) coordinate (ratioT2)
+            (ratioB1) coordinate (rdratio@tmpcoor) ;
+    \foreach \n [count=\i from 2] in {#2} {
+        \path (rdratio@tmpcoor) ++({\n*\rdratio@box@width+\n*\rdratio@lw},0) coordinate (ratioB\i)
+            (ratioB\i) coordinate (rdratio@tmpcoor) ;
+    }
+    %
+    %   Label above
+    \ifnum\rdratio@drawlabelabove>0 %
+        \draw[decoration={brace, amplitude=\rdratio@braceamplitude}, decorate, line width=\rdratio@labelabove@lw, labelabove@decoration@style]
+            ([yshift=\rdratio@labelabove@sep]ratioT1) -- ([yshift=\rdratio@labelabove@sep]ratioT2)
+            node[midway, above=\rdratio@nodesepabove, node font=\rdratio@labelabovefont, text=rdratio@labelabove@color] {\rdratio@labelabove\vphantom{ÀÊÉpgjy}}
+             ;
+    \fi%
+    %
+    %   Label below
+    %
+    \ifnum\rdratio@drawlabelbelow>0 %
+        %   Lecture des labels auto (singulier/pluriel)
+        %
+        \readlist*\rdratio@labelautolist\rdratio@labelbelow@auto%
+        %
+        %   Si la clé "label below" est vide, on affiche "XX part(s)" (clé "label below auto")
+        %   Sinon, on utilise les items de la liste \rdratio@labelbelow que l'on stocke dans
+        %   la liste LOI \rdratio@user@labelbelow
+        \ifx\rdratio@labelbelow\@empty%
+            \def\rdratio@user@labelbelowlen{0}%
+        \else
+            \reademptyitems%
+            \readlist*\rdratio@user@labelbelow\rdratio@labelbelow%
+        \fi
+        \foreach \n [count=\i] in {#2} {
+            \edef\rdratio@next{\fpeval{\i+1}}%
+            % Couleurs automatiques
+            \ifnum\rdratio@autocolors=1 %
+                \pgfkeys{%
+                    /rdratio/label below \i/.prefix style={draw=ratiocol\i},
+                    /rdratio/label below node \i/.prefix style={text=ratiocol\i}%
+                    }%
+            \fi%
+            %
+            \ifnum\rdratio@user@labelbelowlen=0 %
+                \ifnum\n>1 %
+                    \def\rdratio@label{\n{} \rdratio@labelautolist[2]}%
+                \else%
+                    \def\rdratio@label{\n{} \rdratio@labelautolist[1]}%
+                \fi%
+            \else%
+                \itemtomacro\rdratio@user@labelbelow[\i]\rdratio@label%
+            \fi%
+            \draw[decoration={brace, mirror, amplitude=\rdratio@braceamplitude}, decorate,
+                    line width=\rdratio@labelbelow@lw,
+                    labelbelow@decoration@style,
+                    /rdratio/label below \i/.try]
+                ([yshift=-\rdratio@labelbelow@sep]ratioB\i) -- ([yshift=-\rdratio@labelbelow@sep]ratioB\rdratio@next)
+                node[midway, below=\rdratio@nodesepbelow, node font=\rdratio@labelbelowfont,
+                        text=rdratio@labelbelow@color,
+                        /rdratio/label below node \i/.try] {\rdratio@label\vphantom{ÀÊÉpgjy}}
+                ;
+        }%
+    \fi%
+%
+\rdratio@codeafter%
+\end{tikzpicture}%
+\endgroup%
+}

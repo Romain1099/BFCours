@@ -1,0 +1,1424 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{rdarithm}[2023/09/29 rdarithm]
+
+\RequirePackage{xfp}
+\RequirePackage{listofitems}
+\RequirePackage{tikz}
+\usetikzlibrary{tikzmark, positioning, matrix, mindmap}
+
+
+\newsavebox{\rdarithm@sboxA}
+\newsavebox{\rdarithm@sboxB}
+\newlength{\rdarithm@lengthA}
+\newlength{\rdarithm@lengthB}
+
+%   Modulo avec xfp : https://tex.stackexchange.com/a/570589/30654
+\newcommand\xfpmod[2]{\fpeval{((#1)-(#2)*floor((#1)/(#2)))}}
+
+% La liste \rdarithm@primelist contient la liste des facteurs premiers
+% La macro \rdarithm@addtoprimelist permet de construire cette liste
+\newcommand{\rdarithm@addtoprimelist}[1]{%
+  \expandafter\edef\expandafter\rdarithm@primelist\expandafter{\rdarithm@primelist,#1}%
+}
+
+
+\newcounter{rdarithm@tmpcnt}
+\setcounter{rdarithm@tmpcnt}{0}
+
+% Permet d'avoir un préfix différent pour chaque appel à tikzmark
+% (augmente de 1 chaque fois qu'une commande utilisant tikzmark du package est appelée)
+\newcounter{rdarithm@envnum}
+\setcounter{rdarithm@envnum}{0}
+
+
+% Décomposition en produit de facteurs premiers
+% D'après : https://tex.stackexchange.com/a/131701/30654
+
+
+\newcount\factorize@n  % the number to be factorized
+\newcount\factorize@t  % temporary
+\newcount\factorize@p  % a candidate factor
+\newcount\factorize@c  % counter of factors
+
+
+% Macro de décomposition en produit de facteurs premiers
+% Ex. : \decomposefp{126} => \rdarithm@primelist = {2,3,3,7}
+
+% machinery for factorization
+%
+\def\decomposefp#1{%
+  \factorize@begin{#1}%
+  \factorize@n=#1
+  \factorize@c=0
+  \factorize@p=2
+  \factorize@try%
+  \factorize@p=3
+  \factorize@try%
+  \factorize@p=5
+  \factorize@loop%
+  \ifnum\factorize@c>0%
+    \ifnum\factorize@n>1%
+      \factorize@process{\the\factorize@n}%
+    \fi%
+  \else%
+    \factorize@process{\the\factorize@n}%
+  \fi%
+  \factorize@end{#1}%
+}
+\def\factorize@loop{%
+  \factorize@t=\factorize@p
+  \multiply\factorize@t by \factorize@p
+  \ifnum\factorize@t>\factorize@n\else%
+    \factorize@try%
+    \advance\factorize@p by 2
+    \factorize@t=\factorize@p
+    \multiply\factorize@t by \factorize@p
+    \ifnum\factorize@t>\factorize@n\else%
+      \factorize@try%
+      \advance\factorize@p by 4
+      \factorize@loop%
+    \fi%
+  \fi%
+}
+
+\def\factorize@try{%
+  \factorize@t=\factorize@n
+  \divide\factorize@t by \factorize@p
+  \multiply\factorize@t by \factorize@p
+  \ifnum\factorize@n=\factorize@t%
+    \factorize@process{\the\factorize@p}%
+    \divide\factorize@n by \factorize@p
+    \advance\factorize@c by 1
+    \factorize@try%
+  \fi%
+}
+
+% Stubs to be called at start, end, and when a factor is found
+%
+\def\factorize@begin#1{%
+    \let\rdarithm@primelist\@gobble%
+}
+\def\factorize@end#1{%
+}
+\def\factorize@process#1{%
+  \rdarithm@addtoprimelist{#1}%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tikzset{%
+    rdarithm line style/.style={
+        preaction={transform canvas={shift={(\pgflinewidth,\pgflinewidth)}}, draw=#1!50, shorten >=\pgflinewidth, shorten <=\pgflinewidth},
+        draw=#1
+    },
+    rdarithm line style/.initial=red,
+    rdarithm line style/.default=red,
+    special node/.style={
+        prefix after command=\pgfextra{%
+            \path let   \p1 = (\tikzlastnode.north west),
+                        \p2 = (\tikzlastnode.south east)
+                        in  coordinate (p1) at (\p1)
+                            coordinate (p2) at (\p2) ;
+            \fill[#1, opacity=\rdarithm@nodeopacity, overlay] ([shift={(-1pt,1pt)}]p1) rectangle ([shift={(1pt,-1pt)}]p2) ;
+        }
+    },
+    rdarithm@emptycell/.style={draw=none, fill=none, opacity=0},% Pour les cellules vides dans \DecompFPC
+    rdarithm default cell style B/.style={% pour les cellules dans \DecompFPB
+        draw, rectangle, minimum width=3em
+    },
+    rdarithm default cell style C/.style={% pour les cellules dans \DecompFPC
+        rectangle, minimum width=3em, inner sep=3pt, outer sep=0pt
+    },
+    rdarithm default cell style D/.style={% pour les cellules dans \TabPGCD
+        rectangle, minimum width=3em, inner sep=3pt, outer sep=0pt,
+        align=center,
+        minimum height=\rdarithm@leveldistance
+        %text depth=1ex, text height=2.5ex
+    }
+}
+
+
+\definecolor{arithmcol1}{HTML}{FF6633}
+\definecolor{arithmcol2}{HTML}{00A580}
+\definecolor{arithmcol3}{HTML}{FFC518}
+
+
+\pgfkeys{%
+    /rdarithm/.is family,
+    /rdarithm/.cd,
+    colors/.store in=\rdarithm@colors,
+    node opacity/.store in=\rdarithm@nodeopacity,
+    node style/.code=\tikzset{fpa@nodestyle/.style={#1}},
+    decorate/.is choice,
+    decorate/true/.code=\def\rdarithm@decorate{1},
+    decorate/false/.code=\def\rdarithm@decorate{0},
+    decorate/.default=true,
+    stop/.store in=\rdarithm@stop,
+    powers/.is choice,
+    powers/none/.code=\def\rdarithm@displaypowers{0},
+    powers/right/.code=\def\rdarithm@displaypowers{1},
+    powers/bottom/.code=\def\rdarithm@displaypowers{2},
+    powers/.default=bottom,
+    crep/.is choice,%   cadre réponse
+    crep/true/.code=\def\rdarithm@crep{1},
+    crep/false/.code=\def\rdarithm@crep{0},
+    crep/.default=true,
+    crep width/.store in=\rdarithm@crep@width,
+    crep style/.code=\tcbset{crep@style/.style={crep/.cd, #1}},
+    prime style/.code=\tikzset{prime@style/.style={#1}},
+    prime append style/.code=\tikzset{prime@style/.append style={#1}},
+    cell style/.code=\tikzset{cell@style/.style={#1}},
+    cell append style/.code=\tikzset{cell@style/.append style={#1}},
+    picture style/.code=\tikzset{picture@style/.style={#1}},
+    level distance/.store in=\rdarithm@leveldistance,
+    sibling distance/.store in=\rdarithm@siblingdistance,
+    label/.is choice, % pour \DecompFPC
+    label/none/.code=\def\rdarithm@label{0},
+    label/left/.code=\def\rdarithm@label{1},
+    label/above/.code=\def\rdarithm@label{2},
+    label/.default=above,
+    label style/.code=\tikzset{label@style/.style={#1}},
+    prefix label/.store in=\rdarithm@prefix@label,
+    suffix label/.store in=\rdarithm@suffix@label,
+    label extrasep/.store in=\rdarithm@labelextrasep,
+    overlay/.store in=\rdarithm@overlay,
+    column sep/.store in=\rdarithm@columnsep, % \DecompFPC
+    line width/.store in=\rdarithm@linewidth, % \DecompFPB & \DecompFPC
+    %
+    separator/.store in=\rdarithm@separator,
+    cf/.store in=\rdarithm@cf,% Common Factors
+    cf style/.code=\tikzset{cf@style/.style={#1}},
+    gcd style/.code=\tikzset{gcd@style/.style={#1}},
+    %
+    tab orientation/.is choice,
+    tab orientation/horizontal/.code=\def\rdarithm@taborientation{0},
+    tab orientation/vertical/.code=\def\rdarithm@taborientation{1},
+    tab orientation/.default=horizontal,
+    header style/.code=\tikzset{header@style/.style={#1}},
+    prefix header/.store in=\rdarithm@prefix@header,
+    suffix header/.store in=\rdarithm@suffix@header,
+    rules/.is choice,
+    rules/none/.code=\def\rdarithm@hrules{0}\def\rdarithm@vrules{0}\def\rdarithm@rwcoef{1},
+    rules/all/.code=\def\rdarithm@hrules{1}\def\rdarithm@vrules{1}\def\rdarithm@rwcoef{1},
+    rules/horizontal/.code=\def\rdarithm@hrules{1}\def\rdarithm@vrules{0}\def\rdarithm@rwcoef{1},
+    rules/Horizontal/.code=\def\rdarithm@hrules{1}\def\rdarithm@vrules{0}\def\rdarithm@rwcoef{1.7},
+    rules/vertical/.code=\def\rdarithm@hrules{0}\def\rdarithm@vrules{1}\def\rdarithm@rwcoef{1},
+    rules/Vertical/.code=\def\rdarithm@hrules{0}\def\rdarithm@vrules{2}\def\rdarithm@rwcoef{1},
+    rules/.default=all,
+    rule color/.code=\colorlet{rdarithm@rulecolor}{#1},
+    forced width/.store in=\rdarithm@forcedwidth,
+    inner xsep/.store in=\rdarithm@innerxsep,
+    header width/.store in=\rdarithm@headerwidth,
+    %
+    frac mode/.is choice,
+    frac mode/frac/.code=\def\rdarithm@fracmode{0},
+    frac mode/dfrac/.code=\def\rdarithm@fracmode{1},
+    frac mode/.default=dfrac,
+    frac/.style={frac mode=frac},
+    dfrac/.style={frac mode=dfrac},
+    %
+    link/.is choice,
+    link/none/.code=\def\rdarithm@link{0},
+    link/line/.code=\def\rdarithm@link{1},
+    %link/arrow/.code=\def\rdarithm@link{2},
+    link/bubble/.code=\def\rdarithm@link{3},
+    link/.default=bubble,
+    line style/.code=\tikzset{line@style/.style={#1}},% ligne dans \RowPGCD
+    %bubble opacity/.store in=\rdarithm@bubbleopacity,
+    %
+    default/.style={
+        colors={arithmcol1,arithmcol2},
+        node opacity=0.25,
+        node style={},
+        decorate=true,
+        stop=0,
+        powers=none,
+        crep=false,
+        crep width=3em,
+        crep style={seyes, boxsep=1pt, opacityback=0.6, left=2pt, right=2pt},
+        prime style={fill=arithmcol1, fill opacity=0.25, draw=arithmcol1, text opacity=1, node font=\bfseries},
+        cell style={},
+        picture style={},
+        label style={},
+        level distance=8mm,
+        sibling distance=15mm,
+        label=none,
+        prefix label=,
+        suffix label=,
+        label extrasep=0mm,
+        overlay=,
+        column sep=1mm,
+        line width=0.7pt,
+        separator={,~},
+        cf=0,
+        cf style={fill=arithmcol3!50},
+        gcd style={fill=arithmcol3},
+        tab orientation=horizontal,
+        header style={fill=gray!50, node font=\bfseries},
+        prefix header=,
+        suffix header=~:,
+        rules=all,
+        rule color=black,
+        forced width=0cm,
+        inner xsep=3pt,
+        header width=0cm,
+        dfrac,
+        link=bubble,
+        line style={}
+        %bubble opacity=1
+    },
+    default
+}
+
+\newcommand{\setrdarithm}[1]{%
+\pgfkeys{/rdarithm/.cd,#1}%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Facteurs premiers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\NewDocumentCommand{\LOIFP}{m m}{%
+% #2 = un entier dont on cherche la liste des facteurs premiers
+% #1 = nom de la liste LOI retournée (par ex. : \maliste)
+\let\rdarithm@tmp\rdarithm@separator%
+\pgfkeys{/rdarithm/.cd,separator=*}%
+\setsepchar{,}%
+\ignoreemptyitems%
+\decomposefp{#2}%
+\readlist*#1{\rdarithm@primelist}%
+\let\rdarithm@separator\rdarithm@tmp%
+}
+
+
+
+\NewDocumentCommand{\ListeFP}{ O{} m }{%
+\begingroup%
+\pgfkeys{/rdarithm/.cd,#1}%
+%
+\LOIFP{\rdarithm@tmplist}{#2}%
+\foreachitem\facteur\in\rdarithm@tmplist{%
+    \facteur%
+    \ifnum\facteurcnt < \rdarithm@tmplistlen %
+            \rdarithm@separator%
+    \fi%
+}%
+%
+\endgroup%
+}
+
+
+
+\NewDocumentCommand{\DecompFP}{ O{} m }{%
+\begingroup%
+\pgfkeys{/rdarithm/.cd,#1}%
+\decomposefp{#2}%
+\setsepchar{,}%
+\ignoreemptyitems%
+% Lecture des facteurs premiers => \rdarithm@listefp
+\readlist*\rdarithm@listefp{\rdarithm@primelist}%
+\ifnum\rdarithm@displaypowers>0 %
+    \WriteWithPowers%
+    \ensuremath{\rdarithm@powers}%
+\else%
+    \ensuremath{%
+    \foreachitem\facteur\in\rdarithm@listefp{%
+        \facteur%
+        \ifnum\facteurcnt < \rdarithm@listefplen %
+            \times%
+        \fi%
+    }}%
+\fi%
+\endgroup%
+}
+
+
+
+
+
+\NewDocumentCommand{\DecompFPA}{ O{} m }{%
+\begingroup%
+\pgfkeys{/rdarithm/.cd,#1}%
+\stepcounter{rdarithm@envnum}%
+\tikzset{tikzmark prefix=rdarithm@\therdarithm@envnum-}%
+\decomposefp{#2}%
+\setsepchar{,}%
+\ignoreemptyitems%
+% Lecture des facteurs premiers => \rdarithm@listefp
+\readlist*\rdarithm@listefp{\rdarithm@primelist}%
+% Lecture des couleurs => \rdarithm@colorlist
+\readlist*\rdarithm@colorlist{\rdarithm@colors}%
+%
+%
+\ifnum\rdarithm@displaypowers>0 %
+    \WriteWithPowers%
+\fi%
+%
+\edef\rdarithm@tabcontent{#2}%
+\edef\remainder{#2}%
+\edef\facteurs{}%
+% #2 est un nombre premier :
+\ifnum\rdarithm@listefplen=1 %
+    \edef\rdarithm@tabcontent{#2 &= #2}%
+    \edef\rdarithm@laststep{0}%
+\else%
+% Gestion du point d'arrêt
+    \ifnum\rdarithm@stop=0 %
+        \edef\rdarithm@laststep{\rdarithm@listefplen}%
+    \else
+        \edef\rdarithm@laststep{\fpeval{min(\rdarithm@stop+1,\rdarithm@listefplen)}}%
+    \fi%
+    % Construction du "tableau" :
+    \foreachitem\facteur\in\rdarithm@listefp{%
+        \ifnum\facteurcnt < \rdarithm@laststep %
+            \edef\remainder{\fpeval{\remainder/\facteur}}%
+            % Gestion des couleurs
+            \pgfmathsetmacro{\mymod}{int(mod(\facteurcnt,\rdarithm@colorlistlen))}%
+            \ifnum\mymod=0 %
+                \edef\mymod{\rdarithm@colorlistlen}%
+            \fi%
+            \itemtomacro\rdarithm@colorlist[\mymod]\arithmcolor%
+            %   En cas de ! dans la définition des couleurs ( ! = caractère actif en fr !)
+            \edef\arithmcolor{\expandafter\detokenize\expandafter{\arithmcolor}}%
+            % /Gestion des couleurs
+            \edef\tmpstyle{}%
+            \def\rdarithm@eol{}%
+            \ifnum\facteurcnt < \numexpr\rdarithm@listefplen-1\relax%
+                \def\rdarithm@eol{\\}%
+                \ifnum\rdarithm@decorate>0 %
+                    \edef\tmpstyle{special node=\arithmcolor, fpa@nodestyle}%
+                \fi%
+            \fi%
+            %
+            %
+            \edef\rdarithm@row{& = \facteurs\noexpand\mbox{\noexpand\tikzmarknode{\facteurcnt-1}{\noexpand\rdarithm@container{\facteur}}}\times%
+                    \noexpand\mbox{\noexpand\tikzmarknode[\tmpstyle]{\facteurcnt-2}{\noexpand\rdarithm@container{\remainder}}}\rdarithm@eol}%
+            \expandafter\g@addto@macro\expandafter\rdarithm@tabcontent\expandafter{\rdarithm@row}%
+            %
+            % \rdarithm@container ne doit pas être "expandé" une première fois dans \facteurs
+            % ni une deuxième fois dans \rdarithm@row (qui contient \facteurs)
+            \edef\rdarithm@tmp{\noexpand\noexpand\noexpand\rdarithm@container{\facteur}\times}%
+            \expandafter\g@addto@macro\expandafter\facteurs\expandafter{\rdarithm@tmp}%
+        \fi%
+    }%
+\fi%
+%
+%
+\ifnum\rdarithm@crep=1 %
+    \def\rdarithm@container{\tccrep[crep@style]{\rdarithm@crep@width}}%
+\else%
+    \let\rdarithm@container\relax%
+\fi%
+%
+\ifnum\rdarithm@displaypowers=1 %
+    \g@addto@macro\rdarithm@tabcontent{= \rdarithm@powers}%
+\else
+    \ifnum\rdarithm@displaypowers=2 %
+        \g@addto@macro\rdarithm@tabcontent{ \\ & = \rdarithm@powers}%
+    \fi%
+\fi%
+% Affichage du "tableau" :
+$\begin{aligned}[t]
+\rdarithm@tabcontent
+\end{aligned}$%
+%
+%   Dessin des décorations
+%
+\edef\rdarithm@laststep{\fpeval{\rdarithm@laststep-2}}%
+\ifnum\rdarithm@decorate>0 %
+    \ifnum\rdarithm@laststep>0 %
+    \begin{tikzpicture}[remember picture,overlay]
+        \foreach \n in {1,...,\rdarithm@laststep} {
+            \edef\nplusun{\fpeval{\n+1}}%
+            % Gestion des couleurs
+            \pgfmathsetmacro{\mymod}{int(mod(\n,\rdarithm@colorlistlen))}
+            \ifnum\mymod=0 %
+                \edef\mymod{\rdarithm@colorlistlen}%
+            \fi%
+            \itemtomacro\rdarithm@colorlist[\mymod]\arithmcolor%
+            %   En cas de ! dans la définition des couleurs ( ! = caractère actif en fr !)
+            \edef\arithmcolor{\expandafter\detokenize\expandafter{\arithmcolor}}%
+            % /Gestion des couleurs
+            \draw[rdarithm line style=\arithmcolor] ([xshift=-1.5pt, yshift=1pt]\n-2.north west)|- ([yshift=-1.5pt, xshift=1pt]\nplusun-2.south east) ;
+        }
+    \end{tikzpicture}%
+    \fi%
+\fi%
+\endgroup%
+}
+
+
+
+\NewDocumentCommand{\DecompFPB}{ O{} m }{%
+\begingroup%
+\pgfkeys{/rdarithm/.cd,#1}%
+\stepcounter{rdarithm@envnum}%
+\tikzset{tikzmark prefix=rdarithm@\therdarithm@envnum-}%
+\decomposefp{#2}%
+\setsepchar{,}%
+\ignoreemptyitems%
+% Lecture des facteurs premiers => \rdarithm@listefp
+\readlist*\rdarithm@listefp{\rdarithm@primelist}%
+% Lecture des couleurs => \rdarithm@colorlist
+\readlist*\rdarithm@colorlist{\rdarithm@colors}%
+%
+\edef\remainder{#2}%
+\let\rdarithm@listerestes\@gobble%
+% Gestion du point d'arrêt
+    \ifnum\rdarithm@stop=0 %
+        \edef\rdarithm@laststep{\fpeval{\rdarithm@listefplen+1}}%
+    \else
+        \edef\rdarithm@laststep{\fpeval{min(\rdarithm@stop+1,\rdarithm@listefplen+1)}}%
+    \fi%
+    % Construction de la liste des "restes" :
+    \foreachitem\facteur\in\rdarithm@listefp{%
+        \ifnum\facteurcnt < \rdarithm@laststep %
+            \edef\remainder{\fpeval{\remainder/\facteur}}%
+            \expandafter\edef\expandafter\rdarithm@listerestes\expandafter{\rdarithm@listerestes,\remainder}%
+        \fi%
+    }%
+%
+\readlist*\rdarithm@loi@restes{\rdarithm@listerestes}%
+% Utilisation de \rdarithmcontainer au lieu de \rdarithm@container car sinon erreur dans les nodes de \rdarithm@child (pb de catcode ?)
+\ifnum\rdarithm@crep=1 %
+    \def\rdarithmcontainer{\tccrep[crep@style]{\rdarithm@crep@width}}%
+\else%
+    \let\rdarithmcontainer\relax%
+\fi%
+%
+\tikzset{cell@style/.prefix style={rdarithm default cell style B}}%
+\setcounter{rdarithm@tmpcnt}{1}%
+\begin{tikzpicture}[%
+    line width=\rdarithm@linewidth, outer sep=0pt,
+    level distance=\rdarithm@leveldistance,
+    sibling distance=\rdarithm@siblingdistance,
+    baseline=(cell 1.base),
+    picture@style
+]
+    \node[cell@style, /rdarithm/cell 1/.try] (cell 1) {#2}
+        \rdarithm@child
+    ;
+% Overlay
+\rdarithm@overlay%
+\end{tikzpicture}%
+%
+\endgroup%
+}
+
+
+\tikzset{%
+    %rdarithm@increment/.code=\addtocounter{rdarithm@tmpcnt}{1},
+    rdarithm@cellcounter/.code=\xdef\rdarithm@cell@counter{\fpeval{\therdarithm@tmpcnt+1}},
+    rdarithm@fact/.code=\itemtomacro\rdarithm@listefp[\therdarithm@tmpcnt]\rdarithmfactmacro,
+    rdarithm@reste/.code=\itemtomacro\rdarithm@loi@restes[\therdarithm@tmpcnt]\rdarithmrestemacro
+}%
+
+
+\newcommand{\rdarithm@child}{%
+\ifnum\value{rdarithm@tmpcnt}<\rdarithm@laststep %
+    child {node[rdarithm@cellcounter, cell@style, prime@style, /rdarithm/cell \rdarithm@cell@counter -1/.try, rdarithm@fact] (cell \rdarithm@cell@counter -1)  {\rdarithmcontainer{\rdarithmfactmacro}}}
+    child {node[cell@style, rdarithm@reste, /rdarithm/cell \rdarithm@cell@counter -2/.try] (cell \rdarithm@cell@counter -2) {\rdarithmcontainer{\rdarithmrestemacro}\addtocounter{rdarithm@tmpcnt}{1}}
+            \rdarithm@child
+        }
+\fi%
+}
+
+
+
+\NewDocumentCommand{\DecompFPC}{ O{} m }{%
+\begingroup%
+\pgfkeys{/rdarithm/.cd,#1}%
+\stepcounter{rdarithm@envnum}%
+\tikzset{tikzmark prefix=rdarithm@\therdarithm@envnum-}%
+\decomposefp{#2}%
+\setsepchar{,}%
+\ignoreemptyitems%
+% Lecture des facteurs premiers => \rdarithm@listefp
+\readlist*\rdarithm@listefp{\rdarithm@primelist}%
+%
+\edef\rdarithm@tabcontent{}%
+\edef\remainder{#2}%
+% #2 est un nombre premier :
+\ifnum\rdarithm@listefplen=1 %
+    \edef\rdarithm@tabcontent{#2 \& 1}%
+    \edef\rdarithm@laststep{0}%
+\else%
+% Gestion du point d'arrêt
+    \ifnum\rdarithm@stop=0 %
+        \edef\rdarithm@laststep{\rdarithm@listefplen}%
+    \else
+        \edef\rdarithm@laststep{\fpeval{min(\rdarithm@stop,\rdarithm@listefplen)}}%
+    \fi%
+    % Construction du "tableau" :
+    \foreachitem\facteur\in\rdarithm@listefp{%
+            %
+            %
+        \ifnum\facteurcnt < \numexpr\rdarithm@laststep+1\relax %
+            \edef\rdarithm@row{|[/rdarithm/cell \facteurcnt -1/.try]| \noexpand\rdarithm@container{\remainder} \noexpand\&
+                     |[/rdarithm/cell \facteurcnt -2/.try]| \noexpand\rdarithm@container{\facteur} \\}%
+        \else%
+            \edef\rdarithm@row{|[rdarithm@emptycell, /rdarithm/cell \facteurcnt -1/.try]| \noexpand\& |[rdarithm@emptycell, /rdarithm/cell \facteurcnt -2/.try]| \\}%
+        \fi%
+        \expandafter\g@addto@macro\expandafter\rdarithm@tabcontent\expandafter{\rdarithm@row}%
+        \edef\remainder{\fpeval{\remainder/\facteur}}%
+        %
+    }%
+\fi%
+%
+\edef\laststep@plusun{\fpeval{\rdarithm@laststep+1}}%
+\ifnum\rdarithm@laststep=\rdarithm@listefplen %
+    \edef\rdarithm@row{|[/rdarithm/cell \laststep@plusun -1/.try]| \noexpand\rdarithm@container{1} \noexpand\& |[rdarithm@emptycell, /rdarithm/cell \laststep@plusun -2/.try]|  \\}%
+\else%
+    \edef\rdarithm@row{|[rdarithm@emptycell, /rdarithm/cell \laststep@plusun -1/.try]| \noexpand\& |[rdarithm@emptycell, /rdarithm/cell \laststep@plusun -2/.try]| \\}%
+\fi%
+\expandafter\g@addto@macro\expandafter\rdarithm@tabcontent\expandafter{\rdarithm@row}%
+%\meaning\rdarithm@tabcontent
+%
+\ifnum\rdarithm@crep=1 %
+    \def\rdarithm@container{\tccrep[crep@style]{\rdarithm@crep@width}}%
+\else%
+    \let\rdarithm@container\relax%
+\fi%
+%
+\tikzset{cell@style/.prefix style={rdarithm default cell style C}}%
+\ifnum\rdarithm@label=2 %
+    \def\arithm@baseline{arithmlabel.base}%
+\else%
+    \def\arithm@baseline{rdarithm-1-1.base}%
+\fi%
+\begin{tikzpicture}[baseline=(\arithm@baseline), picture@style]
+\matrix[matrix of nodes, nodes in empty cells,
+    inner sep=0pt, , outer sep=0pt,
+    column sep=\rdarithm@columnsep, row sep={\rdarithm@leveldistance, between origins},
+    nodes={cell@style},
+    column 2/.style={prime@style},
+    ampersand replacement=\&]%
+    (rdarithm)
+{%
+    \rdarithm@tabcontent
+};
+\draw[line width=\rdarithm@linewidth] (rdarithm.north)--(rdarithm.south) ;
+% Alias
+\foreach \n in {1,...,\laststep@plusun} {%
+    \pgfnodealias{cell \n-1}{rdarithm-\n-1}
+    \pgfnodealias{cell \n-2}{rdarithm-\n-2}
+}%
+% Label
+\ifnum\rdarithm@label=1 %
+    \node[label@style, left=\dimexpr\rdarithm@leveldistance+\rdarithm@labelextrasep\relax of rdarithm-1-1.base west, anchor=base east] (arithmlabel) {\rdarithm@prefix@label #2\rdarithm@suffix@label};
+\fi%
+\ifnum\rdarithm@label=2 %
+    \path (rdarithm-1-1.base west) -- (rdarithm-1-2.base east) coordinate[pos=0.5] (xlabel) ;
+    \node[label@style, above=\dimexpr\rdarithm@leveldistance+\rdarithm@labelextrasep\relax of xlabel, anchor=base] (arithmlabel) {\rdarithm@prefix@label#2\rdarithm@suffix@label};
+\fi%
+% Overlay
+\rdarithm@overlay%
+\end{tikzpicture}%
+%
+\endgroup%
+}
+
+
+% Transforme la liste des facteurs premiers \rdarithm@listefp en une chaîne (\rdarithm@powers)
+% où la décomposition est écrite avec des exposants.
+\newcommand{\WriteWithPowers}{%
+\let\rdarithm@powers\@gobble% permet d'avaler le premier signe "multiplier"
+\setcounter{rdarithm@tmpcnt}{0}% exposant
+\itemtomacro\rdarithm@listefp[1]\facteurprecedent%
+\foreachitem\facteur\in\rdarithm@listefp{%
+    \ifnum\facteur=\facteurprecedent %
+        \stepcounter{rdarithm@tmpcnt}%
+    \else
+        \ifnum\value{rdarithm@tmpcnt}=1 %
+            \edef\expandmoi{\times\facteurprecedent}%
+        \else
+            \edef\expandmoi{\times\facteurprecedent^{\therdarithm@tmpcnt}}%
+        \fi%
+        \expandafter\g@addto@macro\expandafter\rdarithm@powers\expandafter{\expandmoi}%
+        \setcounter{rdarithm@tmpcnt}{1}%
+        \edef\facteurprecedent{\facteur}%
+    \fi%
+}%
+\ifnum\value{rdarithm@tmpcnt}=1 %
+    \edef\expandmoi{\times\facteurprecedent}%
+\else
+    \edef\expandmoi{\times\facteurprecedent^{\therdarithm@tmpcnt}}%
+\fi%
+\expandafter\g@addto@macro\expandafter\rdarithm@powers\expandafter{\expandmoi}%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Diviseurs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Liste des diviseurs d'un entier
+% https://tex.stackexchange.com/a/603339/30654
+
+\ExplSyntaxOn
+\cs_new:Npn \divisors@list #1
+  {
+    1\rdarithm@separator~
+    \__divisors_aux:nnn { 2 } {#1} {#1}
+  }
+\cs_new:Npn \__divisors_aux:nnn #1#2#3
+  {
+    \fp_compare:nNnTF {#1} > { sqrt (#2) }
+      {#3}
+      {
+        \fp_compare:nNnTF { #2 / #1 } = { floor ( #2 / #1 ) }
+          {
+            #1 \rdarithm@separator ~
+            \fp_compare:nNnTF { #1 = #2 / #1 } = 0
+              {
+                \exp_args:Neee \__divisors_aux:nnn
+                  { \int_eval:n { #1 + 1 } } {#2}
+                  {
+                    \fp_to_int:n { floor ( #2 / #1 ) }
+                    \rdarithm@separator ~ #3
+                  }
+              }
+              {
+                \exp_args:Ne \__divisors_aux:nnn
+                  { \int_eval:n { #1 + 1 } } {#2} {#3}
+              }
+          }
+          {
+            \exp_args:Ne \__divisors_aux:nnn
+              { \int_eval:n { #1 + 1 } } {#2} {#3}
+          }
+      }
+  }
+\ExplSyntaxOff
+
+
+
+\NewDocumentCommand{\ListeDiviseurs}{ O{} m }{%
+\begingroup%
+\pgfkeys{/rdarithm/.cd,#1}%
+\divisors@list{#2}%
+\endgroup%
+}
+
+\NewDocumentCommand{\LOIDiviseurs}{m m}{%
+% #2 = un entier dont on cherche la liste des diviseurs
+% #1 = nom de la liste LOI retournée (par ex. : \maliste)
+\let\rdarithm@tmp\rdarithm@separator%
+\pgfkeys{/rdarithm/.cd,separator=*}%
+\setsepchar{*}%
+\ignoreemptyitems%
+\edef\rdarithm@tmpB{\divisors@list{#2}}%
+\readlist*#1{\rdarithm@tmpB}%
+\let\rdarithm@separator\rdarithm@tmp%
+}
+
+
+\NewDocumentCommand{\TabDiviseurs}{ O{} m }{%
+\begingroup%
+\pgfkeys{/rdarithm/.cd,#1}%
+% Liste des diviseurs dans \rdarithm@listediviseurs
+\LOIDiviseurs{\rdarithm@listediviseurs}{#2}%
+\edef\rdarithm@tabcontent{}%
+% Nombre total de rangées dans le tableau
+\edef\rdarithm@numstep{\fpeval{\rdarithm@listediviseurslen/2}}%
+%
+% Gestion du point d'arrêt
+\ifnum\rdarithm@stop=0 %
+    \edef\rdarithm@laststep{\rdarithm@numstep}%
+\else
+    \edef\rdarithm@laststep{\fpeval{min(\rdarithm@stop,\rdarithm@numstep)}}%
+\fi%
+% Construction du tableau
+\edef\rdarithm@indice{1}%
+\ifnum\rdarithm@cf > 0 %
+    \pgfmathsetmacro{\rdarithm@pgcd}{gcd(#2,\rdarithm@cf)}%
+\fi%
+\whiledo{\rdarithm@indice < \numexpr\rdarithm@numstep+1\relax}{%
+%
+        \itemtomacro\rdarithm@listediviseurs[\rdarithm@indice]\rdarithm@nombreun%
+        \itemtomacro\rdarithm@listediviseurs[-\rdarithm@indice]\rdarithm@nombredeux%
+        %
+        \ifnum\rdarithm@indice < \numexpr\rdarithm@laststep+1\relax %
+            %
+            \edef\rdarithm@stylecolA{|[/rdarithm/cell \rdarithm@indice -1/.try]|}%
+            \edef\rdarithm@stylecolB{|[/rdarithm/cell \rdarithm@indice -2/.try]|}%
+            % Gestion des diviseurs communs
+            \ifnum\rdarithm@cf > 0 %
+                \ifnum\xfpmod{\rdarithm@cf}{\rdarithm@nombreun}=0 %
+                    \ifnum\rdarithm@nombreun=\rdarithm@pgcd %
+                        \edef\rdarithm@stylecolA{|[gcd@style, /rdarithm/cell \rdarithm@indice -1/.try]|}%
+                    \else%
+                        \edef\rdarithm@stylecolA{|[cf@style, /rdarithm/cell \rdarithm@indice -1/.try]|}%
+                    \fi%
+                \fi%
+                \ifnum\xfpmod{\rdarithm@cf}{\rdarithm@nombredeux}=0 %
+                    \ifnum\rdarithm@nombredeux=\rdarithm@pgcd %
+                        \edef\rdarithm@stylecolB{|[gcd@style, /rdarithm/cell \rdarithm@indice -2/.try]|}%
+                    \else%
+                        \edef\rdarithm@stylecolB{|[cf@style, /rdarithm/cell \rdarithm@indice -2/.try]|}%
+                    \fi%
+                \fi%
+            \fi%
+            % /Gestion des diviseurs communs
+            \edef\rdarithm@row{\rdarithm@stylecolA \noexpand\rdarithm@container{\rdarithm@nombreun} \noexpand\&
+                     \rdarithm@stylecolB \noexpand\rdarithm@container{\rdarithm@nombredeux} \\}%
+        \else%
+            \edef\rdarithm@row{|[rdarithm@emptycell, /rdarithm/cell \rdarithm@indice -1/.try]| \noexpand\& |[rdarithm@emptycell, /rdarithm/cell \rdarithm@indice -2/.try]| \\}%
+        \fi%
+        \expandafter\g@addto@macro\expandafter\rdarithm@tabcontent\expandafter{\rdarithm@row}%
+%
+\edef\rdarithm@indice{\fpeval{\rdarithm@indice+1}}%
+}%
+% Boîtes réponse
+\ifnum\rdarithm@crep=1 %
+    \def\rdarithm@container{\tccrep[crep@style]{\rdarithm@crep@width}}%
+\else%
+    \let\rdarithm@container\relax%
+\fi%
+%\meaning\rdarithm@tabcontent%
+\tikzset{cell@style/.prefix style={rdarithm default cell style C}}%
+\ifnum\rdarithm@label=2 %
+    \def\arithm@baseline{arithmlabel.base}%
+\else%
+    \def\arithm@baseline{rdarithm-1-1.base}%
+\fi%
+\begin{tikzpicture}[baseline=(\arithm@baseline), picture@style]
+\matrix[matrix of nodes, nodes in empty cells,
+    inner sep=0pt, , outer sep=0pt,
+    column sep=\rdarithm@columnsep, row sep={\rdarithm@leveldistance, between origins},
+    nodes={cell@style},
+    ampersand replacement=\&]%
+    (rdarithm)
+{%
+    \rdarithm@tabcontent
+};
+\draw[line width=\rdarithm@linewidth] (rdarithm.north)--(rdarithm.south) ;
+% Alias
+\foreach \n in {1,...,\rdarithm@numstep} {%
+    \pgfnodealias{cell \n-1}{rdarithm-\n-1}
+    \pgfnodealias{cell \n-2}{rdarithm-\n-2}
+}%
+% Label
+\ifnum\rdarithm@label=1 %
+    \node[label@style, left=\dimexpr\rdarithm@leveldistance+\rdarithm@labelextrasep\relax of rdarithm-1-1.base west, anchor=base east] (arithmlabel) {\rdarithm@prefix@label #2\rdarithm@suffix@label};
+\fi%
+\ifnum\rdarithm@label=2 %
+    \path (rdarithm-1-1.base west) -- (rdarithm-1-2.base east) coordinate[pos=0.5] (xlabel) ;
+    \node[label@style, above=\dimexpr\rdarithm@leveldistance+\rdarithm@labelextrasep\relax of xlabel, anchor=base] (arithmlabel) {\rdarithm@prefix@label#2\rdarithm@suffix@label};
+\fi%
+% Overlay
+\rdarithm@overlay%
+\end{tikzpicture}%
+\endgroup%
+}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PGCD et PPCM
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Calcul du PGCD (fully expandable)
+% https://tex.stackexchange.com/a/576866/30654
+
+\ExplSyntaxOn
+
+\NewExpandableDocumentCommand{\rdarithm@pgcd}{mm}
+ {
+  \dkozl_gcdab:nn { #1 } { #2 }
+ }
+
+\cs_new:Nn \dkozl_gcdab:nn
+ {
+  \int_compare:nTF { #2 = 0 }
+   { #1 }
+   { \dkozl_gcdab:ne { #2 } { \int_mod:nn { #1 } { #2 } } }
+ }
+\cs_generate_variant:Nn \dkozl_gcdab:nn { ne }
+
+\ExplSyntaxOff
+
+
+\NewDocumentCommand{\PGCD}{}{%
+\ensuremath{\operatorname{PGCD}}%
+}
+
+% La version étoilée renvoie le résultat tanndis que la version non étoilée compose PGCD(#2;#3)
+\NewExpandableDocumentCommand{\pgcd}{s mm}{%
+  \IfBooleanTF{#1}%
+    {\rdarithm@pgcd{#2}{#3}}%
+    {\ensuremath{\operatorname{PGCD}\left(#2\,\mathrm{;}\,#3\right)}}%
+}%
+
+
+\NewDocumentCommand{\PPCM}{}{%
+\ensuremath{\operatorname{PPCM}}%
+}
+
+% La version étoilée renvoie le résultat tanndis que la version non étoilée compose PGCD(#2;#3)
+\NewExpandableDocumentCommand{\ppcm}{s mm}{%
+  \IfBooleanTF{#1}%
+    {\fpeval{#2*#3/\rdarithm@pgcd{#2}{#3}}}%
+    {\ensuremath{\operatorname{PPCM}\left(#2\,\mathrm{;}\,#3\right)}}%
+}%
+
+
+\NewDocumentCommand{\TabPGCD}{ O{} m m}{%
+\begingroup%
+\pgfkeys{/rdarithm/.cd,#1}%
+%
+\edef\rdarithm@ppcm{\fpeval{#2*#3/\rdarithm@pgcd{#2}{#3}}}%
+%
+\LOIFP{\rdarithm@nbA}{#2}%
+\LOIFP{\rdarithm@nbB}{#3}%
+% Le nombre total de colonnes (hors header) du tableau est donné par le nombre de FP du PPCM de #2 et de #3
+\LOIFP{\rdarithm@listefp@ppcm}{\rdarithm@ppcm}%
+%
+%   Construction de deux listes simples \rdarithm@tabfpn@A et \rdarithm@tabfpn@B
+%   qui contiennent les valeurs des cellules du tableau
+%   (si la cellule doit être vide, la valeur insérée est 0)
+\let\rdarithm@tabfpn@A\@gobble%
+\let\rdarithm@tabfpn@B\@gobble%
+\edef\rdarithm@remainder@A{#2}%
+\edef\rdarithm@remainder@B{#3}%
+%   On parcourt l'ensemble des facteurs du PPCM
+%   et si ce facteurs apparaît dans le décomposition en FP
+%   du nombre A (#2), on ajoute ce facteur à la liste \rdarithm@tabfpn@A
+%   sinon on ajoute 0 (idem pour le nombre B)
+\foreachitem\facteur\in\rdarithm@listefp@ppcm{%
+    \ifnum\xfpmod{\rdarithm@remainder@A}{\facteur}=0 %
+        \expandafter\edef\expandafter\rdarithm@tabfpn@A\expandafter{\rdarithm@tabfpn@A,\facteur}%
+        \edef\rdarithm@remainder@A{\fpeval{\rdarithm@remainder@A/\facteur}}%
+    \else%
+        \expandafter\edef\expandafter\rdarithm@tabfpn@A\expandafter{\rdarithm@tabfpn@A,0}%
+    \fi%
+    %
+    \ifnum\xfpmod{\rdarithm@remainder@B}{\facteur}=0 %
+        \expandafter\edef\expandafter\rdarithm@tabfpn@B\expandafter{\rdarithm@tabfpn@B,\facteur}%
+        \edef\rdarithm@remainder@B{\fpeval{\rdarithm@remainder@B/\facteur}}%
+    \else%
+        \expandafter\edef\expandafter\rdarithm@tabfpn@B\expandafter{\rdarithm@tabfpn@B,0}%
+    \fi%
+}%
+%   /Fin construction des deux listes simples
+%
+%   Conversion des listes "simples" en listes au format List of items
+\setsepchar{,}%
+\ignoreemptyitems%
+\readlist*\rdarithm@loi@tabfpn@A{\rdarithm@tabfpn@A}%
+\readlist*\rdarithm@loi@tabfpn@B{\rdarithm@tabfpn@B}%
+%
+% Nombre total de lignes ou de colonnes
+\edef\rdarithm@numstepplusun{\fpeval{\rdarithm@loi@tabfpn@Alen+1}}%
+%
+% Calcul de la largeur maximale entre les deux
+% éléments du header (en tenant compte des éventuels changements
+% de fonte et des prefix/suffix).
+% On affecte la largeur max à \rdarithm@headermaxwidth
+\ifnum\rdarithm@taborientation=0 % horizontal
+    \edef\rdarithm@tmp{2-1}%
+\else%
+    \edef\rdarithm@tmp{1-2}%
+\fi%
+\savebox{\rdarithm@sboxA}{%
+        \tikz[inner sep=0pt, outer sep=0pt, draw=none, line width=0pt]%
+        \node[cell@style, header@style, /rdarithm/cell 1-1/.try, inner sep=0pt, outer sep=0pt, draw=none, line width=0pt]%
+        {\rdarithm@prefix@header#2\rdarithm@suffix@header};%
+    }%
+\settowidth{\rdarithm@lengthA}{\usebox{\rdarithm@sboxA}}%
+\savebox{\rdarithm@sboxB}{%
+        \tikz[inner sep=0pt, outer sep=0pt, draw=none, line width=0pt]%
+        \node[cell@style, header@style, /rdarithm/cell \rdarithm@tmp/.try, inner sep=0pt, outer sep=0pt, draw=none, line width=0pt]%
+        {\rdarithm@prefix@header#3\rdarithm@suffix@header};%
+    }%
+\settowidth{\rdarithm@lengthB}{\usebox{\rdarithm@sboxB}}%
+%
+\ifdim\rdarithm@lengthA > \rdarithm@lengthB %
+    \def\rdarithm@headermaxwidth{\the\rdarithm@lengthA}%
+\else%
+    \def\rdarithm@headermaxwidth{\the\rdarithm@lengthB}%
+\fi%
+% On ajoute 10 % à la largeur approximativement calculée
+\edef\rdarithm@headermaxwidth{\fpeval{1.1*\rdarithm@headermaxwidth}}%
+%    /Fin calcul largeur max
+%
+\tikzset{%
+    % styles supplémentaires ajoutés lorsque forced width > 0pt ou lorsque le tableau est en mode vertical
+    header@forced/.style={},
+    cells@forced/.style={}
+}%
+%   Largeur du tableau forcée
+\ifdim\rdarithm@forcedwidth > 0pt %
+    \ifnum\rdarithm@taborientation=0 %  Tableau horizontal
+        \ifdim\rdarithm@headerwidth = 0pt %
+            \edef\rdarithm@headerwidth{\rdarithm@headermaxwidth}%
+        \fi%
+        %
+        % Calcul de la largeur de colonne (horizontal)
+        \edef\rdarithm@tmp{0}%
+        \ifnum\rdarithm@vrules=1 %
+            \edef\rdarithm@tmp{\rdarithm@linewidth}%
+        \fi%
+        \edef\rdarithm@colwidth{\fpeval{(\rdarithm@forcedwidth-2*\rdarithm@numstepplusun*\rdarithm@innerxsep-\rdarithm@headerwidth-\rdarithm@tmp)/\rdarithm@loi@tabfpn@Alen}pt}%
+        %
+        \tikzset{%
+            % styles supplémentaires ajoutés lorsque forced width > 0pt
+            header@forced/.style={text width=\rdarithm@headerwidth, inner xsep=\rdarithm@innerxsep},%
+            cells@forced/.style={text width=\rdarithm@colwidth, inner xsep=\rdarithm@innerxsep}%
+        }%
+    \else%  Tableau vertical
+    %   On ne s'occupe pas de header width
+    %
+        % Calcul de la largeur de colonne (vertical)
+        \edef\rdarithm@tmp{0}%
+        \ifnum\rdarithm@vrules=1 %
+            \edef\rdarithm@tmp{\rdarithm@linewidth}%
+        \fi%
+        \edef\rdarithm@colwidth{\fpeval{(\rdarithm@forcedwidth-4*\rdarithm@innerxsep-\rdarithm@tmp)/2}pt}%
+        %
+        \tikzset{%
+            % styles supplémentaires ajoutés lorsque forced width > 0pt
+            header@forced/.style={text width=\rdarithm@colwidth, inner xsep=\rdarithm@innerxsep},%
+            cells@forced/.style={text width=\rdarithm@colwidth, inner xsep=\rdarithm@innerxsep}%
+        }%
+    \fi%
+\else% Largeur "naturelle"
+    \ifnum\rdarithm@taborientation=1 % vertical
+        \tikzset{%
+            header@forced/.style={text width=\rdarithm@headermaxwidth},%
+            cells@forced/.style={text width=\rdarithm@headermaxwidth}%
+            }%
+    \fi%
+\fi%
+%   /Fin Largeur du tableau forcée
+\ifnum\rdarithm@taborientation=0 %  Tableau horizontal
+    %
+    \tikzset{header@style/.prefix style={align=left}}%
+    %
+    \edef\rdarithm@rowA{|[header@style, /rdarithm/cell 1-1/.try, header@forced]|%
+        \noexpand\rdarithm@header@container{\noexpand\smash{\noexpand\rdarithm@prefix@header}#2\noexpand\smash{\noexpand\rdarithm@suffix@header}}\noexpand\&}%
+    \edef\rdarithm@rowB{|[header@style, /rdarithm/cell 2-1/.try, header@forced]|%
+        \noexpand\rdarithm@header@container{\noexpand\smash{\noexpand\rdarithm@prefix@header}#3\noexpand\smash{\noexpand\rdarithm@suffix@header}}\noexpand\&}%
+    %
+    \edef\rdarithm@indice{1}%
+    \whiledo{\rdarithm@indice < \rdarithm@numstepplusun}{%
+        %
+        \edef\rdarithm@indice@col{\fpeval{\rdarithm@indice+1}}%
+        %
+        \itemtomacro\rdarithm@loi@tabfpn@A[\rdarithm@indice]\rdarithm@nombreA%
+        \itemtomacro\rdarithm@loi@tabfpn@B[\rdarithm@indice]\rdarithm@nombreB%
+        %   style pour les cellules
+        \ifnum\rdarithm@nombreA=\rdarithm@nombreB %
+            \edef\rdarithm@rowA@style{|[gcd@style, /rdarithm/cell 1-\rdarithm@indice@col/.try, cells@forced]|}%
+            \edef\rdarithm@rowB@style{|[gcd@style, /rdarithm/cell 2-\rdarithm@indice@col/.try, cells@forced]|}%
+        \else%
+            \edef\rdarithm@rowA@style{|[/rdarithm/cell 1-\rdarithm@indice@col/.try, cells@forced]|}%
+            \edef\rdarithm@rowB@style{|[/rdarithm/cell 2-\rdarithm@indice@col/.try, cells@forced]|}%
+        \fi%
+        %   contenu des cellules
+        \ifnum\rdarithm@nombreA=0 %
+            \edef\rdarithm@rowA@content{\noexpand\noexpand\noexpand\phantom{0}}%
+        \else%
+            \edef\rdarithm@rowA@content{\rdarithm@nombreA}%
+        \fi%
+        \ifnum\rdarithm@nombreB=0 %
+            \edef\rdarithm@rowB@content{\noexpand\noexpand\noexpand\phantom{0}}%
+        \else%
+            \edef\rdarithm@rowB@content{\rdarithm@nombreB}%
+        \fi%
+        %
+        \ifnum\rdarithm@indice<\rdarithm@loi@tabfpn@Alen %
+            \edef\rdarithm@row@next{\noexpand\&}%
+        \else%
+            \edef\rdarithm@row@next{\\}%
+        \fi%
+        %
+        \edef\rdarithm@tmpA{\rdarithm@rowA@style\noexpand\rdarithm@container{\rdarithm@rowA@content}\rdarithm@row@next}%
+        \edef\rdarithm@tmpB{\rdarithm@rowB@style\noexpand\rdarithm@container{\rdarithm@rowB@content}\rdarithm@row@next}%
+        \expandafter\g@addto@macro\expandafter\rdarithm@rowA\expandafter{\rdarithm@tmpA}%
+        \expandafter\g@addto@macro\expandafter\rdarithm@rowB\expandafter{\rdarithm@tmpB}%
+        %
+        \edef\rdarithm@indice{\fpeval{\rdarithm@indice+1}}%
+    }% /fin while
+    \def\rdarithm@tabcontent{\rdarithm@rowA\rdarithm@rowB}%
+    %
+\else%  Tableau vertical
+    %
+    \tikzset{header@style/.prefix style={align=center}}%
+    %
+    \edef\rdarithm@tabcontent{|[header@style, /rdarithm/cell 1-1/.try, header@forced]|\noexpand\rdarithm@prefix@header#2\noexpand\rdarithm@suffix@header\noexpand\&%
+            |[header@style, /rdarithm/cell 1-2/.try, header@forced]|\noexpand\rdarithm@prefix@header#3\noexpand\rdarithm@suffix@header \\}%
+    %
+    \edef\rdarithm@indice{1}%
+    \whiledo{\rdarithm@indice < \rdarithm@numstepplusun}{%
+    %
+        \itemtomacro\rdarithm@loi@tabfpn@A[\rdarithm@indice]\rdarithm@nombreA%
+        \itemtomacro\rdarithm@loi@tabfpn@B[\rdarithm@indice]\rdarithm@nombreB%
+        %
+        \edef\rdarithm@indice@row{\fpeval{\rdarithm@indice+1}}%
+        %
+        %   style pour les cellules
+        \ifnum\rdarithm@nombreA=\rdarithm@nombreB %
+            \edef\rdarithm@colA@style{|[gcd@style, /rdarithm/cell \rdarithm@indice@row-1/.try, cells@forced]|}%
+            \edef\rdarithm@colB@style{|[gcd@style, /rdarithm/cell \rdarithm@indice@row-2/.try, cells@forced]|}%
+        \else%
+            \edef\rdarithm@colA@style{|[/rdarithm/cell \rdarithm@indice@row-1/.try, cells@forced]|}%
+            \edef\rdarithm@colB@style{|[/rdarithm/cell \rdarithm@indice@row-2/.try, cells@forced]|}%
+        \fi%
+        %
+        %   contenu des cellules
+        \ifnum\rdarithm@nombreA=0 %
+            \edef\rdarithm@colA@content{\noexpand\noexpand\noexpand\phantom{0}}%
+        \else%
+            \edef\rdarithm@colA@content{\rdarithm@nombreA}%
+        \fi%
+        \ifnum\rdarithm@nombreB=0 %
+            \edef\rdarithm@colB@content{\noexpand\noexpand\noexpand\phantom{0}}%
+        \else%
+            \edef\rdarithm@colB@content{\rdarithm@nombreB}%
+        \fi%
+        %
+        %
+        \edef\rdarithm@row{\rdarithm@colA@style\noexpand\rdarithm@container{\rdarithm@colA@content} \noexpand\&%
+            \rdarithm@colB@style\noexpand\rdarithm@container{\rdarithm@colB@content} \\}%
+        %
+        \expandafter\g@addto@macro\expandafter\rdarithm@tabcontent\expandafter{\rdarithm@row}%
+        %
+        \edef\rdarithm@indice{\fpeval{\rdarithm@indice+1}}%
+    }% /fin while
+    %
+\fi%
+%
+% Boîtes réponse
+\let\rdarithm@header@container\relax%
+\ifnum\rdarithm@crep=1 %
+    \def\rdarithm@container{\tccrep[crep@style]{\rdarithm@crep@width}}%
+    % Précaution supplémentaire :
+    % Quand le tableau est horizontal avec des Crep, les cellules du header peuvent ne pas être alignées
+    % avec les autres cellules de la ligne (à cause des hauteurs et profondeurs différentes).
+    % Dans ce cas, on encapsule le contenu du header dans des boites qui ont la même hauteur et la
+    % même profondeur que les cellulues contenant des macros du type \tccadrerep.
+    \savebox{\rdarithm@sboxA}{\tccrep[crep@style]{\rdarithm@crep@width}{0}}%
+    \settoheight{\rdarithm@lengthA}{\usebox{\rdarithm@sboxA}}%
+    \settodepth{\rdarithm@lengthB}{\usebox{\rdarithm@sboxA}}%
+    \def\rdarithm@header@container{\raisebox{0pt}[\rdarithm@lengthA][\rdarithm@lengthB]}%
+    %
+\else%
+    \let\rdarithm@container\relax%
+\fi%
+%
+\tikzset{cell@style/.prefix style={rdarithm default cell style D}}%
+\begin{tikzpicture}[baseline=(rdarithm-1-1.base), picture@style]
+\matrix[matrix of nodes, nodes in empty cells,
+    inner sep=0pt, , outer sep=0pt,
+    column sep=0pt, row sep={\rdarithm@leveldistance, between origins},
+    nodes={cell@style},
+    ampersand replacement=\&]%
+    (rdarithm)
+{%
+    \rdarithm@tabcontent
+};
+%   Lignes
+%\begin{scope}[opacity=0.25]
+\tikzset{rdarithm@tmpstyle/.style={}}%
+\ifnum\rdarithm@taborientation=0 %  Tableau horizontal
+    \ifnum\rdarithm@hrules=1 % lignes horizontales
+        \draw[overlay, rdarithm@rulecolor, line width=\rdarithm@rwcoef*\rdarithm@linewidth] (rdarithm-1-1.north west)--(rdarithm-1-\rdarithm@numstepplusun.north east) ;
+        \draw[overlay, rdarithm@rulecolor, line width=\rdarithm@linewidth] (rdarithm-1-1.south west)--(rdarithm-1-\rdarithm@numstepplusun.south east) ;
+        \draw[overlay, rdarithm@rulecolor, line width=\rdarithm@rwcoef*\rdarithm@linewidth] (rdarithm-2-1.south west)--(rdarithm-2-\rdarithm@numstepplusun.south east) ;
+        \tikzset{rdarithm@tmpstyle/.style={shorten >=-0.5*\rdarithm@linewidth, , shorten <=-0.5*\rdarithm@linewidth}}%
+    \fi%
+    \ifnum\rdarithm@vrules=1 % lignes verticales
+        \foreach \n in {1,...,\rdarithm@numstepplusun} {
+            \draw[rdarithm@rulecolor, line width=\rdarithm@linewidth, rdarithm@tmpstyle] (rdarithm-1-\n.north west) -- (rdarithm-2-\n.south west) ;
+        }
+        \draw[rdarithm@rulecolor, line width=\rdarithm@linewidth, rdarithm@tmpstyle] %
+            (rdarithm-1-\rdarithm@numstepplusun.north east) -- (rdarithm-2-\rdarithm@numstepplusun.south east) ;
+    \fi%
+    % Alias
+    \foreach \n in {1,...,\rdarithm@numstepplusun} {%
+        \pgfnodealias{cell 1-\n}{rdarithm-1-\n}
+        \pgfnodealias{cell 2-\n}{rdarithm-2-\n}
+    }%
+\else%  Tableau vertical
+    \ifnum\rdarithm@hrules=1 % lignes horizontales
+        \foreach \n in {1,...,\rdarithm@numstepplusun} {
+            \draw[overlay, rdarithm@rulecolor, line width=\rdarithm@linewidth] (rdarithm-\n-1.north west) -- (rdarithm-\n-2.north east) ;
+        }
+        \draw[overlay, rdarithm@rulecolor, line width=\rdarithm@linewidth, rdarithm@tmpstyle] %
+             (rdarithm-\rdarithm@numstepplusun-1.south west) -- (rdarithm-\rdarithm@numstepplusun-2.south east) ;
+        \tikzset{rdarithm@tmpstyle/.style={shorten >=-0.5*\rdarithm@linewidth, , shorten <=-0.5*\rdarithm@linewidth}}%
+    \fi%
+    \ifnum\rdarithm@vrules=1 % lignes verticales
+        \draw[rdarithm@rulecolor, line width=\rdarithm@linewidth, rdarithm@tmpstyle] (rdarithm-1-1.north west) -- (rdarithm-\rdarithm@numstepplusun-1.south west) ;
+        \draw[rdarithm@rulecolor, line width=\rdarithm@linewidth, rdarithm@tmpstyle] (rdarithm.north) -- (rdarithm.south) ;
+        \draw[rdarithm@rulecolor, line width=\rdarithm@linewidth, rdarithm@tmpstyle] (rdarithm-1-2.north east) -- (rdarithm-\rdarithm@numstepplusun-2.south east) ;
+    \fi%
+    \ifnum\rdarithm@vrules=2 % Une seule ligne verticale
+        \draw[rdarithm@rulecolor, line width=\rdarithm@linewidth] (rdarithm.north) -- (rdarithm.south) ;
+    \fi%
+    % Alias
+    \foreach \n in {1,...,\rdarithm@numstepplusun} {%
+        \pgfnodealias{cell \n-1}{rdarithm-\n-1}
+        \pgfnodealias{cell \n-2}{rdarithm-\n-2}
+    }%
+\fi% / Fin lignes
+%\end{scope}
+% Overlay
+\rdarithm@overlay%
+\end{tikzpicture}%
+%
+\endgroup%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fractions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\NewDocumentCommand{\fracirr}{m m}{%
+\ensuremath{%
+\frac{\fpeval{#1/\pgcd*{#1}{#2}}}{\fpeval{#2/\pgcd*{#1}{#2}}}%
+}%
+}
+
+\NewDocumentCommand{\dfracirr}{m m}{%
+\ensuremath{%
+\dfrac{\fpeval{#1/\pgcd*{#1}{#2}}}{\fpeval{#2/\pgcd*{#1}{#2}}}%
+}%
+}
+
+
+
+\pgfkeys{% permet de "stocker" la couleur courante
+    /handlers/.rdarithm@storecol/.code=\colorlet{arithmcol}{#1}%
+}
+
+
+
+
+\NewDocumentCommand{\RowPGCD}{ O{} m m}{%
+\begingroup%
+    \rdarithm@CodeCommun@i[#1]{#2}{#3}%
+%
+\ensuremath{%
+\begin{aligned}[t]
+    #2 &=\rdarithm@numerateur   \\
+    #3 &=\rdarithm@denominateur
+\end{aligned}%
+}%
+%
+\begin{tikzpicture}[remember picture, overlay]
+\begin{pgfonlayer}{background}
+    \foreach \n in {1,...,\numexpr\rdarithm@indice@facteurcommunA-1\relax} {
+        %
+        % Gestion des couleurs
+        \pgfmathsetmacro{\mymod}{int(mod(\n,\rdarithm@colorlistlen))}%
+        \ifnum\mymod=0 %
+            \edef\mymod{\rdarithm@colorlistlen}%
+        \fi%
+        \itemtomacro\rdarithm@colorlist[\mymod]\arithmcolor%
+        %   En cas de ! dans la définition des couleurs ( ! = caractère actif en fr !)
+        \edef\arithmcolor{\expandafter\detokenize\expandafter{\arithmcolor}}%
+        % /Gestion des couleurs
+            \pgfnodealias{x}{1-\n}
+            \pgfnodealias{y}{2-\n}
+        %
+        \ifnum\rdarithm@link=1 %
+            \draw[line@style, draw=\arithmcolor, line width=\rdarithm@linewidth,
+                    %shorten >=-0.5\pgflinewidth, shorten <=-0.5\pgflinewidth
+                    ] (x) to[/rdarithm/to \n/.try] (y) ;
+        \fi%
+        \ifnum\rdarithm@link=2 %
+        \fi%
+        \ifnum\rdarithm@link=3 %
+            \path let \p1=($(x.north)-(x.south)$), \p2=($(y.north)-(y.south)$) in
+                [fill=\arithmcolor,  decorate,
+                    decoration={start radius=\y1/2, end radius=\y2/2,
+                    amplitude=1.25mm, angle=30, circle connection bar}]
+                (x) -- (y);
+        \fi%
+        }
+\end{pgfonlayer}
+\end{tikzpicture}
+%
+\endgroup%
+}
+
+
+
+\NewDocumentCommand{\DecompFrac}{ O{} m m}{%
+\begingroup%
+    \rdarithm@CodeCommun@i[#1, link=none]{#2}{#3}%
+%
+\ifnum\rdarithm@fracmode=0 %
+    \ensuremath{\frac{\rdarithm@numerateur}{\rdarithm@denominateur}}%
+\else%
+    \ensuremath{\dfrac{\rdarithm@numerateur}{\rdarithm@denominateur}}%
+\fi%
+\endgroup%
+}
+
+
+\NewDocumentCommand{\rdarithm@CodeCommun@i}{ O{} m m}{%
+\pgfkeys{/rdarithm/.cd,#1}%
+\stepcounter{rdarithm@envnum}%
+\tikzset{tikzmark prefix=rdarithm@\therdarithm@envnum-}%
+%
+% Lecture des couleurs => \rdarithm@colorlist
+\setsepchar{,}%
+\ignoreemptyitems%
+\readlist*\rdarithm@colorlist{\rdarithm@colors}%
+%
+\edef\rdarithm@ppcm{\fpeval{#2*#3/\rdarithm@pgcd{#2}{#3}}}%
+%
+\LOIFP{\rdarithm@nbA}{#2}%
+\LOIFP{\rdarithm@nbB}{#3}%
+% On organise les facteurs comme dans \TabPGCD (ie en "colonnes" qui se correspondent) afin de pouvoir identifier les facteurs communs
+% Le nombre total de colonnes est donné par le nombre de FP du PPCM de #2 et de #3
+\LOIFP{\rdarithm@listefp@ppcm}{\rdarithm@ppcm}%
+%
+%   Construction de deux listes simples \rdarithm@tabfpn@A et \rdarithm@tabfpn@B
+%   qui contiennent les valeurs des cellules du tableau
+%   (si la cellule doit être vide, la valeur insérée est 0)
+\let\rdarithm@tabfpn@A\@gobble%
+\let\rdarithm@tabfpn@B\@gobble%
+\edef\rdarithm@remainder@A{#2}%
+\edef\rdarithm@remainder@B{#3}%
+%   On parcourt l'ensemble des facteurs du PPCM
+%   et si ce facteurs apparaît dans le décomposition en FP
+%   du nombre A (#2), on ajoute ce facteur à la liste \rdarithm@tabfpn@A
+%   sinon on ajoute 0 (idem pour le nombre B)
+\foreachitem\facteur\in\rdarithm@listefp@ppcm{%
+    \ifnum\xfpmod{\rdarithm@remainder@A}{\facteur}=0 %
+        \expandafter\edef\expandafter\rdarithm@tabfpn@A\expandafter{\rdarithm@tabfpn@A,\facteur}%
+        \edef\rdarithm@remainder@A{\fpeval{\rdarithm@remainder@A/\facteur}}%
+    \else%
+        \expandafter\edef\expandafter\rdarithm@tabfpn@A\expandafter{\rdarithm@tabfpn@A,0}%
+    \fi%
+    %
+    \ifnum\xfpmod{\rdarithm@remainder@B}{\facteur}=0 %
+        \expandafter\edef\expandafter\rdarithm@tabfpn@B\expandafter{\rdarithm@tabfpn@B,\facteur}%
+        \edef\rdarithm@remainder@B{\fpeval{\rdarithm@remainder@B/\facteur}}%
+    \else%
+        \expandafter\edef\expandafter\rdarithm@tabfpn@B\expandafter{\rdarithm@tabfpn@B,0}%
+    \fi%
+}%
+%   /Fin construction des deux listes simples
+%
+%   Conversion des listes "simples" en listes au format List of items
+\setsepchar{,}%
+\ignoreemptyitems%
+\readlist*\rdarithm@loi@tabfpn@A{\rdarithm@tabfpn@A}%
+\readlist*\rdarithm@loi@tabfpn@B{\rdarithm@tabfpn@B}%
+%
+\edef\rdarithm@numerateur{}%
+\edef\rdarithm@denominateur{}%
+\edef\rdarithm@indice@facteurcommunA{1}%
+\edef\rdarithm@indice@facteurcommunB{1}%
+\edef\rdarithm@indice{1}%
+\whiledo{\rdarithm@indice < \numexpr\rdarithm@loi@tabfpn@Alen+1\relax}{%
+    %
+    \itemtomacro\rdarithm@loi@tabfpn@A[\rdarithm@indice]\rdarithm@nombreA%
+    \itemtomacro\rdarithm@loi@tabfpn@B[\rdarithm@indice]\rdarithm@nombreB%
+    %
+    \ifnum\rdarithm@nombreA > 0 % on ajoute le nombre
+        \if\relax\detokenize\expandafter{\romannumeral-`\Q\rdarithm@numerateur}\relax% si ce n'est pas le premier de la liste, il faut ajouter un \times devant
+            \edef\rdarithm@before{}%
+        \else%
+            \edef\rdarithm@before{\times}%
+        \fi%
+        %
+        \ifnum\rdarithm@nombreA=\rdarithm@nombreB %
+            %
+            % Gestion des couleurs
+            \pgfmathsetmacro{\mymod}{int(mod(\rdarithm@indice@facteurcommunA,\rdarithm@colorlistlen))}%
+            \ifnum\mymod=0 %
+                \edef\mymod{\rdarithm@colorlistlen}%
+            \fi%
+            %
+            \itemtomacro\rdarithm@colorlist[\mymod]\arithmcolor%
+            %   En cas de ! dans la définition des couleurs ( ! = caractère actif en fr !)
+            \edef\arithmcolor{\expandafter\detokenize\expandafter{\arithmcolor}}%
+            %
+            % /Gestion des couleurs
+            %
+            %
+            \edef\rdarithm@row{\rdarithm@before\noexpand\mbox{\noexpand%
+                    \tikzmarknode[storedcol/.rdarithm@storecol=\arithmcolor,
+                                    cf@style,
+                                    /rdarithm/cell 1-\rdarithm@indice@facteurcommunA/.try,
+                                    outer sep=0pt,
+                                    \ifnum\rdarithm@link=3 circle, fill=\arithmcolor, postaction={draw=\arithmcolor, line width=0.7pt}\fi
+                                    ]%
+                    {1-\rdarithm@indice@facteurcommunA}{\noexpand\rdarithm@container{\rdarithm@nombreA}}}}%
+            \edef\rdarithm@indice@facteurcommunA{\fpeval{\rdarithm@indice@facteurcommunA+1}}%
+        \else%
+            \edef\rdarithm@row{\rdarithm@before\noexpand\rdarithm@container{\rdarithm@nombreA}}%
+        \fi%
+        %
+        \expandafter\g@addto@macro\expandafter\rdarithm@numerateur\expandafter{\rdarithm@row}%
+    \fi% /Fin \rdarithm@nombreA
+    %
+    \ifnum\rdarithm@nombreB > 0 % on ajoute le nombre
+        \if\relax\detokenize\expandafter{\romannumeral-`\Q\rdarithm@denominateur}\relax% si ce n'est pas le premier de la liste, il faut ajouter un \times devant
+            \edef\rdarithm@before{}%
+        \else%
+            \edef\rdarithm@before{\times}%
+        \fi%
+        %
+        \ifnum\rdarithm@nombreA=\rdarithm@nombreB %
+            %
+            % Gestion des couleurs
+            \pgfmathsetmacro{\mymod}{int(mod(\rdarithm@indice@facteurcommunB,\rdarithm@colorlistlen))}%
+            \ifnum\mymod=0 %
+                \edef\mymod{\rdarithm@colorlistlen}%
+            \fi%
+            \itemtomacro\rdarithm@colorlist[\mymod]\arithmcolor%
+            %   En cas de ! dans la définition des couleurs ( ! = caractère actif en fr !)
+            \edef\arithmcolor{\expandafter\detokenize\expandafter{\arithmcolor}}%
+            % /Gestion des couleurs
+            %
+            \edef\rdarithm@row{\rdarithm@before\noexpand\mbox{\noexpand%
+                    \tikzmarknode[storedcol/.rdarithm@storecol=\arithmcolor,
+                                    cf@style,
+                                    /rdarithm/cell 2-\rdarithm@indice@facteurcommunB/.try,
+                                    outer sep=0pt,
+                                    \ifnum\rdarithm@link=3 circle, fill=\arithmcolor, postaction={draw=\arithmcolor, line width=0.7pt}\fi]%
+                    {2-\rdarithm@indice@facteurcommunB}{\noexpand\rdarithm@container{\rdarithm@nombreB}}}}%
+            \edef\rdarithm@indice@facteurcommunB{\fpeval{\rdarithm@indice@facteurcommunB+1}}%
+        \else%
+            \edef\rdarithm@row{\rdarithm@before\noexpand\rdarithm@container{\rdarithm@nombreB}}%
+        \fi%
+        %
+        \expandafter\g@addto@macro\expandafter\rdarithm@denominateur\expandafter{\rdarithm@row}%
+    \fi% /Fin \rdarithm@nombreB
+    %
+\edef\rdarithm@indice{\fpeval{\rdarithm@indice+1}}%
+}%
+%
+% Boîtes réponse
+\ifnum\rdarithm@crep=1 %
+    \def\rdarithm@container{\tccrep[crep@style]{\rdarithm@crep@width}}%
+\else%
+    \let\rdarithm@container\relax%
+\fi%
+}% /Fin CodeCommun@i
+
+
+%
+%\ifnum\rdarithm@fracmode=0 %
+%    \ensuremath{\frac{\rdarithm@numerateur}{\rdarithm@denominateur}}%
+%\else%
+%    \ensuremath{\dfrac{\rdarithm@numerateur}{\rdarithm@denominateur}}%
+%\fi%
+%\endgroup%
+%}

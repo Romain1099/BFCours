@@ -1,0 +1,152 @@
+
+\ProvidesPackage{bfcours-exoplus}[2024/06/29 v1.0 Entetes et commandes d'exercices et evaluations pour bfcours]
+
+%\usepackage{lastpage}
+% Nouvelle commande pour ajouter une compétence au tableau
+\newcommand{\competenceSommaire}[1]{%
+    \textcolor{black}{\faPen} #1& & & & \\
+    \hline
+}
+% Nouvelle commande pour créer le tableau de compétences
+\newcommand{\tableaucompetenceSommaire}{%
+  \begin{tabular}{|>{\raggedright\arraybackslash}p{0.7\textwidth}|*{4}{>{\centering\arraybackslash}p{0.05\textwidth}|}}
+    \hline
+    \centering\textbf{Compétences travaillées} & \textbf{MI} & \textbf{MF} & \textbf{MS} & \textbf{TBM} \\
+    \hline
+    \input{\jobname.competences}%
+  \end{tabular}%
+}
+\newcommand{\masquerTrouver}[1]{
+	\ifnum\value{prof}=1%
+   	 	#1%
+  	\else%
+    		\uline{\phantom{\Large{#1}}}%
+  	\fi%
+}
+\newcommand{\addkeyword}[1]{#1}
+\newcommand{\tableauVocabulaireSommaire}[1]{%
+Dans le tableau suivant, remplir les cases pour t'aider dans tes révisions.\\ 
+
+  \begin{tabular}{|>{\raggedright\arraybackslash}p{0.3\textwidth}|*{3}{>{\centering\arraybackslash}p{0.2\textwidth}|}}
+    \hline
+    \centering\textbf{Vocabulaire à connaître} & \textbf{Vu en classe le :} & \textbf{Définition apprise le :} & \textbf{Coche si tu es prêt pour l'évaluation} \\
+    \hline
+    #1
+  \end{tabular}%
+}
+\newcommand{\vocabulaireSommaire}[1]{%
+    \textcolor{black}{\faPen} #1 & & & \\
+    \hline
+}
+
+% Nouvelle commande pour créer une section avec des compétences
+\newcommand{\mysection}[2]{%
+  \refstepcounter{section}%
+  \addcontentsline{toc}{section}{\protect\numberline{\thesection}#1}
+  \par\bigskip\noindent
+  \begin{tikzpicture}
+    \node[draw=red,fill=red,text=white,inner sep=2pt,font=\huge\bfseries, minimum height=1.5em] (secnum) {\thesection};
+    \node[rounded corners, right=1em of secnum,font=\huge\bfseries, text=red] (title) {#1};
+    \draw[red, line width=1pt] ($(title.south west) + (-2.49em, 0)$) -- (title.south east);
+    \draw[red] (secnum.south west) -- (secnum.south east);
+\end{tikzpicture}\par
+  \vspace{0.5em}
+  \foreach \x in {#2} {
+    \immediate\write\competencefile{\noexpand\competenceSommaire{\x}}%
+  }%
+}
+
+
+\newcommand{\mysubsection}[2]{%
+  \refstepcounter{subsection}%
+  \addcontentsline{toc}{subsection}{\protect\numberline{\thesubsection}#1}
+  \par\bigskip\noindent\qquad
+  \begin{tikzpicture}
+    \node[draw=blue!70!black,fill=blue!70!black,text=white,inner sep=2pt,font=\Large\bfseries, minimum height=1.5em] (subsecnum) {\thesubsection};
+    \node[rounded corners, right=1em of subsecnum,font=\Large\bfseries, text=blue!70!black] (title) {#1};
+    \draw[blue!70!black, line width=1pt] ($(title.south west) + (-3.24em, 0)$) -- (title.south east);
+    \draw[blue!70!black] (subsecnum.south west) -- (subsecnum.south east);
+  \end{tikzpicture}\par
+   \vspace{0.5em}
+  \foreach \x in {#2} {
+    \immediate\write\competencefile{\noexpand\competenceSommaire{\x}}%
+  }%
+}
+\pagestyle{fancy}
+\fancyhf{} % Effacer tous les en-têtes et pieds de page existants
+\renewcommand{\headrulewidth}{0pt} % Supprimer la ligne d'en-tête
+\newcommand{\plop}{plop}
+
+\NewDocumentCommand{\chapitre}{O{} m m m m m}{
+  \fancypagestyle{monStyle}{%
+  \fancyfoot[R]{%
+    \tikz[baseline]{
+	\addtocounter{pagecounter}{1}
+ \node [circle, fill=gray!80!black, scale=0.8, text=white] (leftnode) {\textbf{\arabic{pagecounter}}};
+    }%
+
+  }%
+  \fancyfoot[L]{%
+%	\hspace{1.5cm}
+    \begin{minipage}[t]{0.4\textwidth}
+      \scriptsize \textbf{#6\ #2} % Remplacer par le titre du chapitre
+    \end{minipage}%
+}
+   \fancyfoot[C]{
+    \begin{minipage}[t]{0.4\textwidth}
+
+	\hfill \scriptsize \textbf{#3\ #4} % Remplacer par le nom de l'établissement
+    \end{minipage}%
+  }%
+  \renewcommand{\footrulewidth}{0.4pt}
+  %\renewcommand{\footrule}{\vskip-10pt \tikz \draw [decorate,decoration={snake,amplitude=0.5mm,segment length=2cm}] (0,0) -- (\textwidth,0); \vskip 10pt}   
+}
+
+
+  \pagestyle{monStyle}
+  \begin{tcolorbox}[
+    enhanced,
+    width=\textwidth,
+    height=1.5cm,
+    colback=white,
+    colframe=white,
+    boxrule=0pt,
+    sharp corners,
+    interior style={
+      left color=gray!60,
+      right color=gray!10
+    },
+    valign=center,
+    borderline north={1pt}{0pt}{shading angle=90, left color=gray!80, right color=gray!10},
+    borderline south={1pt}{0pt}{shading angle=90, left color=gray!80, right color=gray!10}
+  ]
+   \begin{minipage}{1.5cm}
+    \begin{tcolorbox}[
+      width=1.5cm,
+      height=1.4cm,
+      colback=gray!60,
+      colframe=gray!60,%black,
+      valign=center,
+      halign=center,
+      boxrule=0pt,
+      sharp corners,
+      left=0pt,  % Ajouté ici
+        right=0pt  % Ajouté ici
+    ]
+
+\contour{white}{\textcolor{black}{\Large #1}}
+%\textcolor{white}{\Large #1}
+      \end{tcolorbox}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{\dimexpr\textwidth-2.5cm}
+      %\hspace{2cm}\textbf{\Large #6 : #2}
+	\textbf{\Large{#6#2}}
+    \end{minipage}
+  \end{tcolorbox}
+   %\tableofcontents % Génère le sommaire
+   %\section*{Index des Compétences}
+   #5
+}
+
+\endinput

@@ -1,0 +1,190 @@
+\definecolor{paris1}{HTML}{D9D9D9}% fond question
+\definecolor{paris2}{HTML}{D75436}% fond étiquette question
+\definecolor{paris3}{HTML}{C30005}% arrière plan étiquette
+\definecolor{paris4}{HTML}{83B5B4}% réponse gauche
+\definecolor{paris5}{HTML}{F2F2F2}% réponse droite
+\definecolor{paris6}{HTML}{0B7492}% bonne réponse
+\definecolor{paris7}{HTML}{835B6B}% 
+\definecolor{paris8}{HTML}{283B4A}%
+
+
+\pgfdeclarelayer{rdmcqbackground}
+\pgfdeclarelayer{rdmcqforeground}
+
+
+\tikzset{paris dashed/.style={dash pattern=on 1.5pt off 1pt}}
+
+
+\newQuestionFormat{Paris}
+{% boîte externe
+colback=paris1, frame hidden,
+opacityback=1,
+boxsep=5pt,
+attach boxed title to top left={yshift=-\tcboxedtitleheight+1.5mm,xshift=0.35cm},
+title={Question \rdmcqQuestioncount}, coltitle=white, fonttitle=\scriptsize\sffamily\bfseries,
+    boxed title style={enhanced,
+        frame code={
+            \pgfsetlayers{rdmcqbackground,main,rdmcqforeground}
+            \path[rounded corners=1mm, blur shadow={shadow xshift=-0.25mm, shadow yshift=-0.25mm, shadow blur steps=8, shadow blur radius=.15ex, shadow blur extra rounding}]
+                ([yshift=-0.2mm]frame.north west) -- ([xshift=-0.2mm,yshift=-0.2mm]frame.north east)--([xshift=-0.2mm]frame.south east)--(frame.south west)--cycle;
+        \begin{pgfonlayer}{rdmcqbackground}
+                \path[fill=paris3]
+                ([yshift=-1.5mm]frame.north west) -- ([yshift=-1mm]frame.north west) arc[start angle=0,end angle=180,radius=1mm] -- ++(0,-0.5mm)--cycle;
+        \end{pgfonlayer}
+                \path[fill=paris2]
+                ([xshift=-2mm]frame.north west) [rounded corners=1mm] --  (frame.north east) 
+                [rounded corners=1mm] 
+                -- (frame.south east) -- (frame.south west) [rounded corners=1mm] -- (frame.north west) -- cycle;
+        },
+        sharp corners,
+      colback=paris2,
+    },
+}%
+{% boîte interne
+valign=top, halign=justify,
+fontupper=\sffamily,  before upper=\hspace*{2.5cm},
+}
+
+\newAnswerFormat{Paris}{horizontal}%
+{% boîte externe
+}%
+[% mode correctif
+colframe=paris6, colback=paris6
+]%
+{% boîte interne
+bicolor jigsaw, sidebyside, lefthand width=2cm, sidebyside gap=6pt,
+boxsep=3pt,
+valign=center, halign upper=center,
+colback=paris4, colbacklower=paris5,
+arc=2mm-1pt, auto outer arc, sharp corners=east,
+boxrule=2pt, colframe=paris4,
+colupper=white, collower=black,
+before upper=R\'eponse \char\numexpr64+\rdmcqAnswercount\relax\tcblower,
+fontupper=\scriptsize\sffamily\bfseries,
+fontlower=\sffamily,
+frame code={
+        \fill[tcbcolframe] ([yshift=2pt]segmentation.north) {[rounded corners=2mm]
+            --(frame.north west)--(frame.south west)}
+            --([yshift=-2pt]segmentation.south)--cycle;
+        \fill[tcbcolframe] (interior.south east) rectangle ([xshift=2pt]interior.north east);
+    },
+overlay={
+    \draw[white, line width=0.7pt, paris dashed] (segmentation.north) {[rounded corners=2mm-1pt]
+            --(interior.north west)--(interior.south west)}
+            --(segmentation.south);
+    \path (segmentation.north)--(segmentation.south) coordinate[pos=0.25] (x1) ;
+    \tcbsetmacrotoheightofnode\myht{interior}
+    \fill[tcbcolbacklower] ([xshift=0.1pt]x1) arc[start angle=120, end angle=240, radius=0.2886*\myht]--cycle;
+    }
+}
+
+
+
+\newAnswerFormat{Paris}{vertical}%
+{% boîte externe
+}%
+[% mode correctif
+colframe=paris6, colback=paris6
+]%
+{% boîte interne
+bicolor jigsaw, sidebyside, lefthand width=2cm, sidebyside gap=6pt,
+boxsep=3pt,
+valign=center, halign upper=center,
+colback=paris4, colbacklower=paris5,
+arc=2mm-1pt, auto outer arc, sharp corners=east,
+boxrule=2pt, colframe=paris4,
+colupper=white, collower=black,
+before upper=R\'eponse \char\numexpr64+\rdmcqAnswercount\relax\tcblower,
+fontupper=\scriptsize\sffamily\bfseries,
+fontlower=\sffamily,
+frame code={
+        \fill[tcbcolframe] ([yshift=2pt]segmentation.north) {[rounded corners=2mm]
+            --(frame.north west)--(frame.south west)}
+            --([yshift=-2pt]segmentation.south)--cycle;
+        \fill[tcbcolframe] (interior.south east) rectangle ([xshift=2pt]interior.north east);
+    },
+overlay={
+    \draw[white, line width=0.7pt, paris dashed] (segmentation.north) {[rounded corners=2mm-1pt]
+            --(interior.north west)--(interior.south west)}
+            --(segmentation.south);
+    \path (segmentation.north)--(segmentation.south) coordinate[pos=0.25] (x1) ;
+    \tcbsetmacrotoheightofnode\myht{interior}
+    \fill[tcbcolbacklower] ([xshift=0.1pt]x1) arc[start angle=120, end angle=240, radius=0.2886*\myht]--cycle;
+    }
+}
+
+
+
+\newMessageFormat{Paris}{%
+boxrule=2pt, 
+rightrule=\ifMessageMulti{2pt}{0pt},
+frame hidden, colframe=paris7,
+colback=paris7!30,
+fontupper=\sffamily,
+left=1cm, right=1cm, boxsep=5pt,
+overlay={
+        \tcbsetmacrotoheightofnode\myht{interior}
+        \path ([xshift=1cm]interior.north west)--([xshift=1cm]interior.south west) coordinate[pos=0.25] (x1) ;
+        \fill[tcbcolframe] ([shift={(1cm,2pt)}]interior.north west)--(x1) arc[start angle=120, end angle=240, radius=0.2886*\myht]
+            --([shift={(1cm,-2pt)}]interior.south west) {[rounded corners=2mm]--(frame.south west)--(frame.north west)}--cycle;
+        \draw[white, line width=0.7pt, paris dashed] ([xshift=1cm]interior.north west) {[rounded corners=2mm-1pt]
+            --(interior.north west)--(interior.south west)}
+            --([xshift=1cm]interior.south west);
+        \ifMessageMulti{%
+                \path ([xshift=-1cm]interior.north east)--([xshift=-1cm]interior.south east) coordinate[pos=0.25] (x1) ;
+                \fill[tcbcolframe] ([shift={(-1cm,2pt)}]interior.north east)--(x1) arc[start angle=60, end angle=-60, radius=0.2886*\myht]
+                    --([shift={(-1cm,-2pt)}]interior.south east) {[rounded corners=2mm]--(frame.south east)--(frame.north east)}--cycle;
+                \draw[white, line width=0.7pt, paris dashed] ([xshift=-1cm]interior.north east) {[rounded corners=2mm-1pt]
+                    --(interior.north east)--(interior.south east)}
+                    --([xshift=-1cm]interior.south east);
+            }{}
+    }
+}
+[%
+boxrule=2pt, leftrule=0pt, frame hidden,
+colback=paris7!30, colframe=paris7,
+fontupper=\sffamily,
+left=1cm, right=1cm, boxsep=5pt,
+overlay={
+        \tcbsetmacrotoheightofnode\myht{interior}
+        \path ([xshift=-1cm]interior.north east)--([xshift=-1cm]interior.south east) coordinate[pos=0.25] (x1) ;
+        \fill[tcbcolframe] ([shift={(-1cm,2pt)}]interior.north east)--(x1) arc[start angle=60, end angle=-60, radius=0.2886*\myht]
+            --([shift={(-1cm,-2pt)}]interior.south east) {[rounded corners=2mm]--(frame.south east)--(frame.north east)}--cycle;
+        \draw[white, line width=0.7pt, paris dashed] ([xshift=-1cm]interior.north east) {[rounded corners=2mm-1pt]
+            --(interior.north east)--(interior.south east)}
+            --([xshift=-1cm]interior.south east);
+    }
+]
+
+
+\newHeaderFormat{Paris}%
+{% gauche
+enhanced jigsaw, frame hidden,
+boxrule=2pt, top=9pt, bottom=5pt,
+colframe=paris8, colback=paris8!50,
+fontupper=\sffamily\bfseries, halign=center, valign=center,
+coltext=white,
+overlay={
+       \fill[tcbcolframe]  ([yshift=-7pt]frame.north west) {[rounded corners=2mm] --(frame.north west)--(frame.north east)}--([yshift=-7pt]frame.north east)--cycle;
+       \draw[white, line width=0.7pt, paris dashed, rounded corners=2mm-1pt]  ([yshift=-4pt]interior.north west)--(interior.north west)--(interior.north east)--([yshift=-4pt]interior.north east);
+       \fill[tcbcolframe] (interior.south west) rectangle ([yshift=-2pt]interior.south east);
+    }
+}%
+
+
+\newFooterFormat{Paris}%
+{% gauche
+enhanced jigsaw, frame hidden,
+boxrule=2pt, top=5pt, bottom=9pt,
+colframe=paris8, colback=paris8!50,
+fontupper=\sffamily\bfseries, halign=center, valign=center,
+coltext=white,
+overlay={
+       \fill[tcbcolframe]  ([yshift=7pt]frame.south west) {[rounded corners=2mm] --(frame.south west)--(frame.south east)}--([yshift=7pt]frame.south east)--cycle;
+       \draw[white, line width=0.7pt, paris dashed, rounded corners=2mm-1pt]  ([yshift=4pt]interior.south west)--(interior.south west)--(interior.south east)--([yshift=4pt]interior.south east);
+       \fill[tcbcolframe] (interior.north west) rectangle ([yshift=2pt]interior.north east);
+    }
+}%
+
+
+\newMcqFormat[gather=Paris, same width, column sep=4pt, answer columns=2, answer column sep=4pt, row sep=4pt, answer row sep=4pt]{Paris}{0pt}

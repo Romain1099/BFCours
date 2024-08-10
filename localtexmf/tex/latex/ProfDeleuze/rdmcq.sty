@@ -1,0 +1,1556 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{rdmcq}
+
+\RequirePackage{xfp}
+\RequirePackage{tcolorbox}
+\RequirePackage{listofitems}
+\RequirePackage{pifont}
+
+\tcbsetmanagedlayers{8}
+
+\RequirePackage{etoolbox}
+\RequirePackage{xparse}
+
+\newlength{\rdmcq@width}%   largeur totale
+\newlength{\rdmcq@questionwidth}% largeur de la colonne "question"
+\newlength{\rdmcq@remainingwidth}% Largeur du reste
+\newlength{\rdmcq@boxrule}% Largeur de l'éventuelle bordure
+\newlength{\rdmcqboxrule}%  Largeur publique de la bordure
+\newlength{\rdmcq@columnsep}% Séaration entre les éventuelles colonnes (Zone Question et Zone Réponse)
+\newlength{\rdmcq@answercolumnsep}% Séparation entre les connes de la zone Réponses
+\newlength{\rdmcq@answerrowsep}% Séaration verticale entre les boîtes Réponses (uniquement valable en orientation verticale)
+\newlength{\rdmcq@rowsep}% Séaration entre les lignes
+\newlength{\rdmcqrowsep}%  Largeur publique de la séparation verticale entre les lignes du raster
+\newlength{\rdmcq@zonereponses@growtoleft}% élargissement éventuel vers la gauche de la zone Réponse (chevauchement des bordures)
+\newlength{\rdmcq@answerboxrule}%   Epaisseur des éventuelles bordures des réponses en mode vertical (sert pour l'alignement des boîtes dans le raster Réponses)
+\newlength{\rdmcq@interzonessep}%   modification de l'espace vertical entre les zones Question et Réponse (mode vertical)
+
+\newtoggle{rdmcq@horizontal}%  Orientation horizontale des réponses possibles
+\newtoggle{rdmcq@resume}%   Poursuivre la numérotation des questions dans le qcm suivant ?
+\newtoggle{rdmcq@samewidth}%    La zone question et la zone réponse ont la même largeur (revient à forcer question width=width)
+\newtoggle{rdmcq@messagemulti}%
+\togglefalse{rdmcq@messagemulti}
+\newtoggle{rdmcq@headerfootermulti}%
+\togglefalse{rdmcq@headerfootermulti}
+
+%   Déclaration de deux macros  pour éviter d'éventuelles erreurs dans l'utilisation de \ifmcqcor ou de \ifmcqbr
+\edef\rdmcq@correction{0}
+\edef\rdmcqRightAnswer{0}
+
+\newcounter{rdmcq@questioncount}%   compteur pour le numéro des questions
+\newcounter{rdmcq@messagecount}%   compteur pour le numéro des messages
+
+\edef\rdmcq@question@format@list{}%    Liste des formats de type Question définis.
+\edef\rdmcq@answer@format@list{}%    Liste des formats de type Réponse définis.
+\edef\rdmcq@message@format@list{}%    Liste des formats de type Messages définis.
+\edef\rdmcq@header@format@list{}%   Liste des formats de type Header définis.
+\edef\rdmcq@footer@format@list{}%   Liste des formats de type Footer définis.
+
+\edef\rdmcq@format@list{}%  Liste des formats utilisables
+
+
+\tcbset{answerzone@evenodd@style/.style={}}%
+
+
+% \let\rdmcq@interzones@sep=\relax%   Voir \McqQuest
+% \def\rdmcq@interzones@sep@active{%
+    % \tcbset@late@options{before pre={\tcbdimto\tcb@raster@yskip{\rdmcq@interzonessep}}}%
+% }
+
+\def\rdmcq@warning#1{\PackageWarning{rdmcq}{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Les clés %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\pgfkeys{%
+    /rdmcq/.is family,
+    /rdmcq/.cd,
+    %   Orientation horizontale = les réponses sont incluses dans un tcbraster de plusieurs colonnes (les réponses sont donc les unes à côté des autres)
+    %   Orientation verticale = les réponses sont incluses dans un tcbraster d'une seule colonne (les réponses sont donc les unes sous les autres)
+    orientation/.is choice,
+    orientation/horizontal/.code=\toggletrue{rdmcq@horizontal},
+    orientation/vertical/.code=\togglefalse{rdmcq@horizontal},
+    orientation/.default=horizontal,
+    %
+    resume/.is choice,
+    resume/true/.code=\toggletrue{rdmcq@resume},
+    resume/false/.code=\togglefalse{rdmcq@resume},
+    resume/.default=true,
+    num start/.code=\edef\rdmcq@numstart{\numexpr#1-1},
+    %
+    %width/.code=\setlength{\rdmcq@width}{#1},
+    width/.store in=\kvrdmcq@width,
+    question width/.code=\setlength{\rdmcq@questionwidth}{#1},
+    boxrule/.code=\setlength{\rdmcq@boxrule}{#1},
+    column sep/.code=\setlength{\rdmcq@columnsep}{#1},
+    answer column sep/.code=\setlength{\rdmcq@answercolumnsep}{#1},
+    row sep/.code=\setlength{\rdmcq@rowsep}{#1},
+    answer row sep/.code=\setlength{\rdmcq@answerrowsep}{#1},
+    % inter zones sep/.is choice,
+    % inter zones sep/overlap/.code={\setlength{\rdmcq@interzonessep}{-0.1pt}\let\rdmcq@interzones@sep=\rdmcq@interzones@sep@active},
+    % inter zones sep/null/.code={\setlength{\rdmcq@interzonessep}{0pt}\let\rdmcq@interzones@sep=\rdmcq@interzones@sep@active},
+    % inter zones sep/boxrule/.code={\setlength{\rdmcq@interzonessep}{-\rdmcq@boxrule}\let\rdmcq@interzones@sep=\rdmcq@interzones@sep@active},
+    % inter zones sep/.default=null,
+    question answer sep/.store in=\rdmcq@questionanswersep, %   En mode same width=true, séparation verticale entre la zone contenant la question et celle contenant la réponse
+                                                            %   (cette dimension vient donc supplanter la valeur par défaut row sep)
+    boxstyle/.code=\tcbset{rdmcq@backgroundbox@style/.style={#1}},
+    %
+    same width/.is choice,
+    same width/true/.code=\toggletrue{rdmcq@samewidth},
+    same width/false/.code=\togglefalse{rdmcq@samewidth},
+    same width/.default=true,
+    %
+    question colframe/.code=\tcbset{rdmcq@question@user@style/.append style={colframe=#1}},
+    question colback/.code=\tcbset{rdmcq@question@user@style/.append style={colback=#1}},
+    question opacityback/.code=\tcbset{rdmcq@question@user@style/.append style={opacityback=#1}},
+    %
+    answer colframe/.code=\tcbset{rdmcq@answer@user@style/.append style={colframe=#1}},%    style ajouté à Zone Réponse & aux boîtes de questions
+    answer colback/.code=\tcbset{rdmcq@answer@user@style/.append style={colback=#1}},
+    answer opacityback/.code=\tcbset{rdmcq@answer@user@style/.append style={opacityback=#1}},
+    answer columns/.estore in=\rdmcq@answer@columns,%   Nombre de colonnes pour les réponses (=0 => gestion automatique)
+    %
+    question format/.estore in=\rdmcq@questionformat,
+    answer format/.estore in=\rdmcq@answerformat,
+    %
+    every question zone/.code=\tcbset{every question zone style/.style={#1}},%    style tcb supplémentaire pour toutes les zones Question (vide par défaut)
+    every question/.code=\tcbset{every question style/.style={#1}},%    style tcb supplémentaire pour toutes les questions (vide par défaut)
+    every answer zone/.code=\tcbset{every answer zone style/.style={#1}},%    style tcb supplémentaire pour toutes les zones Réponses (vide par défaut)
+    every odd answer zone/.code=\tcbset{every odd answer zone style/.style={#1}},
+    every even answer zone/.code=\tcbset{every even answer zone style/.style={#1}},
+    every odd answer/.code=\tcbset{every odd answer style/.style={#1}},
+    every even answer/.code=\tcbset{every even answer style/.style={#1}},
+    every odd question zone/.code=\tcbset{every odd question zone style/.style={#1}},
+    every even question zone/.code=\tcbset{every even question zone style/.style={#1}},
+    every answer/.code=\tcbset{every answer style/.style={#1}},%    style tcb supplémentaire pour toutes les réponses (vide par défaut)
+    %
+    message format/.estore in=\rdmcq@messageformat,
+    message colframe/.code=\tcbset{rdmcq@message@user@style/.append style={colframe=#1}},
+    message colback/.code=\tcbset{rdmcq@message@user@style/.append style={colback=#1}},
+    message opacityback/.code=\tcbset{rdmcq@message@user@style/.append style={opacityback=#1}},
+    every left message/.code=\tcbset{every left message style/.style={#1}},%
+    every right message/.code=\tcbset{every right message style/.style={#1}},
+    every message/.style 2 args={every left message={#1}, every right message={#2}},
+    %
+    correction/.is choice,
+    correction/true/.code={\edef\rdmcq@correction{1}},
+    correction/false/.code={\edef\rdmcq@correction{0}},
+    correction/.default=true,
+    %
+    format/.style={answer format={#1}, question format={#1}, message format={#1}, header format={#1}, footer format={#1}},
+    colback/.style={answer colback={#1}, question colback={#1}, message colback={#1}},
+    colframe/.style={answer colframe={#1}, question colframe={#1}, message colframe={#1}},
+    opacityback/.style={answer opacityback={#1}, question opacityback={#1}, message opacityback={#1}},
+    every even row/.style={every even question zone={#1}, every even answer zone={#1}, every even answer={#1}},
+    every odd row/.style={every odd question zone={#1}, every odd answer zone={#1}, every odd answer={#1}},
+    %
+    header format/.estore in=\rdmcq@headerformat,
+    footer format/.estore in=\rdmcq@footerformat,
+    %
+    /rdmcq/quest/br/.estore in=\rdmcq@br,
+    /rdmcq/quest/answer zone/.code=\tcbset{local answer zone style/.style={#1}},%   style local pour la zone Réponse
+    /rdmcq/quest/answer zone={},
+    /rdmcq/quest/.unknown/.code={%
+			  \let\currname\pgfkeyscurrentname%
+			  \let\currval\pgfkeyscurrentvalue%
+			  \ifx#1\pgfkeysnovalue%
+			   \tcbset{rdmcq@question@boxlocalstyle/.append style/.expand once={\currname}}%
+			  \else%
+			   \tcbset{rdmcq@question@boxlocalstyle/.append style/.expand twice={\expandafter\currname\expandafter=\expandafter{\currval}}}%
+			  \fi%
+    },
+    %
+    /rdmcq/message/position/.is choice,
+    /rdmcq/message/position/multicolumns/.code={\toggletrue{rdmcq@messagemulti}\let\rdmcq@message@misenforme=\rdmcq@message@multicolumns},
+    /rdmcq/message/position/left only/.code={\togglefalse{rdmcq@messagemulti}\let\rdmcq@message@misenforme=\rdmcq@message@leftonly},
+    /rdmcq/message/position/right only/.code={\togglefalse{rdmcq@messagemulti}\let\rdmcq@message@misenforme=\rdmcq@message@rightonly},
+    /rdmcq/message/position/left and right/.code={\togglefalse{rdmcq@messagemulti}\let\rdmcq@message@misenforme=\rdmcq@message@leftandright},
+    /rdmcq/message/position/.default=mulitcolumns,
+    /rdmcq/message/multicolumns/.style={position=multicolumns},
+    /rdmcq/message/left only/.style={position=left only},
+    /rdmcq/message/right only/.style={position=right only},
+    /rdmcq/message/left and right/.style={position=left and right},
+    /rdmcq/message/.unknown/.code={%
+			  \let\currname\pgfkeyscurrentname%
+			  \let\currval\pgfkeyscurrentvalue%
+			  \ifx#1\pgfkeysnovalue%
+			   \tcbset{rdmcq@message@boxlocalstyle/.append style/.expand once={\currname}}%
+			  \else%
+			   \tcbset{rdmcq@message@boxlocalstyle/.append style/.expand twice={\expandafter\currname\expandafter=\expandafter{\currval}}}%
+			  \fi%
+    },
+    /rdmcq/headerfooter/position/.is choice,
+    /rdmcq/headerfooter/position/multicolumns/.code={\toggletrue{rdmcq@headerfootermulti}\let\rdmcq@headerfooter@misenforme=\rdmcq@headerfooter@multicolumns},
+    /rdmcq/headerfooter/position/left only/.code={\togglefalse{rdmcq@headerfootermulti}\let\rdmcq@headerfooter@misenforme=\rdmcq@headerfooter@leftonly},
+    /rdmcq/headerfooter/position/right only/.code={\togglefalse{rdmcq@headerfootermulti}\let\rdmcq@headerfooter@misenforme=\rdmcq@headerfooter@leftandrightorrightonly%
+                                                    \let\rdmcq@headerfooter@variable@code=\rdmcq@headerfooter@rightonly@code},
+    /rdmcq/headerfooter/position/left and right/.code={\togglefalse{rdmcq@headerfootermulti}\let\rdmcq@headerfooter@misenforme=\rdmcq@headerfooter@leftandrightorrightonly%
+                                                    \let\rdmcq@headerfooter@variable@code=\rdmcq@headerfooter@leftandright@code},
+    /rdmcq/headerfooter/position/.default=mulitcolumns,
+    /rdmcq/headerfooter/multicolumns/.style={position=multicolumns},
+    /rdmcq/headerfooter/left only/.style={position=left only},
+    /rdmcq/headerfooter/right only/.style={position=right only},
+    /rdmcq/headerfooter/left and right/.style={position=left and right},
+    /rdmcq/headerfooter/.unknown/.code={%
+			  \let\currname\pgfkeyscurrentname%
+			  \let\currval\pgfkeyscurrentvalue%
+			  \ifx#1\pgfkeysnovalue%
+			   \tcbset{rdmcq@headerfooter@boxlocalstyle/.append style/.expand once={\currname}}%
+			  \else%
+			   \tcbset{rdmcq@headerfooter@boxlocalstyle/.append style/.expand twice={\expandafter\currname\expandafter=\expandafter{\currval}}}%
+			  \fi%
+    },
+    %
+    /rdmcq/format/question/.estore in=\rdmcq@declaredformat@question,
+    /rdmcq/format/answer/.estore in=\rdmcq@declaredformat@answer,
+    /rdmcq/format/message/.estore in=\rdmcq@declaredformat@message,
+    /rdmcq/format/header/.estore in=\rdmcq@declaredformat@header,
+    /rdmcq/format/footer/.estore in=\rdmcq@declaredformat@footer,
+    /rdmcq/format/gather/.style={question=#1, answer=#1, message=#1, header=#1, footer=#1},
+    /rdmcq/format/reset/.style={gather=default},
+    /rdmcq/format/.unknown/.code={% Dans la définition d'un nouveau format global, les clés qui n'appartiennet pas à la branche /format/ sont interprétées commes
+                                    % des clés /rdmcq, ce qui permet de régler column sep, row sep, ...
+			  \let\currname\pgfkeyscurrentname%
+			  \let\currval\pgfkeyscurrentvalue%
+			  \ifx#1\pgfkeysnovalue%
+			   \setrdmcq{\rdmcq@mcqformat@name @style/.append style/.expand once={\currname}}%
+			  \else%
+			   \setrdmcq{\rdmcq@mcqformat@name @style/.append style/.expand twice={\expandafter\currname\expandafter=\expandafter{\currval}}}%
+			  \fi%
+    },
+    %
+    tcb@reset@style/.code=\tcbset{#1/.style={}},
+    reset/.style={
+        tcb@reset@style=rdmcq@message@user@style,
+        tcb@reset@style=rdmcq@question@user@style,
+        tcb@reset@style=rdmcq@answer@user@style,
+        orientation=horizontal,
+        resume=false,
+        num start=1,
+        question width=8.5cm,
+        width=\linewidth,
+        same width=false,
+        boxrule=0.6pt,
+        row sep=0pt,
+        question answer sep=\rdmcqrowsep,
+        column sep=0pt,
+        answer column sep=-1pt,%    Valeur négative pour indiquer qu'elle doit être égale à column sep
+        answer row sep=0pt,
+        answer columns=0,%  Gestion automatique du nombres de colonnes
+        question format=default,
+        answer format=default,
+        correction=false,
+        message format=default,
+        header format=default,
+        footer format=default,
+        every question zone={},
+        every question={},
+        every answer zone={},
+        every answer={},
+        every odd answer zone={},
+        every even answer zone={},
+        every odd question zone={},
+        every even question zone={},
+        every odd answer={},
+        every even answer={},
+        every left message={},
+        every right message={},
+        boxstyle={},
+    },
+    reset
+}
+
+
+\newcommand{\setrdmcq}[1]{%
+\pgfqkeys{/rdmcq}{#1}%
+}
+
+
+
+\def\ifMessageMulti{%
+    \iftoggle{rdmcq@messagemulti}%
+}
+
+\def\ifHeaderFooterMulti{%
+    \iftoggle{rdmcq@headerfootermulti}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Macros diverses %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\ifmcqcor%  Pour tester si le mode correction est activé ou non
+{%
+\ifnum\rdmcq@correction=\z@%
+    \expandafter\@secondoftwo%
+\else%
+    \expandafter\@firstoftwo%
+\fi%
+}
+
+
+\def\ifmcqbr%  Pour tester si le mode correction est activé ET si il s'agit de la bonne réponse (valable donc, uniquement dans les boîtes Réponse)
+{%
+\ifnum\rdmcqRightAnswer=\z@%
+    \expandafter\@secondoftwo%
+\else%
+    \expandafter\@firstoftwo%
+\fi%
+}
+
+\def\rdmcq@addtolist{\listadd\rdmcq@brlist}% Macro auxiliaire pour pouvoir construire une liste interne etoolbox (pb d'expansion sinon).
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Les zones %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Zone Question et zone Réponse sont des zones normalement gérées par le package
+%   et ne sont pas supposées être accessibles/redéfinissables par l'utilisateur.
+%   Cependant, puisque zone Question définit le cadre, il est nécessaire de lui
+%   fournir 4 paramètres : colback, colframe, boxrule et opacityback
+%   Ce sont les clés : boxrule (globale) et question colback, question colframe,
+%   question opacity qui permettent cela.
+%
+%   Zone réponse ?
+
+
+\newtcolorbox{rdmcq@blankest@box}[1][]{%    La boîte qui englobe la zone MCQ
+blankest, breakable,
+valign=center,
+halign=justify,
+%nobeforeafter, inutile à cause du breakable - Si on veut *vraiment* nobeforeafter, alors : boxstyle={breakable=false, nobeforeafter}
+notitle,
+#1%
+}
+
+
+
+\tcbset{%
+    zonequestion@defaultstyle/.style={%
+        enhanced jigsaw,
+        sharp corners,
+        notitle, nobeforeafter,
+        left=0pt, right=0pt, bottom=0pt, top=0pt, boxsep=0pt, middle=0pt,
+        boxrule=\rdmcq@boxrule,
+    }
+}
+
+\newtcolorbox{rdmcq@zonequestion@box}[1][]{%
+    zonequestion@defaultstyle,
+#1%
+}
+
+
+
+
+
+\newtcolorbox{rdmcq@zonereponses@box}[1][]{%
+blankest, valign=top, %debug,
+%boxrule=\rdmcq@boxrule,
+#1,%
+width=\rdmcq@remainingwidth,
+grow to left by=\rdmcq@zonereponses@growtoleft%    Après width=... !
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% Les formats de header/footer %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%% Boîtes vides (commun à header/footer et message)
+
+\newtcolorbox{rdmcq@questionzone@blankbox}%
+{blankest, width=\rdmcq@questionwidth}
+
+\newtcolorbox{rdmcq@answerzone@blankbox}%
+{blankest, width=\rdmcq@remainingwidth, grow to left by=\rdmcq@zonereponses@growtoleft}
+
+%%%%%%%%%%%%%%%
+
+
+\newtcolorbox{rdmcq@headerfooter@box}[1][]{%
+blankest, middle=0pt, notitle,
+#1%
+}
+
+
+%   Pour les messages d'erreur
+\def\rdmcq@header@up{Header }
+\def\rdmcq@footer@up{Footer }
+
+\NewDocumentCommand{\new@HeaderFooter@Format}{ m m m O{} }{% Pour définir un nouveau "format" (=style tcb) pour les boîtes Header/Footer (deux "saveurs" : left et right)
+%   #1 = header|footer
+%   #2 = nom du nouveau format (Header ou Footer)
+%   #3 = paramètre tcb de la boîte / left
+%   #4 = paramètre tcb de la boîte / right (optionnel / si non fourni => style "right" identique au style "left")
+    \ifinlistcs{#2}{rdmcq@#1@format@list}%
+        {%
+            \rdmcq@warning{\csname rdmcq@#1@up\endcsname format #2 already exists.\MessageBreak No new #1 format created.}%
+        }%
+        {%
+            \listcsadd{rdmcq@#1@format@list}{#2}%   ajout du nouveau format de header/footer à la liste des formats de header/footer
+            \tcbset{%
+                #1style@#2-left/.style={#3}%
+            }%
+            \if\relax\detokenize{#4}\relax%
+                 \tcbset{#1style@#2-right/.style={#3}}%
+            \else%
+                \tcbset{#1style@#2-right/.style={#4}}%
+            \fi%
+        }%
+}
+
+
+\def\newHeaderFormat{%
+    \new@HeaderFooter@Format{header}%
+}
+\def\newFooterFormat{%
+    \new@HeaderFooter@Format{footer}%
+}
+
+
+\newcommand{\new@HeaderFooter@FormatFrom}[3]{%    Héritage d'un format Header/Footer
+%   #1 = header|footer
+%   #2 = nom du format hérité
+%   #3 = nom du nouveau format (Message)
+    \listcsadd{rdmcq@#1@format@list}{#3}%
+    \ifinlistcs{#2}{rdmcq@#1@format@list}{%
+        \tcbset{%
+            #1style@#3-left/.style={#1style@#2-left},%
+            #1style@#3-right/.style={#1style@#2-right}%
+        }%
+    }{%
+        \rdmcq@warning{\csname rdmcq@#1@up\endcsname format #2 doesn't exist.\MessageBreak Using empty style instead.}%
+                \tcbset{%
+                    #1style@#3-left/.style={},%
+                    #1style@#3-right/.style={}%
+                }%
+    }%
+}
+
+
+\def\newHeaderFormatFrom{%
+    \new@HeaderFooter@FormatFrom{header}%
+}
+\def\newFooterFormatFrom{%
+    \new@HeaderFooter@FormatFrom{footer}%
+}
+
+
+
+\def\rdmcq@append@headerfooter@format@left#1#2#3{%  #1 = header|footer #2 = format, #3 = paramètres tcb
+    \tcbset{#1style@#2-left/.append style={#3}}%
+}
+\def\rdmcq@append@headerfooter@format@right#1#2#3{%   #1 = header|footer #2 = format, #3 = paramètres tcb
+    \tcbset{#1style@#2-right/.append style={#3}}%
+}
+\def\rdmcq@append@headerfooter@format@both#1#2#3{%   #1 = header|footer #2 = format, #3 = paramètres tcb
+    \tcbset{#1style@#2-left/.append style={#3}}%
+    \tcbset{#1style@#2-right/.append style={#3}}%
+}
+
+\NewDocumentCommand{\append@headerfooter@Format}{ m O{both} m m  }{%
+%   #1 = header|footer
+%   #2 = left|right|both
+%   #3 = nom du format (Message)
+%   #4 = paramètres tcb supplémentaires / left, right ou les deux
+    \ifinlistcs{#3}{rdmcq@#1@format@list}{%
+        \csname rdmcq@append@headerfooter@format@#2\endcsname{#1}{#3}{#4}%
+    }%
+    {%
+        \rdmcq@warning{\csname rdmcq@#1@up\endcsname format #3 doesn't exist.\MessageBreak No appending done.}
+    }%
+}
+
+
+\def\appendHeaderFormat{\append@headerfooter@Format{header}}
+\def\appendFooterFormat{\append@headerfooter@Format{footer}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Les formats de messages %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newtcolorbox{rdmcq@message@box}[1][]{%
+% héritage, par défaut, du style de la *ZONE* question (la width est paramétrée plus tard)
+zonequestion@defaultstyle,
+%
+#1%
+}
+
+
+
+\NewDocumentCommand{\newMessageFormat}{ m m O{} }{% Pour définir un nouveau "format" (=style tcb) pour les boîtes Message (deux "saveurs" : left et right)
+%   #1 = nom du nouveau format (Message)
+%   #2 = paramètre tcb de la boîte / left
+%   #2 = paramètre tcb de la boîte / right (optionnel / si non fourni => style "right" identique au style "left")
+    \ifinlist{#1}{\rdmcq@message@format@list}%
+        {%
+            \rdmcq@warning{Message format #1 already exists.\MessageBreak No new message format created.}%
+        }%
+        {%
+            \listadd{\rdmcq@message@format@list}{#1}%   ajout du nouveau format de message à la liste des formats de messages
+            \tcbset{%
+                messagestyle@#1-left/.style={#2}%
+            }%
+            \if\relax\detokenize{#3}\relax%
+                 \tcbset{messagestyle@#1-right/.style={#2}}%
+            \else%
+                \tcbset{messagestyle@#1-right/.style={#3}}%
+            \fi%
+        }%
+}
+
+
+\newcommand{\newMessageFormatFrom}[2]{%    Héritage d'un format Message
+%   #1 = nom du format hérité
+%   #2 = nom du nouveau format (Message)
+    \listadd{\rdmcq@message@format@list}{#2}%
+    \ifinlist{#1}{\rdmcq@message@format@list}{%
+        \tcbset{%
+            messagestyle@#2-left/.style={messagestyle@#1-left},%
+            messagestyle@#2-right/.style={messagestyle@#1-right}%
+        }%
+    }{%
+        \rdmcq@warning{Message format #1 doesn't exist.\MessageBreak Using empty style instead.}%
+                \tcbset{%
+                    messagestyle@#2-left/.style={},%
+                    messagestyle@#2-right/.style={}%
+                }%
+    }%
+}
+
+\def\rdmcq@appendmessageformat@left#1#2{%   #1 = format, #2 = paramètres tcb
+    \tcbset{messagestyle@#1-left/.append style={#2}}%
+}
+\def\rdmcq@appendmessageformat@right#1#2{%   #1 = format, #2 = paramètres tcb
+    \tcbset{messagestyle@#1-right/.append style={#2}}%
+}
+\def\rdmcq@appendmessageformat@both#1#2{%   #1 = format, #2 = paramètres tcb
+    \tcbset{messagestyle@#1-left/.append style={#2}}%
+    \tcbset{messagestyle@#1-right/.append style={#2}}%
+}
+
+\NewDocumentCommand{\appendMessageFormat}{ O{both} m m  }{%
+%   #1 = left|right|both
+%   #2 = nom du format (Message)
+%   #3 = paramètres tcb supplémentaires / left, right ou les deux
+    \ifinlist{#2}{\rdmcq@message@format@list}{%
+        \csname rdmcq@appendmessageformat@#1\endcsname{#2}{#3}%
+    }%
+    {%
+        \rdmcq@warning{Message format #2 doesn't exist.\MessageBreak No appending done.}
+    }%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Les formats de questions %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%   Boîte générique pour les questions
+\newtcolorbox{rdmcq@question@box}[1][]{%
+blankest, nobeforeafter, notitle,
+rdmcq@question@box@style,%    style égal au style dont le nom est passé à la clé question format
+every question style,%  style global
+#1%
+}
+
+
+
+\newcommand{\newQuestionFormat}[3]{%  Pour définir un nouveau "format" (=style tcb) pour les boîtes Question
+%   #1 = nom du nouveau format (Question)
+%   #2 = paramètre tcb de la boîte externe (zone Question) : juste colback, colframe et opacityback sont nécessaires
+%   #3 = paramètres tcb de la boîte (boîte interne)
+    \ifinlist{#1}{\rdmcq@question@format@list}%
+        {%
+            \rdmcq@warning{Question format #1 already exists.\MessageBreak No new question format created.}%
+        }%
+        {%
+            \listadd{\rdmcq@question@format@list}{#1}%
+            \tcbset{%
+                questionstyle@#1/.style={#3},%
+                questionzonestyle@#1/.style={opacityback=0, colframe=black, colback=white,% paramètres par défaut pour la zone question
+                                                #2}%
+            }%
+        }%
+}
+
+
+\newcommand{\newQuestionFormatFrom}[2]{%    Héritage d'un format Question
+%   #1 = nom du format hérité
+%   #2 = nom du nouveau format (Question)
+    \listadd{\rdmcq@question@format@list}{#2}%
+    \ifinlist{#1}{\rdmcq@question@format@list}{%
+        \tcbset{%
+            questionstyle@#2/.style={questionstyle@#1},%
+            questionzonestyle@#2/.style={questionzonestyle@#1}%
+        }%
+    }{%
+        \rdmcq@warning{Question format #1 doesn't exist.\MessageBreak Using empty style instead.}
+                \tcbset{%
+                    questionstyle@#2/.style={},%
+                    questionzonestyle@#2/.style={}%
+                }%
+    }%
+}
+
+\newcommand{\appendQuestionFormat}[3]{%
+%   #1 = nom du format (Question)
+%   #2 = paramètres tcb supplémentaires (boîte externe - Zone Question)
+%   #3 = paramètres tcb supplémentaires (boîte interne)
+    \ifinlist{#1}{\rdmcq@question@format@list}{%
+        \tcbset{%
+            questionstyle@#1/.append style={#3},%
+            questionzonestyle@#1/.append style={#2}%
+        }%
+    }%
+    {%
+        \rdmcq@warning{Question format #1 doesn't exist.\MessageBreak No appending done.}
+    }%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Les formats des réponses %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%   Boîte générique pour les réponses
+\newtcolorbox{rdmcq@answer@box}[1][]{%
+blankest, nobeforeafter, notitle,
+#1%
+}
+
+\def\rdmcq@orientation@horizontal{\edef\rdmcq@styleorientation{horizontal}}%
+\def\rdmcq@orientation@vertical{\edef\rdmcq@styleorientation{vertical}}%
+
+\NewDocumentCommand{\newAnswerFormat}{ m m m O{} m }{%     Pour définir un nouveau "format" (=style tcb) pour les boîtes Réponses
+%   #1 = nom du style réponse
+%   #2 = horizontal / vertical
+%   #3 = style tcb de la boîte externe (Zone Réponse)
+%   #4 = (option) style en cas de bonne réponse
+%   #5 = paramètre tcb de la boîte interne
+    \csname rdmcq@orientation@#2\endcsname% renvoie une erreur si #2 n'est pas égal à "horizontal" ou "vertical"
+%
+    \xifinlist{#1-\rdmcq@styleorientation}{\rdmcq@answer@format@list}%
+        {%
+            \rdmcq@warning{Answer format #1 already exists.\MessageBreak No new answer format created.}%
+        }%
+        {%
+            \listeadd{\rdmcq@answer@format@list}{#1-\rdmcq@styleorientation}%
+            \tcbset{%
+                answerstyle@#1-\rdmcq@styleorientation/.style={#5},%
+                answerstyle@#1-\rdmcq@styleorientation-correction/.style={#4},%
+                answerzonestyle@#1-\rdmcq@styleorientation/.style={#3}%
+            }%
+        }%
+}
+
+\newcommand{\newAnswerFormatFrom}[2]{%    Héritage d'un format Réponse
+%   #1 = nom du format hérité
+%   #2 = nom du nouveau format (Réponse)
+    \listeadd{\rdmcq@answer@format@list}{#2-horizontal}%
+    \listeadd{\rdmcq@answer@format@list}{#2-vertical}%
+    %
+    \ifinlist{#1-horizontal}{\rdmcq@answer@format@list}{%
+        \tcbset{%
+            answerstyle@#2-horizontal/.style={answerstyle@#1-horizontal},%
+            answerstyle@#2-horizontal-correction/.style={answerstyle@#1-horizontal-correction},%
+            answerzonestyle@#2-horizontal/.style={answerszonetyle@#1-horizontal}%
+        }%
+    }{%
+        \rdmcq@warning{Answer format #1 doesn't exist in horizontal mode.\MessageBreak Using empty style instead.}
+                \tcbset{%
+                    answerstyle@#2-horizontal/.style={},%
+                    answerstyle@#2-horizontal-correction/.style={},%
+                    answerzonestyle@#2-horizontal/.style={}%
+                }%
+    }%
+    \ifinlist{#1-vertical}{\rdmcq@answer@format@list}{%
+        \tcbset{%
+            answerstyle@#2-vertical/.style={answerstyle@#1-vertical},%
+            answerstyle@#2-vertical-correction/.style={answerstyle@#1-vertical-correction},%
+            answerzonestyle@#2-vertical/.style={answerszonetyle@#1-vertical}%
+        }%
+    }{%
+        \rdmcq@warning{Answer format #1 doesn't exist in vertical mode.\MessageBreak Using empty style instead.}
+                \tcbset{%
+                    answerstyle@#2-vertical/.style={},%
+                    answerstyle@#2-vertical-correction/.style={},%
+                    answerzonestyle@#2-vertical/.style={}%
+                }%
+    }%
+}
+
+
+
+\NewDocumentCommand{\appendAnswerFormat}{ m m m O{} m }{%
+%   #1 = nom du format (Réponse)
+%   #2 = horizontal / vertical
+%   #3 = style tcb de la boîte externe (Zone Réponse)
+%   #4 = (option) style en cas de bonne réponse
+%   #5 = paramètre tcb de la boîte
+%
+    \csname rdmcq@orientation@#2\endcsname%
+%
+    \xifinlist{#1-\rdmcq@styleorientation}{\rdmcq@answer@format@list}{%
+        \tcbset{%
+            answerstyle@#1-\rdmcq@styleorientation/.append style={#5},%
+            answerstyle@#1-\rdmcq@styleorientation-correction/.append style={#4},%
+            answerzonestyle@#2-\rdmcq@styleorientation/.append style={#3}%
+        }%
+    }{%
+        \rdmcq@warning{Answer format #1 doesn't exist in \rdmcq@styleorientation\space mode.\MessageBreak No appending done.}
+    }%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Déclaration d'un nouveau format (obligatoire pour pouvoir utiliser un format)
+
+\newcommand{\newMcqFormat}[3][]{%
+%   #1 = options mcq (row sep, etc.)
+%   #2 = nom du format déclaré
+%   #3 = boxrule pour le format
+%\setrdmcq{rdmcq@format@localstyle/.style={}}% Clés /mcq/ collectées dans #1
+%
+\ifinlist{#2}{\rdmcq@format@list}%
+    {%  Le format existe déjà
+        \rdmcq@warning{Format declaration : global format #2 already exists !\MessageBreak No new format added.}%
+    }%
+    {%
+        \edef\rdmcq@mcqformat@name{#2}%
+        \setrdmcq{#2@style/.style={}}%
+        \pgfkeys{/rdmcq/format/.cd, reset, #1}%
+        \listadd{\rdmcq@format@list}{#2}%
+        \setrdmcq{#2/.style={}}%
+        %   question
+        \xifinlist{\rdmcq@declaredformat@question}{\rdmcq@question@format@list}%
+            {%
+                \setrdmcq{#2/.append style/.expanded={question format=\rdmcq@declaredformat@question}}%
+            }%
+            {%
+                \rdmcq@warning{Format declaration :\MessageBreak Question format \rdmcq@declaredformat@question\space doesn't exist.%
+                        \MessageBreak Using default question format instead.
+                    }%
+            }%
+        %   answer
+        %       On cherche si le mode "horizontal" *ou* "vertical" existe
+        \xifinlist{\rdmcq@declaredformat@answer-horizontal}{\rdmcq@answer@format@list}%
+            {%
+                \setrdmcq{#2/.append style/.expanded={answer format=\rdmcq@declaredformat@answer}}%
+            }%
+            {%
+                \xifinlist{\rdmcq@declaredformat@answer-vertical}{\rdmcq@answer@format@list}%
+                    {%
+                        \setrdmcq{#2/.append style/.expanded={answer format=\rdmcq@declaredformat@answer}}%
+                    }%
+                    {%
+                        \rdmcq@warning{Format declaration :\MessageBreak Answer format \rdmcq@declaredformat@answer\space doesn't exist.%
+                                \MessageBreak Using default answer format instead.
+                            }%
+                    }%
+            }%
+        %   message
+        \xifinlist{\rdmcq@declaredformat@message}{\rdmcq@message@format@list}%
+            {%
+                \setrdmcq{#2/.append style/.expanded={message format=\rdmcq@declaredformat@message}}%
+            }%
+            {%
+                \rdmcq@warning{Format declaration :\MessageBreak Message format \rdmcq@declaredformat@message\space doesn't exist.%
+                        \MessageBreak Using default message format instead.
+                    }%
+            }%
+        %
+        %   header
+        \xifinlist{\rdmcq@declaredformat@header}{\rdmcq@header@format@list}%
+            {%
+                \setrdmcq{#2/.append style/.expanded={header format=\rdmcq@declaredformat@header}}%
+            }%
+            {%
+                \rdmcq@warning{Format declaration :\MessageBreak Header format \rdmcq@declaredformat@header\space doesn't exist.%
+                        \MessageBreak Using default header format instead.
+                    }%
+            }%
+        %
+        %   footer
+        \xifinlist{\rdmcq@declaredformat@footer}{\rdmcq@footer@format@list}%
+            {%
+                \setrdmcq{#2/.append style/.expanded={footer format=\rdmcq@declaredformat@footer}}%
+            }%
+            {%
+                \rdmcq@warning{Format declaration :\MessageBreak Footer format \rdmcq@declaredformat@footer\space doesn't exist.%
+                        \MessageBreak Using default footer format instead.
+                    }%
+            }%
+        %
+        \setrdmcq{#2/.append style={#2@style, boxrule=#3}}%
+    }%
+}
+
+
+
+
+\newcommand{\newMcqFormatFrom}[2]{%    Héritage d'un format (Question+Réponses+Message+Header+Footer+Style général)
+%   #1 = nom du format hérité
+%   #2 = nom du nouveau format
+\ifinlist{#2}{\rdmcq@format@list}%
+    {%  Le "nouveau" nom figure déjà dans la liste des formats
+        \rdmcq@warning{Format declaration : global format #2 already exists !\MessageBreak No new format added.}%
+    }%
+    {%
+        \ifinlist{#1}{\rdmcq@format@list}%
+        {%
+            \listadd{\rdmcq@format@list}{#2}%
+            %
+            \newQuestionFormatFrom{#1}{#2}%
+            \newAnswerFormatFrom{#1}{#2}%
+            \newMessageFormatFrom{#1}{#2}%
+            \newHeaderFormatFrom{#1}{#2}%
+            \newFooterFormatFrom{#1}{#2}%
+            \setrdmcq{%
+                #2/.style={#1}% Le style #1 existe forcément
+            }%
+            %   Attention : pas de création de "format"@style commae avec \newMcqFormat...
+            %   => a priori, pas grave puisque #1@style est stocké dans #1 et puisqu'on ne se sert de #1@style nul part ailleurs
+        }%
+        {%
+            \rdmcq@warning{Format declaration : global format #1 unknown !\MessageBreak No new format added.}%
+        }%
+    }%
+}
+
+
+\newcommand{\appendFormatSettings}[2]{% Pour modifier les "paramètres" d'un format gloabl (en particulier, on peut y modifier le boxrule...)
+%   #1 = nom du format
+%   #2 = paramètres rdmcq (row sep, etc.)
+\ifinlist{#1}{\rdmcq@format@list}%
+    {%
+        \setrdmcq{#1/.append style={#2}}%
+    }%
+    {%  Le format fourni n'existe pas
+        \rdmcq@warning{Format settings : global format #1 doesn't exist !\MessageBreak No new settings added.}%
+    }%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% Définitions des formats %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tcbset{%
+    rdmcq frame/.style={boxrule=\rdmcq@boxrule}
+}
+
+%%%%    Default
+
+
+%   Formatage du compteur - Modifiable par l'utilisateur
+\newcommand{\rdmcqCounterFormat}[1]{%
+\begin{tikzpicture}[overlay, outer sep=0pt, baseline=(x.base)]
+    \node[inner sep=0pt] (x) {};
+    \node[minimum width=1.8em, left=0.4em of x.base, anchor=base east,
+        fill=black, text=white, rounded corners=4pt,
+        font=\sffamily\bfseries\footnotesize,
+        ]  {#1};
+\end{tikzpicture}%
+}
+
+\newQuestionFormat{default}{% boîte externe
+colframe=black,
+colback=white,
+opacityback=0
+}%
+{%   boîte interne
+    left=2.4em, right=5pt, top=3pt, bottom=3pt, middle=0pt,
+    valign=top, halign=justify,
+    before upper=\rdmcqCounterFormat{\rdmcqQuestioncount}
+}
+
+\newAnswerFormat{default}{horizontal}%
+    {%  boîte externe
+    }%
+    [% mode correctif
+        colback=gray!10, fontupper=\bfseries\boldmath]%
+    {% boîte interne
+        enhanced jigsaw,
+        boxsep=3pt,
+        valign=center, halign=center,
+        colframe=black, opacityback=0,
+        rdmcq frame
+}
+
+\newAnswerFormat{default}{vertical}%
+        {%  boîte externe
+        enhanced jigsaw,
+        boxsep=3pt,colframe=black, colback=white, opacityback=0,
+        rdmcq frame}
+        [%  mode correctif
+        enhanced jigsaw, colback=gray!10, fontupper=\bfseries\boldmath]%
+        {%  boîte interne
+        boxsep=3pt,
+        valign=center, halign=left,
+        before upper=\rdmcqcb{}\hspace*{0.5em}
+        }
+
+
+\newMessageFormat{default}{%
+    boxsep=5pt, colback=gray!10, colframe=black
+}
+
+\newHeaderFormat{default}%
+    {%  gauche
+    blankest,
+    boxsep=5pt,
+    halign=center, valign=center, fontupper=\sffamily\bfseries\footnotesize,
+    }%
+    [%  droite
+    enhanced jigsaw,
+    boxsep=5pt, colback=black!35, colframe=black, rdmcq frame,
+    halign=center, valign=center, fontupper=\sffamily\bfseries\footnotesize,
+    coltext=white
+    ]
+
+\newFooterFormat{default}%
+    {%  gauche
+    enhanced jigsaw,
+    boxsep=5pt, colback=black!35, colframe=black, rdmcq frame,
+    halign=center, valign=center, fontupper=\sffamily\bfseries\footnotesize,
+    coltext=white
+    }
+
+
+\newMcqFormat[gather=default, column sep=0pt, row sep=0pt]{default}{0.6pt}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Les commandes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%   Rappels :
+    % /rdmcq/headerfooter/position/multicolumns/.code={\let\rdmcq@headerfooter@misenforme=\rdmcq@headerfooter@multicolumns},
+    % /rdmcq/headerfooter/position/left only/.code={\let\rdmcq@headerfooter@misenforme=\rdmcq@headerfooter@leftonly},
+    % /rdmcq/headerfooter/position/right only/.code={\let\rdmcq@headerfooter@misenforme=\rdmcq@headerfooter@leftandrightorrightonly%
+                                                    % \let\rdmcq@headerfooter@variable@code=\rdmcq@headerfooter@rightonly@code},
+    % /rdmcq/headerfooter/position/left and right/.code={\let\rdmcq@headerfooter@misenforme=\rdmcq@headerfooter@leftandrightorrightonly%
+                                                    % \let\rdmcq@headerfooter@variable@code=\rdmcq@headerfooter@leftandright@code},
+
+
+
+\long\def\rdmcq@headerfooter@multicolumns#1#2#3{%
+%   #1 = header|footer
+    \begin{rdmcq@headerfooter@box}[#1style@\csname rdmcq@#1format\endcsname-left, rdmcq@headerfooter@boxlocalstyle, raster multicolumn=\rdmcq@rastercols]%
+#2%
+    \end{rdmcq@headerfooter@box}%
+}
+
+\long\def\rdmcq@headerfooter@leftonly#1#2#3{%
+    \begin{rdmcq@headerfooter@box}[#1style@\csname rdmcq@#1format\endcsname-left, rdmcq@headerfooter@boxlocalstyle, width=\rdmcq@questionwidth]%
+#2%
+    \end{rdmcq@headerfooter@box}%
+    \ifnum\rdmcq@rastercols>1%
+        \begin{rdmcq@answerzone@blankbox}%
+        \end{rdmcq@answerzone@blankbox}%
+    \fi%
+}
+
+\long\def\rdmcq@headerfooter@leftandright@code#1#2{%
+    \begin{rdmcq@headerfooter@box}[#1style@\csname rdmcq@#1format\endcsname-left, rdmcq@headerfooter@boxlocalstyle, width=\rdmcq@questionwidth,
+            space to=\rdmcq@leftspace,% Si positif, la boîte de droite est plus haute que cette boîte
+            code={\xdef\rdmcq@globalleftspace{\rdmcq@leftspace}}% Valeur récupérée pour utilisation dans la zone de droite
+            ]
+#2%
+    \end{rdmcq@headerfooter@box}%
+}
+
+\long\def\rdmcq@headerfooter@rightonly@code#1#2{%
+    \ifnum\rdmcq@rastercols>1%
+        \xdef\rdmcq@globalleftspace{-1pt}%
+        \begin{rdmcq@questionzone@blankbox}%
+        \end{rdmcq@questionzone@blankbox}%
+    \fi%
+}
+
+
+\long\def\rdmcq@headerfooter@leftandrightorrightonly#1#2#3{%
+\rdmcq@headerfooter@variable@code{#1}{#2}%
+%
+\setsepchar{,}%
+\reademptyitems% on prend en compte les éléments vides
+\readlist*\rdmcq@hditems{#3}% on ignore les espaces extrêmes
+%
+%
+    \begin{rdmcq@blankest@box}[width=\rdmcq@remainingwidth, grow to left by=\rdmcq@zonereponses@growtoleft, space to=\rdmcq@rightspace]
+%
+%        \edef\rdmcq@idgroup{\kvtcb@raster@ehgid @\number\c@tcbrasterrow}%
+%
+        \ifdim\rdmcq@answercolumnsep>0pt%
+            %   Les colonnes ne se chevauchent pas donc tout va bien => raster "normal"
+        \else%
+            \setlength{\rdmcq@answercolumnsep}{-\rdmcq@boxrule}%    Séparation négative pour obtenir un chevauchement
+        \fi%
+        %
+        \begin{tcbraster}[raster columns=\rdmcq@hditemslen,
+            raster before skip=0pt, raster after skip=0pt, raster left skip=0pt, raster right skip=0pt,
+            raster equal height=rows, raster valign=center,
+            raster column skip=\rdmcq@answercolumnsep,
+            code={%
+                                        \ifdim\rdmcq@rightspace>0pt\relax%
+                                                    \ifdim\rdmcq@globalleftspace=0pt\relax%
+                                                        \tcbset{rdmcq@headerfooter@height/.style={height=\rdmcq@rightspace}}%
+                                                    \fi%
+                                        \fi%
+                }
+            ]%
+            \foreachitem\rdmcq@headerfooteritem\in\rdmcq@hditems{%
+            %
+                \begin{rdmcq@headerfooter@box}[#1style@\csname rdmcq@#1format\endcsname-right,
+                    rdmcq@headerfooter@boxlocalstyle,
+                    /rdmcq/headerfooter/item \rdmcq@headerfooteritemcnt/.try,
+%                     use height from group=\rdmcq@idgroup
+                    rdmcq@headerfooter@height%
+                    ]
+                    \rdmcq@headerfooteritem%
+                \end{rdmcq@headerfooter@box}%
+            %
+            }%
+        \end{tcbraster}%
+%
+    \end{rdmcq@blankest@box}%
+%
+}
+
+
+\NewDocumentCommand{\rdmcq@Header@Footer}{ m O{} +m +O{}}{%
+%   #1 = header|footer
+%   #2 = options
+%   #3 = message (zone Question)
+%   #4 = message(s) (zone Réponse)
+\begingroup%
+\tcbset{rdmcq@headerfooter@boxlocalstyle/.style={}}% Clés collectées
+\tcbset{rdmcq@headerfooter@height/.style={}}%
+\pgfkeys{/rdmcq/headerfooter/.cd, multicolumns, #2}%
+%
+\rdmcq@headerfooter@misenforme{#1}{#3}{#4}%
+\endgroup%
+}
+
+
+
+\def\McqHeader{\rdmcq@Header@Footer{header}}
+\def\McqFooter{\rdmcq@Header@Footer{footer}}
+
+
+
+
+
+
+
+
+\long\def\rdmcq@message@multicolumns#1#2{%
+    \begin{rdmcq@message@box}[messagestyle@\rdmcq@messageformat-left, rdmcq@message@user@style, every left message style, rdmcq@message@boxlocalstyle, raster multicolumn=\rdmcq@rastercols, width=\linewidth]%
+#1%
+    \end{rdmcq@message@box}%
+}
+\long\def\rdmcq@message@leftonly#1#2{%
+    \begin{rdmcq@message@box}[messagestyle@\rdmcq@messageformat-left, rdmcq@message@user@style, every left message style, rdmcq@message@boxlocalstyle, width=\rdmcq@questionwidth]%
+#1%
+    \end{rdmcq@message@box}%
+    \ifnum\rdmcq@rastercols>1%
+        \begin{rdmcq@answerzone@blankbox}%
+        \end{rdmcq@answerzone@blankbox}%
+    \fi%
+}
+\long\def\rdmcq@message@rightonly#1#2{%
+    \ifnum\rdmcq@rastercols>1%
+        \begin{rdmcq@questionzone@blankbox}%
+        \end{rdmcq@questionzone@blankbox}%
+    \fi%
+    \begin{rdmcq@message@box}[messagestyle@\rdmcq@messageformat-right, rdmcq@message@user@style, every right message style, rdmcq@message@boxlocalstyle, width=\rdmcq@remainingwidth, grow to left by=\rdmcq@zonereponses@growtoleft]%
+#1%
+    \end{rdmcq@message@box}%
+}
+\long\def\rdmcq@message@leftandright#1#2{%
+\begin{rdmcq@message@box}[messagestyle@\rdmcq@messageformat-left, rdmcq@message@user@style, every left message style, rdmcq@message@boxlocalstyle, width=\rdmcq@questionwidth]
+#1%
+\end{rdmcq@message@box}%
+%
+\begin{rdmcq@message@box}[messagestyle@\rdmcq@messageformat-right, rdmcq@message@user@style, every right message style, rdmcq@message@boxlocalstyle, width=\rdmcq@remainingwidth, grow to left by=\rdmcq@zonereponses@growtoleft]
+#2%
+\end{rdmcq@message@box}%
+}
+
+
+\NewDocumentCommand{\McqMessage}{ O{} +m +O{}}{%
+%\newcommand{\McqMessage}[3][]{%
+%   #1 = options
+%   #2 = message (left en mode "left and right")
+%   #3 = message à droite (en mode "left and right")
+%
+\begingroup%
+\stepcounter{rdmcq@messagecount}%
+\edef\rdmcqMessagecount{\therdmcq@messagecount}%    On rend le compteur accessible
+\tcbset{rdmcq@message@boxlocalstyle/.style={}}% Clés collectées
+\pgfkeys{/rdmcq/message/.cd, multicolumns, #1}%
+%
+\rdmcq@message@misenforme{#2}{#3}%
+\endgroup%
+}
+
+
+
+\newcommand{\McqQuest}[3][]{%
+%   #1 = options
+%   #2 = question
+%   #3 = réponses possibles (sous forme de liste)
+%
+\begingroup%
+%
+\stepcounter{rdmcq@questioncount}%
+\edef\rdmcqQuestioncount{\therdmcq@questioncount}%    On rend le compteur accessible
+\tcbset{rdmcq@question@boxlocalstyle/.style={}}%    Remise à zéro du style local pour la boîte Zone Réponse (inutile a priori puisqu'on est dans un groupe)
+\tcbset{rdmcq@answer@height/.style={}}%
+\def\rdmcq@brlist{}%    Remise à zéro de la liste de bonnes réponses
+\pgfkeys{/rdmcq/quest/.cd, br=0, answer zone={}, #1}%
+\expandafter\forcsvlist\expandafter\rdmcq@addtolist\expandafter{\rdmcq@br}% Construction de la liste \rdmcq@brlist (au format interne etoolbox) des bonnes réponses
+%   Lecture des réponses
+\setsepchar{,}%
+\reademptyitems% on prend en compte les éléments vides
+\readlist*\rdmcq@answerlist{#3}% on ignore les espaces extrêmes
+%
+%
+%%%%%%%%    Zone Question
+%
+%
+\tcbset{rdmcq@question@box@style/.style=questionstyle@\rdmcq@questionformat}%
+%
+\ifodd\therdmcq@questioncount\relax%
+    \tcbset{rdmcq@question@boxlocalstyle/.prefix style=every odd question zone style}%
+\else%
+    \tcbset{rdmcq@question@boxlocalstyle/.prefix style=every even question zone style}%
+\fi%
+%
+%
+\begin{rdmcq@zonequestion@box}[%
+    questionzonestyle@\rdmcq@questionformat,%    style associé au format
+    rdmcq@question@user@style,% clés question colback, question colframe et question opacityback
+    every question zone style,
+    rdmcq@question@boxlocalstyle,%   rdmcq@question@boxlocalstyle contient les éventuelles clés tcb collectées passées directement à \McqQuest
+    width=\rdmcq@questionwidth,
+    space to=\rdmcq@leftspace,% Si positif, la boîte de droite (answer zone) est plus haute que cette boîte
+    code={\xdef\rdmcq@globalleftspace{\rdmcq@leftspace}}% Valeur récupérée pour utilisation dans la zone answer
+    ]%   Boîte englobante pour définir le cadre et le fond
+    \begin{rdmcq@question@box}%    Format de la question
+#2%
+    \end{rdmcq@question@box}%
+\end{rdmcq@zonequestion@box}%
+%
+%   En *mode same width* (ie, quand la zone Réponse est située *sous* la zone Question), on peut vouloir modifier l'espace inter lignes par défaut
+%   (fourni par la clé row sep). On peut donc recourir à la clé "question answer sep".
+\tcbset@late@options{before pre={\tcbdimto\tcb@raster@yskip{\rdmcq@questionanswersep}}}%    rédéfinition locale de \tcb@raster@yskip
+%
+%%%%%%%%    Zone Réponse
+%
+%
+\iftoggle{rdmcq@horizontal}% Les réponses sont mises en forme dans un tcbrater à \rdmcq@answercols colonnes, \rdmcq@answercols dépend de l'orientation choisie
+    {%  Vrai : les réponses sont les unes à côté des autres
+        \edef\rdmcq@orientation{horizontal}%
+        %   Nombre de colonnes du tcbraster
+        \edef\rdmcq@answercols{\rdmcq@answerlistlen}%
+        %   En mode horizontal, on fait en sorte que les boîtes Réponses aient la plus grande hauteur possible dans la zone Réponse
+        \tcbset{rdmcq@sameheight/.style={%
+                        code={%     Code intégré au raster intérieur à la zone réponse
+%   Voir : https://tex.stackexchange.com/q/599234/30654
+%   Si \rdmcq@rightspace est différent de 0pt, c'est que la boîte Zone Réponse Externe n'a pas sa hauteur naturelle. Autrement dit,
+%   c'est que la boite Zone Question est plus haute que la boîte Zone Réponse. Dans ce cas, on fait donc en sorte que les cellules du raster
+%   (les boîtes qui contiennent chaque réponse possible) prennent la hauteur maximale : \tcbset{rdmcq@answer@height/.style={height=\rdmcq@rightspace}}
+%   MAIS, les choses ne sont pas aussi simples que prévu : il semble qu'il y ait une sorte de bug avec la clé "space to" et si on s'amuse à modifier
+%   la géométrie des boîtes (boxsep par exemple), après plusieurs compilations, la longueur \rdmcq@rightspace peut devenir positive alors que ça ne
+%   devrait pas être le cas !
+%   Solution de contournement : on récupère la longueur \rdmcq@leftspace (de la zone Question) grâce à la macro \rdmcq@globalleftspace.
+%   Et seulement si cette longueur vaut 0pt (autrement dit, la boîte Zone Question Externe a sa hauteur naturelle, elle donc plus haute que la
+%   boîte Zone Réponse Externe), on ajuste la hauteur des cellules du tcbraster.
+                                        \ifdim\rdmcq@rightspace>0pt\relax%
+%                                            \edef\rdmcq@boxbeforenumber{\fpeval{\thetcolorboxnumber-3}}%
+%                                            \ifcsdef{tcb@space@\rdmcq@boxbeforenumber}%
+%                                                {%
+%                                                    \letcs{\rdmcq@tmplength}{tcb@space@\rdmcq@boxbeforenumber}%
+                                                    \ifdim\rdmcq@globalleftspace=0pt\relax%
+                                                        \tcbset{rdmcq@answer@height/.style={height=\rdmcq@rightspace}}%
+                                                    \fi%
+%                                                }{}%
+                                        \fi%
+                            }%
+                    }%
+            }%
+    }%
+    {%  Faux : les réponses sont les unes sous les autres
+        \edef\rdmcq@orientation{vertical}%
+        %   Nombre de colonnes du tcbraster
+        \edef\rdmcq@answercols{1}%
+        %\tcbset{rdmcq@answer@height/.style={}}%
+        \tcbset{rdmcq@sameheight/.style={}}%
+    }%
+%
+\tcbset{answer@equalheight/.style={raster equal height=rows}}%  Par défaut
+%
+\ifnum\rdmcq@answer@columns>0 \relax%    On n'est plus forcément en gestion automatique du nombre de colonnes dans la zone Réponse
+    \iftoggle{rdmcq@horizontal}{}%  En mode horizontal on *reste* en gestion automatique / impossible de passer sur plusieurs lignes
+%                                       (en effet, les boîtes "réponses" prennent la hauteur de la boîte englobante (zone Réponse)
+%                                       et si le raster pend plusieurs lignes on tombe dans une sorte de boucle qui ne s'arrête pas
+%                                       puisqu'à chaque compilation les boîtes "réponses" ou "zone réponse" essayent de prendre la hateur de l'autre.
+%                                       De toute façon, ça n'a pas bcp de sens de demander plusieurs lignes en mode horizontal : suffit de
+%                                       demander le mode vertical à la place !)
+        {%
+            \edef\rdmcq@answercols{\rdmcq@answer@columns}%
+            \tcbset{answer@equalheight/.style={raster equal height=all}}%   et, dans ce cas, toutes les cellules ont la même hauteur
+        }%
+\fi%
+%
+\ifodd\rdmcqQuestioncount\relax%
+%   appending local (dans un groupe)
+    \tcbset{every answer zone style/.append style={every odd answer zone style}}%   Clé every odd answer zone={...}
+    \tcbset{every answer style/.append style=every odd answer style}%   Clé every odd anwser={...}
+\else%
+    \tcbset{every answer zone style/.append style={every even answer zone style}}%
+    \tcbset{every answer style/.append style=every even answer style}%
+\fi%
+%
+\begin{rdmcq@zonereponses@box}[%
+        answerzonestyle@\rdmcq@answerformat-\rdmcq@orientation,%    style défini par le format
+        rdmcq@answer@user@style,%   clés answer colback, answer colframe et answer opacity
+        every answer zone style,%
+        local answer zone style,%    style passé en paramètre à \mcqQuest par la clé "answer zone={...}"
+        space to=\rdmcq@rightspace%
+        ]% Boîte englobante pour définir le cadre et le fond
+%
+%
+%
+%    \edef\rdmcq@idgroup{\kvtcb@raster@ehgid @\number\c@tcbrasterrow}%   id du groupe de la boîte rdmcq@zonereponses@box, ce qui va permettre de récupérer sa hauteur (marche parce que "raster equal height=rows" pour le qcm)
+    %
+    \ifdim\rdmcq@answercolumnsep>0pt%
+        %   Les colonnes ne se chevauchent pas donc tout va bien => raster "normal"
+    \else%
+        \setlength{\rdmcq@answercolumnsep}{-\rdmcq@boxrule}%    Séparation négative pour obtenir un chevauchement
+    \fi%
+    %
+    \begin{tcbraster}[raster columns=\rdmcq@answercols,
+        raster before skip=0pt, raster after skip=0pt, raster left skip=0pt, raster right skip=0pt,
+        answer@equalheight,%    Si nombre automatique de colonnes =rows, si gestion par l'utilisateur =all
+        raster valign=center,
+        raster column skip=\rdmcq@answercolumnsep,
+        raster row skip=\rdmcq@answerrowsep,
+        rdmcq@sameheight%
+        ]%
+        \foreachitem\rdmcq@answer\in\rdmcq@answerlist{%
+            \tcbset{rdmcq@answer@correction@style/.style={}}%
+            \edef\rdmcqAnswercount{\rdmcq@answercnt}%    On rend le compteur accessible
+            %   Gestion de la bonne réponse : Si mode correction & si bonne réponse => \rdmcqRightAnswer=1 (0 sinon)
+            \edef\rdmcqRightAnswer{0}%
+            \ifnum\rdmcq@correction=1 \relax%
+                \xifinlist{\rdmcqAnswercount}{\rdmcq@brlist}{%   \xifinlist (au lieu de \ifinlist) pour développer \rdmcqAnswercount
+                        \edef\rdmcqRightAnswer{1}%
+%                        Style qui *s'ajoute* au style prédéfini en cas de bonne réponse et de correction (il supplante l'éventuel style particulier attribué à l'une des boîtes)
+                        \tcbset{rdmcq@answer@correction@style/.style={answerstyle@\rdmcq@answerformat-\rdmcq@orientation-correction}}%
+                    }{}%
+            \fi%
+            %
+            %
+            \begin{rdmcq@answer@box}[%
+                    answerstyle@\rdmcq@answerformat-\rdmcq@orientation,
+                    rdmcq@answer@user@style,%   clés answer colback, answer colframe et answer opacity
+                    every answer style,
+                    /rdmcq/quest/answer \rdmcqAnswercount/.try,
+                    rdmcq@answer@correction@style,
+                    rdmcq@answer@height
+                    ]%
+                \rdmcq@answer%
+            \end{rdmcq@answer@box}%
+            %   On "colle" les bordures si l'espace inter-ligne est défini à 0pt (orientation verticale)
+            \ifdim\rdmcq@answerrowsep=0pt%
+                \tcbset@late@options{before pre={\tcbdimto\tcb@raster@yskip{-\kvtcb@top@rule@break}}}%
+            \fi%
+        }%
+    \end{tcbraster}%
+%
+%
+\end{rdmcq@zonereponses@box}%
+\endgroup%
+}
+
+
+
+\newcommand{\rdmcq@check@requested@formats}{%
+%   On vérifie l'existence des formats (answer, question, etc.) passés à l'environnament Mcq.
+%   Si le format n'existe pas on bascule sur le format default.
+\xifinlist{\rdmcq@messageformat}{\rdmcq@message@format@list}{}%
+        {%
+            \rdmcq@warning{Message format \rdmcq@messageformat\space unknown.\MessageBreak Using default message format instead.}%
+            \edef\rdmcq@messageformat{default}%
+        }%
+\xifinlist{\rdmcq@questionformat}{\rdmcq@question@format@list}{}%
+        {%
+            \rdmcq@warning{Question format \rdmcq@questionformat\space unknown.\MessageBreak Using default question format instead.}%
+            \edef\rdmcq@questionformat{default}%
+        }%
+\xifinlist{\rdmcq@headerformat}{\rdmcq@header@format@list}{}%
+        {%
+            \rdmcq@warning{Header format \rdmcq@headerformat\space unknown.\MessageBreak Using default header format instead.}%
+            \edef\rdmcq@headerformat{default}%
+        }%
+\xifinlist{\rdmcq@footerformat}{\rdmcq@footer@format@list}{}%
+        {%
+            \rdmcq@warning{Footer format \rdmcq@footerformat\space unknown.\MessageBreak Using default footer format instead.}%
+            \edef\rdmcq@footerformat{default}%
+        }%
+\iftoggle{rdmcq@horizontal}{\edef\rdmcq@orientation{horizontal}}{\edef\rdmcq@orientation{vertical}}%
+\xifinlist{\rdmcq@answerformat-\rdmcq@orientation}{\rdmcq@answer@format@list}{}%
+        {%
+            \rdmcq@warning{Answer format \rdmcq@answerformat\space (in \rdmcq@orientation\space mode) unknown.\MessageBreak Using default answer format instead.}%
+            \edef\rdmcq@answerformat{default}%
+        }%
+}
+
+\newenvironment{Mcq}[1][]%
+%%% init environment
+{%
+%
+\ifcsundef{ifcrep@correction}% Si le booléen ifcrep@correction du package cadrereponse.sty est défini...
+    {}%
+    {%
+    \ifcrep@correction\edef\rdmcq@correction{1}\fi%... et s'il vaut vrai, on active le mode correction
+    }%
+%
+\tcbset{rdmcq@message@localenv@style/.style={}}%
+%
+\pgfkeys{/rdmcq, #1}%
+\tcbdimto\rdmcq@width{\kvrdmcq@width}%  Initialement, la largeur totale n'est pas une longueur (sinon, la valeur par défaut n'est pas correcte
+%   puisqu'elle serait alors égale à la \linewidth au moment où l'extension est chargée). On stocke donc la largeur dans une macro qui est développée (?)
+%   à l'activation de l'environnement.
+%
+\begin{rdmcq@blankest@box}[rdmcq@backgroundbox@style,%  style utilisateur (clé boxstyle=...)
+        width=\rdmcq@width]
+%   On entre dans la boîte englobante.
+%   Désormais, il faut se fier à \linewidth pour la largeur totale (qui, par conséquent, tient compte des éventuelles modifications de style
+%   de la boîte englobante fournies par l'utilisateur (boxsep, boxrule, left, etc.)
+%
+\ifdim\rdmcq@questionwidth>\rdmcq@width \setlength{\rdmcq@questionwidth}{\rdmcq@width}\fi% Si la largeur des questions est supérieure à la largeur totale, on la rectifie.
+%
+\rdmcq@check@requested@formats%
+%
+\iftoggle{rdmcq@resume}{}%  Poursuite de la numérotation
+    {%
+        \setcounter{rdmcq@questioncount}{\rdmcq@numstart}%  Remise à zéro de la numérotation des questions...
+        \setcounter{rdmcq@messagecount}{0}% ... et de messages
+    }%
+%
+\ifdim\rdmcq@answercolumnsep<0pt%   Si \rdmcq@answercolumnsep < 0, cette valeur n'a pas été définie par l'utilisateur, on la rend égale à \rdmcq@columnsep
+    \setlength{\rdmcq@answercolumnsep}{\rdmcq@columnsep}%
+\fi%
+%
+\iftoggle{rdmcq@samewidth}% Utilisation de la clé "same width"
+    {\setlength{\rdmcq@questionwidth}{\linewidth}}%   Vrai => on force question width=width
+    {}%
+%
+\setlength{\rdmcq@remainingwidth}{\linewidth}%
+\edef\rdmcq@rastercols{2}%
+\ifdim\rdmcq@questionwidth<\linewidth%
+    %   Zones Question & Réponses sur une même ligne du raster
+    \addtolength{\rdmcq@remainingwidth}{-\rdmcq@questionwidth-\rdmcq@columnsep}% largeur de la zone Réponses
+    \tcbset{mcq@rasterequalheight/.style={raster equal height=rows}}%   Les hauteurs des deux zones doivent être égales
+\else%
+    %   Zone Question sur une  ligne complète du raster et Zone Réponse sur la ligne d'après
+    \edef\rdmcq@rastercols{1}%
+    \tcbset{mcq@rasterequalheight/.style={raster equal height=none}}%   Les hauteurs des deux zones sont quelconques
+\fi%
+%
+\setlength{\rdmcq@zonereponses@growtoleft}{0pt}%
+\ifdim\rdmcq@columnsep=0pt% On agrandit vers la gauche la zone Réponse seulement si l'espace entre les colonnes vaut 0...
+    \ifnum\rdmcq@rastercols>1%  ... et si la zone Réponse est à droite de la zone Question
+        \setlength{\rdmcq@zonereponses@growtoleft}{\rdmcq@boxrule}%
+    \fi%
+\fi%
+\ifdim\rdmcq@rowsep=0pt%
+    \addtolength{\rdmcq@rowsep}{-\rdmcq@boxrule}%    séparation négative si les lignes se touchent (row sep=0pt)
+\fi%
+%
+%   On rend accessibles la largeur de bordure ainsi que l'espace vertical entre deux lignes du raster.
+%   Ces dimensions sont seulement destinées à être consultées et non modifiées (pour l'élaboration des thèmes en particulier).
+\setlength{\rdmcqboxrule}{\rdmcq@boxrule}%
+\setlength{\rdmcqrowsep}{\rdmcq@rowsep}%
+%
+    \begin{tcbraster}[raster columns=\rdmcq@rastercols,
+        raster before skip=0pt, raster after skip=0pt, raster left skip=0pt, raster right skip=0pt,
+        mcq@rasterequalheight,
+        raster column skip=\rdmcq@columnsep, raster row skip=\rdmcq@rowsep,
+        raster force size=false
+        ]%
+}%
+%%% end environment
+{%
+\end{tcbraster}%
+\end{rdmcq@blankest@box}%
+}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%   Checkbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newlength{\rdmcq@cb@size}
+\newlength{\rdmcq@cb@raise}
+\newtoggle{rdmcq@cb@checked}
+
+\pgfkeys{%
+    /rdmcqcb/.is family,
+    /rdmcqcb/.cd,
+    size/.code=\setlength{\rdmcq@cb@size}{#1},
+    size=0.9em,
+    color/.code=\colorlet{rdmcq@cb@color}{#1},
+    color=black,
+    raise/.code=\setlength{\rdmcq@cb@raise}{#1},
+    raise=0pt,
+    check symbol/.store in=\rdmcq@cb@symbol,
+    check symbol=\ding{51},
+    check color/.code=\colorlet{rdmcq@cb@checkcolor}{#1},
+    check color=red,
+    checked/.is choice,%
+    checked/true/.code=\toggletrue{rdmcq@cb@checked},
+    checked/false/.code=\togglefalse{rdmcq@cb@checked},
+    checked/.default=true,
+    checked=false,
+%    checked corr/.is choice,%
+%    checked corr/true/.code=\ifthenelse{\boolean{MyExo@Correction}}{\toggletrue{rdmcq@cb@checked}}{},
+%    checked corr/false/.code=,
+%    checked corr/.default=true,
+%    checked corr=false,
+    background color/.estore in=\rdmcq@cb@bckcolor,
+    background color=transparent,
+}
+
+\newcommand{\setrdmcqcb}[1]{\pgfkeys{%
+  /rdmcqcb/.cd,%
+  #1%
+}}
+
+\newcommand{\rdmcqcb}[1][]{%
+\begingroup%
+\pgfkeys{/rdmcqcb/.cd, #1}%
+\ifnum\pdf@strcmp{\rdmcq@cb@bckcolor}{transparent}=0%
+        \tikzset{rdmcqcb preaction/.style={}}%
+\else%
+        \tikzset{rdmcqcb preaction/.style={preaction={fill=\rdmcq@cb@bckcolor}}}%
+\fi%
+\raisebox{\rdmcq@cb@raise}{%
+\begin{tikzpicture}[outer sep=0pt, inner sep=0pt, baseline=0.04765886288\rdmcq@cb@size]%+\rdmcq@cb@raise]
+\fill [rdmcqcb preaction] [rdmcq@cb@color, even odd rule] (0,0)--++(0,\rdmcq@cb@size)--++(\rdmcq@cb@size,0)--++(0,-0.18812709\rdmcq@cb@size)
+        --++(0.18979933\rdmcq@cb@size,0)--++(0,-\rdmcq@cb@size)--++(-\rdmcq@cb@size,0)
+        --++(0,0.18812709\rdmcq@cb@size)--++(-0.18979933\rdmcq@cb@size,0)
+        (0.04765886288\rdmcq@cb@size,0.04765886288\rdmcq@cb@size)
+            rectangle
+        ++(0.9055183946\rdmcq@cb@size,0.9055183946\rdmcq@cb@size)
+        ;
+\ifmcqbr{\toggletrue{rdmcq@cb@checked}}{}%
+\iftoggle{rdmcq@cb@checked}{%
+    \node[overlay, anchor=center, color=rdmcq@cb@checkcolor] at (0.5\rdmcq@cb@size,0.5\rdmcq@cb@size) {\rdmcq@cb@symbol};
+}{}%
+\end{tikzpicture}}%
+\endgroup%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%   Radio button
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\newlength{\rdmcq@rb@size}
+\newlength{\rdmcq@rb@raise}
+\newtoggle{rdmcq@rb@checked}
+
+\pgfkeys{%
+    /rdmcqrb/.is family,
+    /rdmcqrb/.cd,
+    size/.code=\setlength{\rdmcq@rb@size}{#1},
+    size=1.3em,
+    color/.code=\colorlet{rdmcq@rb@color}{#1},
+    color=black,
+    raise/.code=\setlength{\rdmcq@rb@raise}{#1},
+    raise=0pt,
+    check symbol/.store in=\rdmcq@rb@symbol,
+    check symbol=disc,% ou autre symbole
+    check color/.code=\colorlet{rdmcq@rb@checkcolor}{#1},
+    check color=red,
+    checked/.is choice,%
+    checked/true/.code=\toggletrue{rdmcq@rb@checked},
+    checked/false/.code=\togglefalse{rdmcq@rb@checked},
+    checked/.default=true,
+    checked=false,
+    background color/.estore in=\rdmcq@rb@bckcolor,
+    background color=transparent,
+}
+
+\newcommand{\setrdmcqrb}[1]{\pgfkeys{%
+  /rdmcqrb/.cd,%
+  #1%
+}}
+
+
+
+\newcommand{\rdmcqrb}[1][]{%
+\begingroup%
+\pgfkeys{/rdmcqrb/.cd, #1}%
+\raisebox{\rdmcq@rb@raise}{%
+\begin{tikzpicture}[x=2/7*\rdmcq@rb@size,y=2/7*\rdmcq@rb@size, outer sep=0pt, inner sep=0pt, baseline=-0.34\rdmcq@rb@size]%+\rdmcq@rb@raise]
+\def\rb@contour{%
+    (-1.74,-0.25) .. controls (-1.82,0.28) and (-1.63,0.85) .. (-1.25,1.23) .. controls (-0.53,1.97) and (0.57,1.88) .. (1.40,1.08)
+    .. controls (1.78,0.70) and (2.01,0.19) .. (2.03,-0.28) .. controls (2.05,-0.74) and (1.88,-1.21) .. (1.55,-1.55)
+    .. controls (0.80,-2.29) and (-0.30,-2.22) .. (-1.12,-1.40) .. controls (-1.46,-1.04) and (-1.67,-0.66) .. (-1.74,-0.25)
+}%
+\ifnum\pdf@strcmp{\rdmcq@rb@bckcolor}{transparent}=0%
+\else%
+    \fill[\rdmcq@rb@bckcolor] \rb@contour;
+\fi%
+\fill[rdmcq@rb@color]
+% Contour
+    \rb@contour
+    %	Intérieur
+    (-0.08,1.59) .. controls (-0.49,1.57) and (-0.85,1.40) .. (-1.12,1.12) .. controls (-1.76,0.51) and (-1.76,-0.51) .. (-1.12,-1.12)
+    .. controls (-0.51,-1.76) and (0.49,-1.76) .. (1.12,-1.12) .. controls (1.44,-0.80) and (1.61,-0.38) .. (1.59,0.08)
+    .. controls (1.57,0.44) and (1.40,0.85) .. (1.14,1.10) .. controls (1.14,1.10) and (1.14,1.10) .. (1.14,1.10)
+    .. controls (0.78,1.44) and (0.38,1.61) .. (-0.08,1.59) -- cycle
+    ;
+\ifmcqbr{\toggletrue{rdmcq@rb@checked}}{}%
+\iftoggle{rdmcq@rb@checked}{%
+    \def\rdmcqtmp{disc}%
+    \ifx\rdmcq@rb@symbol\rdmcqtmp%
+        \fill[rdmcq@rb@checkcolor] (1.19,0.00) .. controls (1.19,-0.66) and (0.66,-1.19) .. (0.00,-1.19) .. controls (-0.66,-1.19) and (-1.21,-0.66)
+                .. (-1.21,0.00) .. controls (-1.21,0.66) and (-0.66,1.19) .. (0.00,1.19) .. controls (0.66,1.19) and (1.19,0.66) .. (1.19,0.00);
+    \else%
+        \node[overlay, anchor=center, rdmcq@rb@checkcolor]  at (0,0) {\rdmcq@rb@symbol};
+    \fi%
+}{}%
+\end{tikzpicture}}%
+\endgroup%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\input{rdmcq.troyes.format}
+\input{rdmcq.tokyo.format}
+\input{rdmcq.boston.format}
+\input{rdmcq.miami.format}
+\input{rdmcq.reims.format}
+\input{rdmcq.millau.format}
+\input{rdmcq.melun.format}
+\input{rdmcq.paris.format}

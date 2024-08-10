@@ -1,0 +1,19 @@
+% Nom du fichier : bfcours-commands.sty
+\ProvidesPackage{bfcours-items}[2024/06/29 v1.0 Gestion des items et enumerate pour bfcours]
+
+
+%\renewcommand{\labelenumi}{\textbf{\theenumi{}.}}
+%\renewcommand{\labelenumii}{\textbf{\theenumii{}.}}
+\renewcommand{\labelenumi}{%
+  {\colorbox{gray!80!black}{\textcolor{white}{\textbf{\theenumi}}}}%
+}
+
+% Redéfinir le label pour chaque item de deuxième niveau
+\renewcommand{\labelenumii}{%
+  {\colorbox{gray!80!black}{\textcolor{white}{\textbf{\theenumii}}}}%
+}
+
+% Définition des thèmes et environnements
+% (Ajoutez ici les définitions de vos thèmes et environnements)
+
+\endinput

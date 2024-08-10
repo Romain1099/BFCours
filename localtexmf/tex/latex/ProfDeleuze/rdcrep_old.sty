@@ -1,0 +1,1110 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{rdcrep}[2023/05/11 rdcrep.sty]
+
+
+\RequirePackage{calc}
+%\RequirePackage{listofitems}
+\RequirePackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{tikzmark}
+\usetikzlibrary{calc}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins}
+\tcbuselibrary{hooks}
+\tcbuselibrary{breakable}
+\tcbuselibrary{xparse}
+\RequirePackage{nicematrix}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Les compteurs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\newcount\crepcounter
+\newcount\tccrepcounter
+
+\newcommand{\thecrepcounter}{\the\crepcounter}
+\newcommand{\thetccrepcounter}{\the\tccrepcounter}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Les couleurs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\definecolor{seyescol}{HTML}{C8C8DE}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Les booléens
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newif\ifcrep@correction
+\newif\ifcrep@dotfill
+\newif\ifcrep@show@crep
+\newif\ifcrep@normalcrep
+\newif\ifcrep@seyes
+\newif\ifcrep@showcrepnum
+\newif\ifcrep@mathmode
+\newif\ifcrep@forcedheight% pour les boîtes seyes dont la hauteur n'est pas la hauteur naturelle => on change de méthode de tracé des lignes Seyes
+
+
+\def\TFCorrection{%
+ \ifcrep@correction%
+   \expandafter\@firstoftwo%
+ \else%
+   \expandafter\@secondoftwo%
+ \fi%
+}
+
+
+\long\def\@crepfirstofone#1{\begingroup\color{crepcorrectioncol}\crep@correction@font#1\endgroup}
+
+\NewDocumentCommand{\SiCorrection}{ s }{%
+\ifcrep@correction%
+    \IfBooleanTF{#1}%
+    {\expandafter\@crepfirstofone}%
+    {\expandafter\@firstofone}%
+\else%
+    \unskip\expandafter\@gobble%
+\fi%
+}
+
+
+
+\def\TFCrep{%
+ \ifcrep@show@crep%
+   \expandafter\@firstoftwo%
+ \else%
+   \expandafter\@secondoftwo%
+ \fi%
+}
+
+\NewDocumentCommand{\SiCrep}{}{%
+\ifcrep@show@crep%
+    \expandafter\@firstofone%
+\else%
+    \unskip\expandafter\@gobble%
+\fi%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Longueurs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newlength{\crep@seyesunit}
+\setlength{\crep@seyesunit}{8mm}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Handler
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Nouvel handler : /.cor style = {style si correction=true}{style si correction=false}
+
+\pgfkeys{%
+    /handlers/.cor style/.code 2 args=%
+        \pgfkeys{%
+            \pgfkeyscurrentpath/.code=\TFCorrection{\pgfkeysalso{#1}}{\pgfkeysalso{#2}}%
+        }
+}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Utilitaires
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\let\crep@invisible\pgfsys@begininvisible
+\let\crep@visible\pgfsys@endinvisible
+
+
+
+%%%%%%  Inspiré de : https://tex.stackexchange.com/a/17808/30654
+
+\newcounter{crep@whatsleft@counter}
+\newlength{\crep@whatsleft}
+
+\newcommand{\crep@measure@remainder}[1]{%
+\stepcounter{crep@whatsleft@counter}%
+\tikzmark{left-\thecrep@whatsleft@counter}\hfill\tikzmark{right-\thecrep@whatsleft@counter}%
+\begin{tikzpicture}[overlay,remember picture]%
+\path let \p0 = (pic cs:left-\thecrep@whatsleft@counter), \p1 = (pic cs:right-\thecrep@whatsleft@counter) in
+        [/utils/exec={\pgfmathsetlength#1{\x1-\x0}\global#1=#1}];%
+\end{tikzpicture}%
+\hspace*{-#1}%
+}
+
+
+\tikzset{%
+pics/ligneseyes/.style={
+    % Pic pour tracer des lignes seyes
+    % Le paramètre le plus important : height=<longueur> (<longueur> = hauteur selon laquelle tracer les lignes)
+    % Si <longueur> > 0 alors les lignes sont tracées au-dessus du point d'origine
+    % Si <longueur> < 0 alors les lignes sont tracées au-dessous du point d'origine
+        code={
+            \tikzset{lseyes/.cd, #1}
+            \def\pv##1{\pgfkeysvalueof{/tikz/lseyes/##1}}
+            %
+            \pgfmathtruncatemacro{\nblignes}{ceil(\pv{height}/22.6772)}% Nombre de lignes à prévoir : 8 mm = 22.6772 pt
+            %
+            \ifnum\nblignes>0 %
+                \def\debutindice{1}%
+            \else%
+                \def\debutindice{0}%
+            \fi%
+            \foreach \m in {\debutindice,...,\nblignes} {%
+                %
+                \pgfmathtruncatemacro{\deltay}{\m-1}%
+                % ajouter style pour lignes ?
+                \draw [draw=\pv{colA}, line width=1.128pt] (0,-0.564pt+\deltay*8mm) --++ (\pv{width},0);
+                \foreach \n in {1,2,3} {
+                    \draw[draw=\pv{colB}, line width=0.564pt] (0,-0.564pt+\n*2mm+\deltay*8mm) --++ (\pv{width},0) ;
+                }
+                %
+            }%
+        }%  fin code
+    }%  fin style
+    ,
+    lseyes/.cd,
+    width/.initial=\linewidth,% longueur d'une ligne
+    colA/.initial=seyescol,% couleur ligne épaisse
+    colB/.initial=seyescol,% couleur lignes secondaires
+    height/.initial=8mm,% hauteur selon laquelle tracer les lignes
+}
+
+
+
+\def\reset@strutbox@{%
+  \global\setbox\strutbox@\hbox{%
+\normallineskiplimit=0pt
+    \lower.5\normallineskiplimit
+       \vbox{\kern-\normallineskiplimit\copy\strutbox}}}
+
+
+
+
+\newcommand{\crep@seyes@initspacing}{%
+\lineskip0pt%
+\baselineskip.8cm%
+\normalbaselineskip=\baselineskip%
+\topskip\baselineskip%
+\setlength{\abovedisplayskip}{0pt}%
+\setlength{\belowdisplayskip}{0pt}%
+\setlength{\abovedisplayshortskip}{0pt}%
+\setlength{\belowdisplayshortskip}{0pt}%
+\setlength{\jot}{0pt}% envi. "align"
+\lineskiplimit=-\maxdimen%=-8mm%
+\normallineskiplimit\lineskiplimit%
+\setlength{\topsep}{0pt}%
+\setlength{\parskip}{0pt}%
+\setlength{\partopsep}{0pt}%
+% tableaux & \strut
+\setbox\strutbox\hbox{%
+          \vrule\@height5mm%
+                \@depth3mm%
+                \@width\z@}%
+\AddToHook{cmd/array/before}{\lineskiplimit=0pt}%
+}
+
+
+
+
+% https://tex.stackexchange.com/a/38424/30654
+\newcommand\underscorefill{%
+\leavevmode\xleaders%
+\hbox{\_\;}\hfill\kern0pt%
+}
+
+
+\newcommand{\seyesskip}[1][1]{%
+\vspace*{#1\baselineskip}%
+}
+
+
+% Inutilisé
+\newcommand{\undepth}[2][0]{%
+\raisebox{0pt}[0pt][0pt]{#2}%
+\ifnum#1>0 \vspace*{#1\baselineskip}\fi%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Hack
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Bug de tcolorbox :
+% Avec un skin "bicolor" ou "bicolor jigsaw", l'environnement "tcbclipinterior" se
+% comporte bizarrement et effectue la coupe aux limites de la upperbox.
+% La commande ci-dessous (à inclure dans un "scope") permet de revenir à un clipping
+% correct prenant en compte les éventuels coins arrondis de la boîte.
+
+\newcommand{\crep@tcbclipinterior}{%
+    \tcb@boundary@base{\kvtcb@left@rule}{\kvtcb@bottom@rule}{\tcb@width-\kvtcb@right@rule}{\tcb@height-\kvtcb@top@rule}%
+                {\tcb@arc@ins@SW}{\tcb@arc@ins@NW}{\tcb@arc@ins@NE}{\tcb@arc@ins@SE}
+    \pgfusepath{clip}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Les clés / styles tcb
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\tcbset{%
+    %%%%%%%% Styles utilisateur
+    % Boîte normal crep
+    normal crep style/.style={fontupper=\normalfont\normalcolor},
+    % Boîte crep
+    crep default style/.style={
+            enhanced jigsaw,
+            before skip balanced=0.25\baselineskip plus 2pt,
+            after skip balanced=0.5\baselineskip plus 2pt,
+            notitle,
+            valign=top, halign=justify,
+            colback=gray!10, colframe=black,
+            boxsep=7pt,
+            top=0pt,
+            bottom=0pt,
+            left=0pt,
+            right=0pt,
+            middle=0pt, lower separated=false,
+            sidebyside gap=0pt,
+            boxrule=0.6pt
+    },
+    % Boîte tccrep
+    tccrep default style/.style={
+            on line,
+            enhanced jigsaw,
+            colback=gray!10,
+            boxsep=5pt,
+            top=0pt, bottom=0pt, left=0pt, right=0pt,
+            sharp corners,
+            frame engine=empty,
+            boxrule=0pt,
+    },
+    % Boîte tccrep lorsque crep show=false
+    tccrep show false/.style={%
+        frame engine=empty,
+        interior engine=empty,
+        crep/seyes=false
+    },
+    % Boîte tccrep avec seyes=true
+    crep default seyes/.style={
+            frame hidden, boxrule=0pt, opacityback=0, sharp corners, colback=white, top=1mm
+    },
+    %
+    crep num style/.style={%
+        finish={%
+            \begin{tcbclipframe}
+                \fill[white, opacity=0.8] (frame.north west) rectangle (frame.south east) ;
+                \node[anchor=north west, fill=black!70, text=white, node font=\sffamily\tiny\bfseries] at (frame.north west) {\thetcbcounter};
+            \end{tcbclipframe}
+        }
+    },
+    %
+    bbox/.style 2 args={enlarge bottom by=#1, enlarge top by=#2},
+    %
+    crep/crep opaq/.style={seyes=false, colback=black, opacityback=0.15, normal crep=false},
+    %
+    %%%%%%%% Clés utilisateur
+    %
+    crep/.cd,
+    %
+    %
+    seyes colors/.code 2 args=\colorlet{seyescolA}{#1}\colorlet{seyescolB}{#2},
+    seyes colors={seyescol}{seyescol},
+    %
+    extra lines/.store in=\crep@extralines,
+    extra lines=0,
+    %
+    dotfill/.is if=crep@dotfill,
+    dotfill=false,
+    %
+    crep align/.is choice,
+    crep align/center/.style={tcbox width=forced center},
+    crep align/left/.style={tcbox width=forced left},
+    crep align/right/.style={tcbox width=forced right},
+    crep align/.default=center,
+%    crep align=center, !! Surtout pas, sinon la clé s'applique globalement !
+    %
+    %
+    normal crep/.is if=crep@normalcrep,% permet d'afficher une boîte corrective "normale" (même style mais sans tenir compte du mode correction)
+    normal crep=false,
+    %
+    show crep num/.is if=crep@showcrepnum,
+    %
+    seyes/.is if=crep@seyes,
+    %
+    crep mode/.is choice,% Boîtes dérivées
+    crep mode/regular/.code=\edef\crep@mode@num{0},
+    crep mode/upper/.code=\edef\crep@mode@num{1},
+    crep mode/lower/.code=\edef\crep@mode@num{2},
+    crep mode/left/.code=\edef\crep@mode@num{3},
+    crep mode/right/.code=\edef\crep@mode@num{4},
+    crep mode/.default=regular,
+    crep mode=regular,
+    %
+    forced height/.is if=crep@forcedheight,
+    %
+    seyes upper/.style={seyes, crep mode=upper},
+    seyes lower/.style={seyes, crep mode=lower},
+    seyes left/.style={seyes, crep mode=left},
+    seyes right/.style={seyes, crep mode=right},
+    %
+    %
+    %
+    %
+    %
+    %%%%%%%%% Clés / styles privés
+    %
+    %
+    %
+    tccrep@mode/.code=\tcbset{%
+            crep/.cd,
+            seyes@style/.style={seyes@regular@style@noremember},
+            crep@visibility@false/.style={crep@visibility@upper@false},
+            crep@correctionstyle/.style={crep@regular@correctionstyle},
+            crep@setprevdepth/.style={crep@upper@setprevdepth}
+        },%
+    %
+    crep@mode/.code={%
+        \ifnum\crep@mode@num=0 %    crep mode=regular
+            %   On tente de détecter si la boîte crep est incluse dans un tcbraster avec equal height=...
+            %   ou si la boîte n'a pas sa hauteur naturelle (forced height=true)
+            %   Si c'est le cas, on bascule sur la méthode de tracé des lignes Seyes qui utilise \tikzmark
+            %
+            % crep@forcedheight=true OU \tcb@raster@ehg@set not \@empty
+            \ifnum\ifcrep@forcedheight 1\else\ifx\tcb@raster@ehg@set\@empty 0\else1\fi\fi%
+                =1 %
+                \tcbset{crep/.cd, seyes@style/.style={seyes@regular@style@remember}}%
+            \else%
+                \tcbset{crep/.cd, seyes@style/.style={seyes@regular@style@noremember}}%
+            \fi%
+            \tcbset{crep/.cd,
+                                    crep@visibility@false/.style={crep@visibility@upper@false},
+                                    crep@correctionstyle/.style={crep@regular@correctionstyle},
+                                    crep@setprevdepth/.style={crep@upper@setprevdepth}
+                                    }%
+        \fi%
+        \ifnum\crep@mode@num=1 %    crep mode=upper
+            \tcbset{crep/.cd,
+                                    seyes@style/.style={seyes@upper@style},
+                                    crep@visibility@false/.style={crep@visibility@upper@false},
+                                    crep@correctionstyle/.style={crep@upper@correctionstyle},
+                                    crep@setprevdepth/.style={crep@upper@setprevdepth}
+                                    }%
+        \fi%
+        \ifnum\crep@mode@num=2 %    crep mode=lower
+            \tcbset{crep/.cd,
+                                    seyes@style/.style={seyes@lower@style},
+                                    crep@visibility@false/.style={crep@visibility@lower@false},
+                                    crep@correctionstyle/.style={crep@lower@correctionstyle},
+                                    crep@setprevdepth/.style={crep@lower@setprevdepth}
+                                    }%
+        \fi%
+        \ifnum\crep@mode@num=3 %    crep mode=left
+            \tcbset{crep/.cd,
+                                    seyes@style/.style={seyes@left@style},
+                                    crep@visibility@false/.style={crep@visibility@upper@false},
+                                    crep@correctionstyle/.style={crep@upper@correctionstyle},
+                                    crep@setprevdepth/.style={crep@upper@setprevdepth}
+                                    }%
+            \pgfkeysalso{sidebyside, crep@sbs@adjustgap}%
+        \fi%
+        \ifnum\crep@mode@num=4 %    crep mode=right
+            \tcbset{crep/.cd,
+                                    seyes@style/.style={seyes@right@style},
+                                    crep@visibility@false/.style={crep@visibility@lower@false},
+                                    crep@correctionstyle/.style={crep@lower@correctionstyle},
+                                    crep@setprevdepth/.style={crep@lower@setprevdepth}
+                                    }%
+            \pgfkeysalso{sidebyside, crep@sbs@adjustgap}%
+        \fi%
+    },%
+    %
+    crep@detect@seyes/.code={%
+        \xdef\crep@seyes@flag{0}%
+        {\tcbset{crep/.cd, #1}\ifcrep@seyes\xdef\crep@seyes@flag{1}\fi}%
+        \ifnum\crep@seyes@flag=1\pgfkeysalso{crep default seyes}\fi%
+    },
+    %
+    crep@boxtype/.is choice,
+    crep@boxtype/crep/.code=\tcbset{crep/crep@show@false@style/.style={nirvana}},
+    crep@boxtype/tccrep/.code=\tcbset{crep/crep@show@false@style/.style={tccrep show false}},
+    crep@boxtype/.default=crep,
+    %
+    % Pour seyes@left@style : au gap par défaut, on ajouter 2 * boxsep (sinon le texte est collé à la zone segmentation)
+    crep@sbs@adjustgap/.code=\tcbdimto{\kvtcb@sbs@gap}{\kvtcb@boxsep*2+\kvtcb@sbs@gap},%
+    %
+    seyes@regular@style@noremember/.style={%
+        %   Tracé "normal" des lignes (1 seule passe suffit)
+        /tcb/before upper pre=\crep@seyes@initspacing\let\tcblower\par,
+        underlay pre={%
+            \ifdim\crep@prevdepth=0pt % On est dans une tccrep ou tcfillcrep
+                \def\crep@mydelta{\tcb@val@raisebase-\kvtcb@bbbottom@stand}% prise en compte de enlarge bottom by=...
+            \else%  On est dans une crep
+                \def\crep@mydelta{\kvtcb@bottom@rule+\kvtcb@boxsep+\kvtcb@bottom+\crep@prevdepth}%
+            \fi%
+            \begin{tcbclipinterior}
+                %   On se place sur le bord inférieur et on "remonte" sur la baseline de la *dernière* ligne
+                \path ([yshift=\crep@mydelta]frame.south west) coordinate (x0)
+                    let \p1 = ($(frame.north west)-(x0)$), \p2 = ($(frame.south west)-(x0)$) in     % \y1 = distance entre ligne de base et bord supérieur > 0
+                                                                        % \y2 = distance entre ligne de base et bord inférieur < 0
+                        pic at (x0) {ligneseyes={height=\y1, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessus de la ligne de base
+                        pic at (x0) {ligneseyes={height=\y2, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessous de la ligne de base
+                    ;
+            \end{tcbclipinterior}
+        }%
+    },
+    seyes@regular@style@remember/.style={%
+        remember,
+        before upper pre=\crep@seyes@initspacing\tikzmark{crep@mark@\thetcbcounter},
+        underlay pre={%
+            \begin{tcbclipinterior}
+                %
+                \path (pic cs:crep@mark@\thetcbcounter) coordinate (x')
+                    (frame.north west |- x') coordinate (x0)
+                    let \p1 = ($(frame.north west)-(x0)$), \p2 = ($(frame.south west)-(x0)$) in     % \y1 = distance entre ligne de base et bord supérieur > 0
+                                                                        % \y2 = distance entre ligne de base et bord inférieur < 0
+                        pic at (x0) {ligneseyes={height=\y1, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessus de la ligne de base
+                        pic at (x0) {ligneseyes={height=\y2, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessous de la ligne de base
+                    ;
+            \end{tcbclipinterior}
+        }%
+    },
+    %
+    seyes@lower@style/.style={%
+        before lower pre=\crep@seyes@initspacing,
+        underlay pre={%
+            \ifdim\crep@prevdepth=0pt % On est dans une tccrep ou tcfillcrep
+                \let\crep@mydelta\tcb@val@raisebase%
+            \else%  On est dans une crep
+                \def\crep@mydelta{\kvtcb@bottom@rule+\kvtcb@boxsep+\kvtcb@bottom+\crep@prevdepth}%
+            \fi%
+            \begin{pgfscope}%
+                \crep@tcbclipinterior
+                %   On se place sur le bord inférieur et on "remonte" sur la baseline de la *dernière* ligne
+                \path ([yshift=\crep@mydelta]frame.south west) coordinate (x0)
+                    let \p1 = ($(segmentation.south west)-(x0)$), \p2 = ($(frame.south west)-(x0)$) in     % \y1 = distance entre ligne de base et bord supérieur > 0
+                                                                        % \y2 = distance entre ligne de base et bord inférieur < 0
+                        pic at (x0) {ligneseyes={height=\y1, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessus de la ligne de base
+                        pic at (x0) {ligneseyes={height=\y2, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessous de la ligne de base
+                    ;
+            \end{pgfscope}
+        }%
+    },
+    %
+    seyes@upper@style/.style={%
+        before upper pre=\crep@seyes@initspacing,
+        underlay pre={%
+            \ifdim\crep@prevdepth=0pt % On est dans une tccrep ou tcfillcrep
+                \let\crep@mydelta\tcb@val@raisebase%
+            \else%  On est dans une crep
+                \def\crep@mydelta{\kvtcb@boxsep+\crep@prevdepth}%
+            \fi%
+            \path (segmentation.north east)--(segmentation.south east) coordinate[pos=0.5] (mid) ;
+            \begin{tcbclipinterior}
+                % Pas besoin de \crep@tcbclipinterior car le upper est correctement clippé
+                \begin{scope}
+                    \clip (interior.north west) rectangle (mid) ;
+                    %   On se place sur le bord inférieur et on "remonte" sur la baseline de la *dernière* ligne
+                    \path ([yshift=\crep@mydelta]segmentation.north west) coordinate (x0)
+                        let \p1 = ($(frame.north west)-(x0)$), \p2 = ($(mid)-(x0)$) in     % \y1 = distance entre ligne de base et bord supérieur > 0
+                                                                            % \y2 = distance entre ligne de base et bord inférieur < 0
+                            pic at (x0) {ligneseyes={height=\y1, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessus de la ligne de base
+                            pic at (x0) {ligneseyes={height=\y2, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessous de la ligne de base
+                        ;
+                \end{scope}
+            \end{tcbclipinterior}
+        }%
+    },
+    %
+    seyes@left@style/.style={%
+        remember,
+        before upper pre=\crep@seyes@initspacing\tikzmark{crep@mark@\thetcbcounter},
+        underlay pre={%
+            \begin{tcbclipinterior}
+                % Pas besoin de \crep@tcbclipinterior car le upper est correctement clippé
+                \begin{scope}
+                    \clip (interior.north west) rectangle ([xshift=\kvtcb@boxsep]segmentation.south west) ;
+                %
+                \path (pic cs:crep@mark@\thetcbcounter) coordinate (x')
+                    (frame.north west |- x') coordinate (x0)
+                    let \p1 = ($(frame.north west)-(x0)$), \p2 = ($(frame.south west)-(x0)$) in     % \y1 = distance entre ligne de base et bord supérieur > 0
+                                                                        % \y2 = distance entre ligne de base et bord inférieur < 0
+                        pic at (x0) {ligneseyes={height=\y1, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessus de la ligne de base
+                        pic at (x0) {ligneseyes={height=\y2, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessous de la ligne de base
+                    ;
+                \end{scope}
+            \end{tcbclipinterior}
+        }%
+    },
+    %
+    seyes@right@style/.style={%
+        remember,
+        before lower pre=\crep@seyes@initspacing\tikzmark{crep@mark@\thetcbcounter},
+        underlay pre={%
+            \begin{pgfscope}%
+                \crep@tcbclipinterior
+                \clip[rounded corners=0pt] ([xshift=-\kvtcb@boxsep]segmentation.north east)  rectangle (interior.south east);
+                \path (pic cs:crep@mark@\thetcbcounter) coordinate (x')
+                    (frame.north west |- x') coordinate (x0)
+                    let \p1 = ($(frame.north west)-(x0)$), \p2 = ($(frame.south west)-(x0)$) in     % \y1 = distance entre ligne de base et bord supérieur > 0
+                                                                        % \y2 = distance entre ligne de base et bord inférieur < 0
+                        pic at (x0) {ligneseyes={height=\y1, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessus de la ligne de base
+                        pic at (x0) {ligneseyes={height=\y2, colA=seyescolA, colB=seyescolB}}% tracé des lignes au-dessous de la ligne de base
+                    ;
+            \end{pgfscope}
+        }%
+    },
+    %
+    crep@visibility@regular@true/.style={upperbox=visible, lowerbox=visible},
+    crep@visibility@regular@false/.style={upperbox=invisible, lowerbox=invisible},
+    crep@visibility@lower@true/.style={upperbox=visible, lowerbox=visible},
+    %crep@visibility@lower@false/.style={upperbox=visible, lowerbox=invisible},
+    crep@visibility@lower@false/.style={upperbox=visible, before lower pre=\crep@invisible, after lower app=\crep@visible},
+    crep@visibility@upper@true/.style={upperbox=visible, lowerbox=visible},
+    crep@visibility@upper@false/.style={before upper pre=\crep@invisible, after upper app=\crep@visible, lowerbox=visible},
+    %
+    crep@regular@correctionstyle/.style={fontupper=\crep@correction@font, coltext=crepcorrectioncol},
+    crep@lower@correctionstyle/.style={fontlower=\crep@correction@font, collower=crepcorrectioncol},
+    crep@upper@correctionstyle/.style={fontupper=\crep@correction@font, colupper=crepcorrectioncol},
+    %
+    %   Calcul de \crep@prevdepth & prise en compte de la clé extra lines
+    %       boites crep
+    crep@upper@setprevdepth/.style={/tcb/after upper app={% petit souci si on est en vmode (ex. : après enumerate)
+                                                    \ifdim\crep@extralines pt=0pt\relax\else%
+                                                        \ifvmode\kern-\crep@seyesunit\fi%
+                                                        \vrule width0pt height0pt depth\crep@extralines\crep@seyesunit%
+                                                    \fi%
+                                                    \par\xdef\crep@prevdepth{\the\prevdepth}}},
+    crep@lower@setprevdepth/.style={/tcb/after lower app={% petit souci si on est en vmode (ex. : après enumerate)
+                                                    \ifdim\crep@extralines pt=0pt\relax\else%
+                                                        \ifvmode\kern-\crep@seyesunit\fi%
+                                                        \vrule width0pt height0pt depth\crep@extralines\crep@seyesunit%
+                                                    \fi%
+                                                    \par\xdef\crep@prevdepth{\the\prevdepth}}},
+    %       boîtes tccrep
+    tccrep@setprevdepth/.code=\xdef\crep@prevdepth{0pt},
+    %
+    crep@setcrep/.code={%
+        %
+        \ifcrep@normalcrep%
+            \pgfkeysalso{normal crep style}%
+        \else%
+            \ifcrep@show@crep%
+                \ifcrep@correction%
+                    \pgfkeysalso{crep@correctionstyle}%
+                \else%
+                    \ifcrep@dotfill%
+                        \pgfkeysalso{normal crep style}%
+                    \else%
+                        \pgfkeysalso{crep@correctionstyle}%
+                        \pgfkeysalso{crep@visibility@false}%
+                    \fi%
+                \fi%
+            \else%
+                \crep@correctionfalse%
+                \pgfkeysalso{normal crep style, crep@show@false@style}%
+            \fi%
+        \fi%
+        %
+        \ifcrep@seyes%
+            \pgfkeysalso{seyes@style}%
+        \fi%
+        \ifcrep@showcrepnum%
+            \pgfkeysalso{crep num style}%
+        \fi%
+    },
+    /tcb/crep/.search also={/tcb}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Tableaux Seyes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\initSeyesTab}{%
+\lineskiplimit=0pt%
+\normallineskiplimit=0pt%
+\NiceMatrixOptions{%
+    standard-cline,
+    % Une custom-line pour éviter que l'épaisseur des lignes horizontales ne décale les cellules vers le bas.
+    custom-line =
+        {
+        letter = I ,
+        % De manière empirique : pour qu'il y ait parfaite correspondance entre les lignes horizontales et verticales,
+        % il faut (?) que l'épaisseur des lignes horizontales soient 1,0975 fois plus grande que celle des lignes verticales.
+        tikz = {line width=1.0975*\arrayrulewidth},
+        command = sline ,
+        }
+}%
+%\setbox\strutbox\hbox{%
+%          \vrule\@height5mm%
+%                \@depth3mm%
+%                \@width\z@}%
+}
+
+
+\NewDocumentEnvironment{seyestab}{ m +b }
+{%
+\begingroup%
+\initSeyesTab%
+\begin{NiceTabular}[t]{#1}%
+#2
+\end{NiceTabular}%
+\endgroup%
+}{}
+
+
+\NewDocumentEnvironment{seyestabx}{ m m +b }
+{%
+\begingroup%
+\initSeyesTab%
+\begin{NiceTabularX}{#1}[t]{#2}%
+#3
+\end{NiceTabularX}%
+\endgroup%
+}{}
+
+\NewDocumentEnvironment{seyesarray}{ m +b }
+{%
+\begingroup%
+\initSeyesTab%
+\begin{NiceArray}[t]{#1}%
+#2
+\end{NiceArray}%
+\endgroup%
+}{}
+
+
+\NewDocumentEnvironment{seyesarraydelims}{ m m m +b }
+{%
+\begingroup%
+\initSeyesTab%
+\begin{NiceArrayWithDelims}{#1}{#2}[t]{#3}%
+#4
+\end{NiceArrayWithDelims}%
+\endgroup%
+}{}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Les clés
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\newcommand{\setrdcrep}[1]{%
+    \pgfkeys{/crep/.cd,#1}%
+}
+
+
+\newcommand{\resetcrepcounters}{%
+\setrdcrep{reset crep counter, reset tccrep counter}%
+}
+
+\newcommand{\setcrepcounter}[1]{%
+\crepcounter #1\relax%
+}
+
+\newcommand{\settccrepcounter}[1]{%
+\tccrepcounter #1\relax%
+}
+
+
+\pgfkeys{%
+    /crep/.is family,
+    /crep/.cd,
+    correction/.is if=crep@correction,
+    correction color/.code=\colorlet{crepcorrectioncol}{#1},
+    correction font/.store in=\crep@correction@font,
+    show crep/.is if=crep@show@crep,
+    seyes colors/.code 2 args=\colorlet{seyescolA}{#1}\colorlet{seyescolB}{#2},
+    dotfill command/.store in=\crep@dotfill@command,
+    seyes/.is if=crep@seyes,
+    reset crep counter/.code=\crepcounter 0\relax,
+    reset tccrep counter/.code=\tccrepcounter 0\relax,
+    set crep counter/.code=\crepcounter #1\relax,
+    set tccrep counter/.code=\tccrepcounter #1\relax,
+    default/.style={%
+        correction=false,
+        correction color=red,
+        correction font=\bfseries\boldmath,
+        show crep=true,
+        dotfill command=\dotfill,
+        seyes=false
+    },
+    default
+}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Les boîtes tcolorbox
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newcommand{\crep@detect@mathmode}{%
+\relax\ifmmode\crep@mathmodetrue\else\crep@mathmodefalse\fi%
+}
+
+\newcommand{\tccrep@content}[1]{%
+% crep@correction=true OU crep@normalcrep=true
+\ifnum\ifcrep@correction 1\else\ifcrep@normalcrep 1\else0\fi\fi%
+    =1 %
+\ifcrep@mathmode\ensuremath{#1}\else#1\fi%
+\else%
+{\crep@correction@font\ifcrep@mathmode\ensuremath{\vphantom{#1}}\else\vphantom{#1}\fi}%
+\ifcrep@dotfill\crep@dotfill@command\fi%
+\fi%
+}
+
+
+
+\NewTColorBox[auto counter]{crep}{ O{} }{%
+    crep/.cd,
+    crep@boxtype=crep,
+    crep default style,
+    crep@detect@seyes={#1},
+    #1,
+    crep@mode,% si mode = left|right, on bascule en sidebyside
+    crep box \number\numexpr\value{tcb@cnt@crep}+1\relax/.try,
+    crep@setprevdepth,
+    crep@setcrep
+}
+
+\AddToHook{env/crep/before}{\advance\crepcounter 1\relax}
+
+
+\NewTotalTCBox[auto counter]{\tccrep}{ O{} m m }{%
+    crep/.cd,
+    crep@boxtype=tccrep,
+    tcbox width=forced center,
+    width=#2,
+    tccrep default style,
+    crep@detect@seyes={#1},
+    #1,
+    tccrep@mode,
+    tccrep box \number\numexpr\value{tcb@cnt@tccrep}+1\relax/.try,
+    before upper pre=\bgroup\crep@correction@font\vphantom{\^Ep}\egroup,
+    tccrep@setprevdepth,% \crep@prevdepth = 0pt
+    crep@setcrep
+}{%
+\tccrep@content{#3}%
+}
+
+\AddToHook{cmd/tccrep/before}{\advance\tccrepcounter 1\crep@detect@mathmode}
+
+
+\NewTotalTCBox[use counter from=tccrep]{\tcfillcrep}{ O{} m }{%
+    crep/.cd,
+    crep@boxtype=tccrep,
+    tcbox width=forced left,
+    width=\crep@whatsleft,
+    tccrep default style,
+    crep@detect@seyes={#1},
+    #1,
+    tccrep@mode,
+    tccrep box \number\numexpr\value{tcb@cnt@tccrep}+1\relax/.try,
+    before upper pre=\bgroup\crep@correction@font\vphantom{\^Ep}\egroup,
+    tccrep@setprevdepth,% \crep@prevdepth = 0pt
+    crep@setcrep
+}{%
+\tccrep@content{#2}%
+}
+
+
+\AddToHook{cmd/tcfillcrep/before}{\advance\tccrepcounter 1\crep@detect@mathmode\crep@measure@remainder{\crep@whatsleft}}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Dembox
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\tcbset{%
+    dembox/.cd,
+    demskin/.store in=\crep@demboxskin,
+    demskin=regular,
+    %
+    dembox@settings/.code={%
+        \xdef\crep@seyes@skin{}%
+        {\tcbset{dembox/.cd, #1}\xdef\crep@seyes@skin{\crep@demboxskin}}%
+        \let\crep@demboxskin\crep@seyes@skin%
+        \ifcrep@normalcrep%
+            \pgfkeysalso{\crep@demboxskin/dembox normal crep}%
+        \else%
+            \pgfkeysalso{\crep@demboxskin/dembox correction}%
+        \fi%
+    },
+    /tcb/dembox/.search also={/tcb}
+}
+
+\tcbset{%
+    dembox/regular/.cd,
+    dembox correction/.style={
+        colframe=crepcorrectioncol,
+        coltext=crepcorrectioncol,
+    },
+    dembox normal crep/.style={
+        colframe=black,
+        coltext=black
+    },
+    dembox style/.style={%
+        enhanced jigsaw,
+        opacityback=0.05,
+        colback=black,
+        sharp corners,
+        frame hidden,
+        boxsep=0pt,
+        top=4pt, bottom=4pt, left=6pt, right=6pt,
+        boxrule=1pt,
+        interior code={%
+            \fill[tcbcolback, fill opacity=\kvtcb@opacityback] (frame.north west) rectangle (frame.south east);
+        },
+        finish={%
+            \draw[tcbcolframe, line width=\kvtcb@left@rule] ([shift={(-4mm,0.5*\pgflinewidth)}]frame.south east) -| ([shift={(-0.5*\pgflinewidth,4mm)}]frame.south east) ;
+            \draw[tcbcolframe, line width=\kvtcb@left@rule] ([xshift=0.5*\pgflinewidth]frame.north west) --++(0,-4mm) ;
+        }
+    },
+    dembox title/.style={%
+        adjusted title=#1,
+        attach boxed title to top left,
+        fonttitle=\sffamily\bfseries\scriptsize,
+        boxed title style={
+            sharp corners,
+            frame hidden, boxrule=0pt,
+            colback=tcbcolframe,
+            boxsep=2pt,
+            left=0pt, right=0pt, top=0pt, bottom=0pt
+        }
+    }
+}
+
+
+\tcbset{%
+    dembox/compact/.cd,
+    dembox compact title width/.code={
+        \setbox0\hbox{\tcbtitle}%
+        \tcbdimto\demboxcompacttitlewidth{\wd0+4pt+6pt}% title width + 2*boxsep title + boxsep compact box
+    },
+    dembox correction/.style={
+        colframe=crepcorrectioncol,
+        coltext=crepcorrectioncol,
+    },
+    dembox normal crep/.style={
+        colframe=black,
+        coltext=black
+    },
+    dembox style/.style={%
+        compact/dembox compact title width,
+        enhanced jigsaw,
+        opacityback=0.05,
+        colback=black,
+        sharp corners,
+        frame hidden,
+        boxsep=0pt,
+        top=4pt, bottom=4pt, left=6pt, right=6pt,
+        boxrule=1pt,
+        left=\demboxcompacttitlewidth,
+        interior code={%
+            \fill[tcbcolback, fill opacity=\kvtcb@opacityback] (frame.north west) rectangle (frame.south east);
+        },
+        finish={%
+            \draw[tcbcolframe, line width=\kvtcb@left@rule] ([shift={(-4mm,0.5*\pgflinewidth)}]frame.south east) -| ([shift={(-0.5*\pgflinewidth,4mm)}]frame.south east) ;
+            \draw[tcbcolframe, line width=\kvtcb@left@rule] ([xshift=0.5*\pgflinewidth]frame.north west) --++(0,-6mm) ;
+        }
+    },
+    dembox title/.style={%
+        adjusted title=#1,
+        attach boxed title to top left={yshift=-\tcboxedtitleheight},
+        fonttitle=\sffamily\bfseries\scriptsize,
+        boxed title style={
+            sharp corners,
+            frame hidden, boxrule=0pt,
+            colback=tcbcolframe,
+            boxsep=2pt,
+            left=0pt, right=0pt, top=0pt, bottom=0pt
+        }
+    }
+}
+
+
+
+\NewTotalTCBox{\dembox}{ O{} m +m }{%
+    on line, halign=center,
+    tcbox width=forced center,% permet de forcer le calcul de \tcb@w@upper
+    dembox/.cd,
+    dembox@settings={#1},% dans un crep normal ou non + détermination du skin
+    \crep@demboxskin/dembox title=#2,
+    \crep@demboxskin/dembox style,
+    #1
+}%
+{%
+\begin{minipage}[t]{\tcb@w@upper}
+\kvtcb@halignupper\vphantom{\^Ep}#3%
+\end{minipage}%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Goodies
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%   Seyesfig
+
+\tcbset{%
+    seyesfig/.style={
+        boxrule=1.128pt, colframe=seyescolA!90!black, colback=seyescolB!10,
+        halign=center, valign=center, boxsep=2pt, lefttitle=5pt,
+        top=4pt, bottom=4pt,
+        fonttitle=\bfseries\boldmath
+    }
+}
+
+
+%%%%%   Seyesrep
+
+
+\tcbset{%
+    crep/seyesrep style/.style={
+        seyes lower, top=0pt, middle=0.5mm, boxrule=0.7pt,
+        frame style={}, rounded corners, arc=1.5mm,
+        halign=center, valign=center, halign lower=center,
+        space to upper, bottom=1mm
+    }
+}
+
+\NewDocumentEnvironment{seyesrep}{ O{} +m +b }
+{%
+\begin{crep}[seyesrep style, #1]
+#3
+\tcblower
+#2
+\end{crep}%
+}
+{}
+
+
+%%%%%   assosbox
+
+\tcbset{%
+    assosbox common style/.style={
+        bicolor jigsaw, lower separated, % lower separated = important (sinon pas de bicolor)
+        frame style={}, boxrule=0.7pt, rounded corners,
+        sidebyside align=center seam,
+        colframe=black,
+    },
+    crep/.cd,
+    assosbox right/.style={
+        crep mode=right,
+        assosbox common style,
+        righthand width=#1,
+        halign lower=center,
+        colbacklower=seyescolA!15,
+        opacityback=0,
+    },
+    assosbox right/.default=1.5cm,
+    %
+    assosbox left/.style={
+        crep mode=left,
+        assosbox common style,
+        lefthand width=#1,
+        halign=center,
+        colback=seyescolA!15,
+        opacityback=1,
+        opacitybacklower=0,
+    },
+    assosbox left/.default=1.5cm,
+}
+
+
+\tcbset{
+    crep/assosbox/.cd,
+    box right/.code={\edef\crep@assosbox@pos{1}\pgfkeysalso{/tcb/crep/assosbox right=#1}},
+    box right/.default=1.5cm,
+    box left/.code={\edef\crep@assosbox@pos{0}\pgfkeysalso{halign lower=justify, /tcb/crep/assosbox left=#1}},
+    box left/.default=1.5cm,
+    /tcb/crep/assosbox/.search also={/tcb,/tcb/crep}
+}
+
+
+\def\TF@assosbox@right{%
+ \ifnum\crep@assosbox@pos=1 %
+   \expandafter\@firstoftwo%
+ \else%
+   \expandafter\@secondoftwo%
+ \fi%
+}
+
+
+\NewDocumentEnvironment{assosbox}{ O{} +m +b }
+{%
+\begin{crep}[assosbox/.cd, box right, #1]
+\TF@assosbox@right{#3}{#2}%
+\tcblower
+\TF@assosbox@right{#2}{#3}%
+\end{crep}%
+}
+{}
+
+
+%%%%%   fractions
+
+
+\tcbset{
+    crep/frac/.cd,
+    width/.store in=\crep@frac@width,
+    width=0.7cm,
+    crep for/.is choice,
+    crep for/both/.code=\edef\crep@frac@crepfor{0},
+    crep for/num/.code=\edef\crep@frac@crepfor{1},
+    crep for/den/.code=\edef\crep@frac@crepfor{2},
+    crep for/.default=both,
+    crep for=both,
+    crep num style/.code=\tcbset{crep/crep@frac@numstyle/.style={normal crep=false, seyes=false, #1}},
+    crep num style={},
+    crep den style/.code=\tcbset{crep/crep@frac@denstyle/.style={normal crep=false, seyes=false, #1}},
+    crep den style={},
+    crep style/.style={crep num style={#1}, crep den style={#1}}
+}
+
+\NewDocumentCommand{\tcfraccrep}{O{} m m}{%
+\begingroup%
+\tcbset{crep/frac/.cd, #1}%
+\ensuremath{%
+\dfrac{%
+% numérateur
+\ifnum\crep@frac@crepfor<2 %
+\tccrep[crep@frac@numstyle]{\crep@frac@width}{#2\vphantom{9}}%
+\else%
+#2%
+\fi%
+% /numérateur
+}%
+{%
+% dénominateur
+\ifnum\crep@frac@crepfor=1 %
+#3%
+\else%
+\tccrep[crep@frac@denstyle]{\crep@frac@width}{#3\vphantom{9}}%
+\fi%
+% /dénominateur
+}}%
+\endgroup%
+}

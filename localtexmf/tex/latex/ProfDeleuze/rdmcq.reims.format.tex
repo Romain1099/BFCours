@@ -1,0 +1,89 @@
+%%%%%%%%%%  Reims
+
+
+\definecolor{reims1}{HTML}{DDCFCF}% gris
+\definecolor{reims2}{HTML}{D0F03C}% vert
+\definecolor{reims3}{HTML}{FCF5EF}% questions
+\definecolor{reims4}{HTML}{BABFC0}% messages
+
+\newAnswerFormat{Reims}{vertical}%
+        {%  Zone Réponse
+        blankest}
+        [%  Mode Correction
+        colback=reims2,
+        ]%
+        {%  Réponses
+            enhanced jigsaw,
+            sidebyside, sidebyside gap=6pt, lower separated=false,
+            lefthand width=2em, sidebyside align=top seam,
+            halign upper=center, halign lower=justify,
+            colback=reims1, fuzzy shadow={0pt}{-0.5mm}{0mm}{0.05mm}{black!70!white}, %drop fuzzy midday shadow,
+            boxsep=3pt,
+            before upper={\tikz[baseline=(x.base), inner sep=0pt, outer sep=0pt]
+                     {\node (x) {\vphantom{\'Ep}};
+                      \draw[line width=1pt, white] (-0.4em,-0.4em) rectangle (0.4em,0.4em);
+                      \ifmcqbr{\node[red] at (0,0) {\ding{56}};}{}
+                      }}%
+                     \tcblower\vphantom{\'Ep}%
+        }
+
+\newAnswerFormat{Reims}{horizontal}%
+        {%  Zone Réponse
+        blankest}
+        [%  Mode Correction
+        colback=reims2,
+        ]%
+        {%  Réponses
+            enhanced jigsaw,
+            halign=center, valign=center,
+            colback=reims1, fuzzy shadow={0pt}{-0.5mm}{0mm}{0.05mm}{black!70!white}, %drop fuzzy midday shadow,
+            boxsep=3pt,
+            overlay={%
+                \node[anchor=center, circle, fill=white, text=\ifmcqbr{reims2}{reims1}, font=\sffamily\bfseries\scriptsize, minimum width=1.2em]
+                    at (frame.north west) {\char\numexpr64+\rdmcqAnswercount\relax};
+            }
+        }
+
+\newQuestionFormat{Reims}{% boîte externe
+opacityback=1, %frame engine=empty,
+leftrule=3pt, rightrule=0pt, toprule=0pt, bottomrule=0pt, colframe=reims1,
+colback=reims3,
+fuzzy shadow={0pt}{-0.5mm}{0mm}{0.05mm}{black!70!white}
+}%
+{%    boîte interne
+sidebyside, boxsep=3pt,
+sidebyside gap=7.5pt,%  3+1.5+3
+lefthand width=2em,
+sidebyside align=top seam, halign upper=center, halign lower=justify,
+before upper={\tikz[baseline=(x.base), inner sep=1pt, outer sep=0pt] \node[circle, fill=reims1, text=white, font=\sffamily\bfseries\tiny, minimum width=1.2em] (x) {\rdmcqQuestioncount};
+\tcblower}
+}
+
+\newMessageFormat{Reims}{%
+    boxsep=5pt, colback=reims1!50,
+}
+
+\newFooterFormat{Reims}%
+    {%  Left footer
+    enhanced jigsaw, sharp corners, arc=3mm, auto outer arc, rounded corners=south,
+    boxsep=5pt, colback=reims1, drop lifted shadow=black!70!white,
+    halign=center, valign=center, fontupper=\sffamily\bfseries\footnotesize,
+    }
+
+\newHeaderFormat{Reims}%
+    {%  Left header
+    enhanced jigsaw,
+    boxsep=5pt, colback=reims1,
+    sharp corners, arc=3mm, auto outer arc, rounded corners=northwest,
+    halign=center, valign=center, fontupper=\sffamily\bfseries,
+    coltext=reims3!50
+    }%
+    [%   Right header
+    enhanced jigsaw,
+    boxsep=5pt, colback=reims1,
+    sharp corners, arc=3mm, auto outer arc, rounded corners=northeast,
+    halign=center, valign=center, fontupper=\sffamily\bfseries,
+    coltext=reims3!50
+    ]
+
+\newMcqFormat[gather=Reims, column sep=1em, row sep=1em, answer row sep=0.5em]{Reims}{0pt}

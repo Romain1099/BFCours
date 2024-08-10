@@ -1,0 +1,217 @@
+\ProvidesPackage{bfcours-use_rdexo_rdcrep}[29/06/2024 - Cas d'utilisation de rdexo/crep etc pour bfcours]
+
+\definecolor{monrose}{HTML}{FF1493}
+% Nouvelle commande pour définir couleur_theme
+\newcommand{\setcouleurtheme}[1]{%
+    \ifnumequal{#1}{0}{%
+        \arrayrulecolor{black} % Noir si profseyes = 0
+    }{%
+        \arrayrulecolor{monrose} % monrose si profseyes = 1
+    }%
+}
+\newcommand{\repfill}[2][2cm]{
+\tcfillcrep[seyes]{\tccrep{#1}{#2}}}
+
+\newcommand{\measuretext}[1]{%
+  \settowidth{\textlength}{#1} % Mesure la longueur du texte
+  \the\textlength % Affiche la longueur
+}
+
+\newcommand{\repline}[2][1]{
+\begin{crep}[extra lines = #1]
+	#2
+\end{crep}
+}
+
+\newcommand{\repsim}[2][1.5cm]{
+\tccrep{#1}{#2}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Skin : bouyachakka
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tcbset{%
+    % les styles pour un skin doivent �tre rang�s dans la branche /tcb/rdexo/<nom du skin>
+    rdexo/bouyachakka/.cd,
+    % Couleurs
+    bg color/.initial=gray!20,
+    fg color/.initial=black,
+    frame color/.initial=black,
+    star fg color/.initial=orange,
+    star bg color/.initial=white,
+    star line color/.initial=black,
+    score fg color/.initial=black,
+    score bg color/.initial=gray!20,
+    tags bg color/.initial=black!70,
+    tags fg color/.initial=white,
+    title color/.forward to=/tcb/rdexo/exotitle color,
+    % Style optionnel
+    %exo style/.style={},
+    exo title style/.style={
+        adjusted title=\ding{110}~\thelabel\thenumexo*[~]\theExotitle*[~--~],
+        fonttitle=\sffamily\bfseries,
+        coltitle=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/fg color},
+        colbacktitle=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/bg color},
+        lefttitle=3pt, righttitle=3pt, toptitle=3pt, bottomtitle=3pt,
+        attach boxed title to top={yshift=-\tcboxedtitleheight+\rdexoheaderskip},
+        boxed title style={frame engine=empty, sharp corners, rounded corners=east, arc=6pt, rdexo/bouyachakka/score and level},
+        before upper pre=\TFTags{%
+                        \begin{tcolorbox}[rdexo/bouyachakka/tags tcolorbox, before=\vspace*{-\rdexoheaderskip+1ex}, after skip=\rdexoheaderskip]
+                        \thetags%
+                        \end{tcolorbox}}{}%
+    },
+    %   style optionnel pour la bo�te destin�e � contenir la lowerbox
+    lower style/.style={
+        boxsep=3pt
+    },
+    %   style optionnel pour les bo�tes lowerbox d�port�es
+    saved lower style/.style={
+        enhanced jigsaw,
+        opacityback=0,
+        fontupper=\footnotesize,
+        adjusted title=\ding{110}~\thelabel~\thelowernum~:,
+        coltitle=black,
+        fonttitle=\sffamily\footnotesize,
+        opacitybacktitle=0,
+        titlerule=0.6pt,
+        bottomtitle=1pt, toptitle=0pt,
+        top=5pt
+    },
+    % style optionnel pour les tags
+    tag style/.style={
+        enhanced jigsaw, on line, boxsep=3pt,
+        rdexo resest padding,
+        frame engine=empty, boxrule=0pt,
+        colback=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/tags bg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/tags fg color},
+        fontupper=\sffamily\bfseries\tiny,
+        before upper=\vphantom{\'Ey}
+    },
+    % Styles pour exo header=tcbox ou tcolorbox
+    header tcolorbox/.style={
+        bicolor jigsaw,
+        rdexo resest padding,
+        sidebyside, sidebyside align=center seam,
+        sidebyside gap=0pt, righthand width=2.8cm,
+        before upper=\vphantom{\'Ep},
+        before lower=\hspace*{3pt},
+        fontupper=\sffamily\bfseries,
+        colback=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/bg color},
+        colbacklower=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/score bg color},
+        colframe=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/frame color},
+        colupper=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/fg color},
+        collower=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/score fg color},
+        sharp corners,
+        halign lower=center,
+        fontlower=\TFScore{\sffamily\bfseries\scriptsize}{},
+        boxsep=3pt, arc=6pt, rounded corners=east,
+        frame engine=empty, boxrule=0pt,
+        after skip=0pt,% ! Important !
+    },
+    header tcbox/.style={
+        enhanced jigsaw,
+        on line,
+        rdexo resest padding,
+        fontupper=\sffamily\bfseries,
+        colback=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/bg color},
+        coltext=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/fg color},
+        boxsep=3pt, boxrule=0pt, frame engine=empty,
+        sharp corners,
+        rounded corners=east, arc=6pt,
+        width=\TFScore{\TFLevel{7cm}{6cm}}{6cm},
+        tcbox width=forced left,
+        rdexo/bouyachakka/score and level,
+        overlay app={
+            \TFTags{%
+                \node[anchor=north east, inner sep=0pt, outer sep=0pt] at ([xshift=-1em]frame.north west) {\thetags[1]};
+                    }{}
+        }
+    },
+    % Styles auxiliaires
+    tags tcolorbox/.style={
+        blankest,
+        after skip=0pt,
+        before skip=1ex,
+        halign=right
+    },
+    score and level/.style={
+        overlay={
+            \begin{tcbclipframe}
+                \fill[\pgfkeysvalueof{/tcb/rdexo/bouyachakka/score bg color}] ([xshift=-1.8cm]frame.north east) rectangle (frame.south east) coordinate[pos=0.5] (x);
+                \TFScore{%
+                    \node[inner sep=0pt, node font=\sffamily\bfseries\scriptsize, text=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/score fg color}] at (x) {};
+
+                    \TFLevel{%
+                        \node[inner sep=0pt, inner xsep=3pt, anchor=east] at ([xshift=-2.8cm]frame.east) {%
+                                \rdexostars[star color=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star fg color},
+                                    star background=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star bg color},
+                                    line color=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star line color}]{\thelevel}{3}%
+                            };
+                    }
+                    {}
+                }{%
+                    \TFLevel{%
+                        \node[inner sep=0pt] at (x) {%
+                            \rdexostars[line width=0pt, star color=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star fg color},
+                                star background=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star bg color},
+                                line color=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star line color}]{\thelevel}{3}};
+                            }%
+                            {}
+                }
+            \end{tcbclipframe}
+        }
+    },
+    exotitle tcbox/.style={
+        enhanced jigsaw,
+        on line,
+        rdexo resest padding,
+        boxsep=1.5pt,
+        sharp corners,
+        frame engine=empty,
+        interior engine=empty,
+        fontupper=\rdexotitlefont\itshape,
+        coltext=rdexotitlecol
+    }
+}
+
+\rdexoSkin{bouyachakka}%
+{%
+\tcbox[rdexo/bouyachakka/header tcbox]{\ding{110}~\thelabel\thenumexo*[~]}\TFTitle{~\tcbox[rdexo/bouyachakka/exotitle tcbox]{\frquote{\theexotitle}}}{}%
+}%
+{%
+\begin{tcolorbox}[rdexo/bouyachakka/header tcolorbox]
+\ding{110}~\thelabel\thenumexo*[~]\theExotitle*[~--~]%
+\hfill\TFScore{\TFLevel{\rdexostars[raise=-1pt, star color=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star fg color},
+                        star background=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star bg color},
+                        line color=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star line color}]{\thelevel}{3}}{}~\mbox{}}{}%
+\tcblower\TFScore{\scoreRD[\points]}{\TFLevel{\rdexostars[line width=0pt, star color=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star fg color},
+                        star background=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star bg color},
+                        line color=\pgfkeysvalueof{/tcb/rdexo/bouyachakka/star line color}]{\thelevel}{3}}{}}
+\end{tcolorbox}%
+\TFTags{%
+\begin{tcolorbox}[rdexo/bouyachakka/tags tcolorbox]
+\thetags%
+\end{tcolorbox}}{}%
+}
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+
+\endinput

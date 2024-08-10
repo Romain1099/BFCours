@@ -1,0 +1,142 @@
+\definecolor{melun1}{HTML}{b5dcd6}
+\definecolor{melun2}{HTML}{00ad98}
+\definecolor{melun3}{HTML}{007A6C}
+\definecolor{melun4}{HTML}{EFDCD2}%{e4f1ff}
+\definecolor{melun5}{HTML}{C17752}%{acb9d4}
+\definecolor{melun6}{HTML}{85FFF1}
+\definecolor{melun7}{HTML}{007A6C}
+
+\tcbset{%
+    melun frame title/.style={%
+        fonttitle=\bfseries\footnotesize,
+        lefttitle=1em,
+        toptitle=-3pt, bottomtitle=-3pt,
+        frame code={%
+                \fill[tcbcolframe] (interior.north west)--(interior.south west)--(frame.south west)--
+                                        ([shift={(-2pt,2pt)}]interior.north west)--([xshift=1.5em]frame.north west)--(frame.north east)--(interior.north east)--cycle;
+            }
+        }
+}
+
+\newcommand{\melunsquare}{%
+    \tikz[baseline=0.15em]{%
+         \fill[white] (0,0) rectangle (1em,1em);
+         \ifmcqbr{\node[overlay, red] at (0.5em,0.5em) {\ding{55}};}{}
+    }\hspace*{0.5em}%
+}
+
+\newQuestionFormat{Melun}
+{% boîte externe
+colback=melun1,
+opacityback=1, 
+colframe=melun2,
+leftrule=2pt,
+boxsep=5pt, 
+adjusted title=Question \rdmcqQuestioncount,
+melun frame title
+}%
+{% boîte interne
+valign=top, halign=justify,
+}
+
+\newAnswerFormat{Melun}{horizontal}%
+{% boîte externe
+}%
+[% mode correctif
+colback=melun4, colframe=melun5
+]%
+{% boîte interne
+enhanced jigsaw,
+boxsep=3pt,
+valign=center, halign=center,
+colback=melun1!50, colframe=melun3,
+adjusted title=\melunsquare{} R\'eponse \char\numexpr64+\rdmcqAnswercount\relax,
+fonttitle=\bfseries\footnotesize,
+toptitle=-1pt, bottomtitle=-1pt
+}
+
+
+\newAnswerFormat{Melun}{vertical}%
+{% boîte externe
+enhanced jigsaw,
+colback=melun1,
+boxsep=5pt
+}%
+[% mode correctif
+colbacklower=melun4, colback=melun5
+]%
+{% boîte interne
+bicolor, sidebyside, lefthand width=1.5em,%0.5em+6pt,
+boxsep=3pt, sidebyside gap=6pt, sidebyside align=top seam,
+colback=melun3, frame hidden,
+colbacklower=melun1!50,
+before upper=\melunsquare{}\tcblower,
+halign=center
+}
+
+
+\newMessageFormat{Melun}{%
+colback=melun1!50,
+opacityback=1,
+colframe=melun7,
+leftrule=2pt,
+boxsep=5pt,
+adjusted title=Information,
+melun frame title
+}
+[%
+enhanced jigsaw, notitle,
+frame hidden, boxsep=5pt,
+colback=melun1!50
+]
+
+
+\newHeaderFormat{Melun}%
+{% gauche
+enhanced jigsaw, boxsep=5pt,
+colframe=melun7, colback=melun1!50,
+coltext=melun7,
+left=3em,
+frame code={%
+        \begin{scope}
+            \clip ([xshift=1.5em]frame.south west)--([xshift=3em]frame.north west)--(frame.north east)--(frame.south east)--cycle;
+            \fill[tcbcolback] ([xshift=1.5em]frame.south west)--([xshift=3em]frame.north west)--(frame.north east)--(frame.south east)--cycle;
+            \draw[tcbcolframe, line width=4pt] ([xshift=1.5em]frame.south west)--([xshift=3em]frame.north west)--(frame.north east);
+        \end{scope}         
+    },
+interior engine=empty,
+halign=center, valign=center,
+fontupper=\sffamily\bfseries
+}%
+[% droite
+enhanced jigsaw,
+toprule=2pt, colframe=melun7, colback=melun1!50,  boxsep=5pt,
+halign=center, valign=center,
+]
+
+
+\newFooterFormat{Melun}%
+{% gauche
+enhanced jigsaw, boxsep=5pt,
+colframe=melun7, colback=melun1!50,
+coltext=melun7,
+left=3em,
+frame code={%
+        \begin{scope}
+            \clip (frame.north west)--([xshift=1.5em]frame.south west)--(frame.south east)--(frame.north east)--cycle;
+            \fill[tcbcolback] (frame.north west)--([xshift=1.5em]frame.south west)--(frame.south east)--(frame.north east)--cycle;
+            \draw[tcbcolframe, line width=4pt] (frame.north west)--([xshift=1.5em]frame.south west)--(frame.south east);
+        \end{scope}
+    },
+interior engine=empty,
+halign=center, valign=center,
+fontupper=\sffamily\bfseries
+}%
+[% droite
+enhanced jigsaw,
+bottomrule=2pt, colframe=melun7, colback=melun1!50,  boxsep=5pt,
+halign=center, valign=center,
+]
+
+
+\newMcqFormat[gather=Melun, column sep=4pt, answer column sep=4pt, row sep=4pt, answer row sep=4pt]{Melun}{0pt}

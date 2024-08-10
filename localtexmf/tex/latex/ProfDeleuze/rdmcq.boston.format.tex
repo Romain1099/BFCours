@@ -1,0 +1,106 @@
+%%%%%%%%%%%%%   Boston
+
+
+\definecolor{boston1}{HTML}{e5e5e5}
+\definecolor{boston2}{HTML}{fca311}
+\definecolor{boston3}{HTML}{ede7d9}
+\definecolor{boston4}{HTML}{4b4237}
+
+
+\newQuestionFormat{Boston}{% boîte externe
+frame engine=empty,
+colback=boston1,
+opacityback=1,
+sharp corners, arc=3mm, auto outer arc, rounded corners=north,
+}%
+{%   boîte interne
+    sidebyside, boxsep=4pt,
+    sidebyside gap=4pt,
+    lefthand width=2em,
+    sidebyside align=top seam, halign upper=center, halign lower=justify,
+    before upper={\tikz[baseline=(x.base), inner sep=1pt, outer sep=0pt] \node[circle, fill=white, opacity=0.75, text=black, font=\sffamily\bfseries\tiny, minimum width=1.2em] (x) {\rdmcqQuestioncount};
+    \tcblower}
+}
+
+\newAnswerFormat{Boston}{vertical}%
+        {%  Zone Réponse
+        enhanced jigsaw, frame engine=empty,
+        boxsep=3pt, opacityback=1, colback=boston1,
+        sharp corners, arc=3mm, auto outer arc, rounded corners=south,
+        }
+        [%  Mode Correction
+        colback=boston2, opacityback=0.25,
+        ]%
+        {%  Réponses
+        enhanced jigsaw, colframe=boston2, colback=white, opacityback=0.75,
+        rounded corners, arc=3mm, auto outer arc, boxrule=0.8pt,
+        boxsep=3pt,
+        valign=center, halign=left,
+        before upper={\rdmcqrb[check color=boston2]{}\hspace*{0.5em}}
+        }
+
+
+\newAnswerFormat{Boston}{horizontal}%
+        {%  Zone Réponse
+        enhanced jigsaw, frame engine=empty,
+        boxsep=3pt, opacityback=1, colback=boston1,
+        sharp corners, arc=3mm, auto outer arc, rounded corners=south,
+        }
+        [%  Mode Correction
+        colback=boston2, opacityback=0.25,
+        ]%
+        {%  Réponses
+        enhanced jigsaw, colframe=boston2, colback=white, opacityback=0.75,
+        rounded corners, arc=3mm, auto outer arc, boxrule=0.8pt,
+        boxsep=3pt,
+        valign=center, halign=left,
+        before upper={\rdmcqrb[check color=boston2]{}\hspace*{0.5em}}
+        }
+
+\newMessageFormat{Boston}%
+    {%  Left message
+    boxsep=5pt, colback=boston3, left=1em, frame engine=empty,
+    opacityback=1,
+    sharp corners, arc=3mm, auto outer arc, rounded corners=west,
+    overlay={
+        \begin{tcbclipinterior}
+            \fill[boston4] (interior.north west) rectangle ([xshift=1em]interior.south west)
+                node[midway, rotate=90, text=white, font=\sffamily\tiny\bfseries] {Info} ;
+        \end{tcbclipinterior}
+            }%
+    }
+    [%  Right message
+    boxsep=5pt, colback=boston3, right=1em, frame engine=empty,
+    opacityback=1,
+    sharp corners, arc=3mm, auto outer arc, rounded corners=east,
+    overlay={
+        \begin{tcbclipinterior}
+            \fill[boston4] (interior.south east) rectangle ([xshift=-1em]interior.north east) ;
+        \end{tcbclipinterior}
+            }%
+    ]
+
+\newFooterFormat{Boston}%
+    {%  Left footer
+    enhanced jigsaw,
+    boxsep=5pt, colback=boston4,
+    sharp corners, arc=3mm, rounded corners=south, auto outer arc,
+    halign=center, valign=center, fontupper=\sffamily\bfseries\footnotesize,
+    coltext=white,
+    fuzzy shadow={0pt}{1mm}{0mm}{0.1mm}{boston4}
+    }
+
+\newHeaderFormat{Boston}%
+    {%  Left header
+    enhanced jigsaw,
+    boxsep=5pt, colback=boston4,
+    sharp corners, arc=3mm, rounded corners=north, auto outer arc,
+    halign=center, valign=center, fontupper=\sffamily\bfseries\footnotesize,
+    coltext=white,
+    fuzzy shadow={0pt}{-1mm}{0mm}{0.1mm}{boston4}
+    }%
+
+\newMcqFormat[gather=Boston, same width, row sep=1em, 
+    question answer sep=-0.1pt,
+    answer columns=2, answer column sep=1em, answer row sep=0.5em]{Boston}{0pt}
+

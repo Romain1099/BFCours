@@ -1,0 +1,302 @@
+% Nom du fichier : bfcours-commands.sty
+\ProvidesPackage{bfcours-commands}[2024/06/29 v1.0 Macros pour bfcours]
+
+
+
+ \newcommand{\pascalc}{\textbf{Calculatrice interdite}}
+\newcommand\degree{\degres}
+
+% Définition des commandes et styles
+\setlength{\parindent}{0mm}
+\renewcommand{\arraystretch}{1.5}
+\setlength{\fboxsep}{3mm}
+\setlength{\headheight}{14.5pt}
+\setlength{\premulticols}{0pt}
+
+\newcounter{ExoMA}
+\newlength{\parindentMA}%
+\setlength{\parindentMA}{\parindent}
+\addtolength{\parindentMA}{30pt}
+\newcounter{pagecounter}
+\setcounter{pagecounter}{0}
+
+% Définition des thèmes et environnements
+% (Ajoutez ici les définitions de vos thèmes et environnements)
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+
+\def\points{\phantom{AAA}} %Pour indiquer les points dans les exos
+
+
+\newcounter{tikzfigcounter}
+\setcounter{tikzfigcounter}{0}
+
+
+\newcounter{profseyescounter}
+\setcounter{profseyescounter}{0}
+
+\newcommand{\masquerSiProf}[1]{%
+  \ifnum\value{profseyescounter}=0%
+    \phantom{#1}%
+  \else%
+    #1%
+  \fi%
+}
+
+\newlength{\myboxwidth}
+\newlength{\myboxheight}
+
+\newcommand{\seyesCMD}[6]{%
+  \settowidth{\myboxwidth}{\huge{#6}}%
+  \settoheight{\myboxheight}{#1em}%
+  \pgfmathsetmacro{\totalheight}{#1 * 3 * #3}%
+  \begin{tcolorbox}[%
+    enhanced,%
+    nobeforeafter,%
+    height=5 pt,%
+    capture=hbox,%
+    baseline={\the\dimexpr-\dp\strutbox+\ht\strutbox\relax},%
+    hbox,%
+    breakable,%
+    left=0pt,%
+    right=0pt,%
+    top=2pt,%
+    bottom=1pt,%
+    opacityback=0,
+    colback=transparent!0,% Rend le fond transparent
+    colframe=white,%
+    rounded corners,%
+    boxrule=0pt,%
+    %drop shadow,%
+    before upper={%
+      \begin{minipage}{\myboxwidth}%
+        %\pgfmathsetmacro{\linespreadfactor}{1 + 2 / #3}%
+        %\linespread{\linespreadfactor}\selectfont%
+        \tikz[overlay,remember picture] \coordinate (start);%
+        \phantom{\large{#6} } %si problemes mettre \phantom{\large{#6} }
+      \end{minipage}%
+    },%
+    after upper={%
+      \tikz[overlay,remember picture] \coordinate (end);%
+    },%
+    overlay={%
+      \begin{tikzpicture}[overlay, remember picture]%
+        \coordinate (A) at ([xshift=\myboxwidth]start);%
+        \coordinate (B) at ([xshift=\myboxwidth]end);%
+        \foreach \i in {1,...,#1} {%
+          \pgfmathsetmacro{\height}{\i * 3 * 1.9mm}%
+          \draw[blue!50, thin] ([xshift=#5, yshift=#2mm-\height]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height]A);%
+	  \draw[gray!50, ultra thin] ([xshift=#5, yshift=#2mm-\height+#3]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height+#3]A);%
+          \draw[gray!50, ultra thin] ([xshift=#5, yshift=#2mm-\height+3*#3]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height+3*#3]A);%
+          %\draw[gray!50, ultra thin] ([xshift=#5, yshift=#2mm-\height-#3]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height-#3]A);%
+          \draw[gray!50, ultra thin] ([xshift=#5, yshift=#2mm-\height+2*#3]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height+2*#3]A);%
+          %\draw[blue!50, ultra thin] ([xshift=#5, yshift=#2mm-\height+4*#3]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height+4*#3]A);%
+        }%
+      \end{tikzpicture}%
+    }%
+  ]%
+\noindent  \hspace{-\myboxwidth} \large{#6}
+  \end{tcolorbox}%
+}
+\newcommand{\seyesFrac}[6]{%
+  \settowidth{\myboxwidth}{\large{#6}}%
+  \settoheight{\myboxheight}{#1em}%
+  \pgfmathsetmacro{\totalheight}{#1 * 3 * #3}%
+  \begin{tcolorbox}[%
+    enhanced,%
+    nobeforeafter,%
+    height=7 pt,% Modifie la hauteur du texte dans la box
+    capture=hbox,%
+    baseline={\the\dimexpr-\dp\strutbox+\ht\strutbox\relax},%
+    hbox,%
+    breakable,%
+    left=0pt,%
+    right=0pt,%
+    top=-4.5pt,%
+    bottom=10pt,%
+    opacityback=0,
+    colback=transparent!0,% Rend le fond transparent
+    colframe=white,%
+    rounded corners,%
+    boxrule=0pt,%
+    %drop shadow,%
+    before upper={%
+      \begin{minipage}{\myboxwidth}%
+        %\pgfmathsetmacro{\linespreadfactor}{1 + 2 / #3}%
+        %\linespread{\linespreadfactor}\selectfont% MODIFIE POUR TETS, A REMETTRE AVC LIGNE DU DESSUS POUR LES FRACTIONS SEYES
+        \tikz[overlay,remember picture] \coordinate (start);%
+        \phantom{\large{#6} } %si problemes mettre \phantom{\large{#6} }
+      \end{minipage}%
+    },%
+    after upper={%
+      \tikz[overlay,remember picture] \coordinate (end);%
+    },%
+    overlay={%
+      \begin{tikzpicture}[overlay, remember picture]%
+        \coordinate (A) at ([xshift=1.2\myboxwidth]start);%
+        \coordinate (B) at ([xshift=1.2\myboxwidth]end);%
+        \foreach \i in {1,...,#1} {%
+          \pgfmathsetmacro{\height}{\i * 3 * 1.9mm}%
+          \draw[blue!50, thin] ([xshift=#5, yshift=#2mm-\height]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height]A);%
+	  \draw[gray!50, ultra thin] ([xshift=#5, yshift=#2mm-\height+#3]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height+#3]A);%
+          \draw[gray!50, ultra thin] ([xshift=#5, yshift=#2mm-\height+3*#3]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height+3*#3]A);%
+          \draw[gray!50, ultra thin] ([xshift=#5, yshift=#2mm-\height-#3]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height-#3]A);%
+          \draw[gray!50, ultra thin] ([xshift=#5, yshift=#2mm-\height+2*#3]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height+2*#3]A);%
+          \draw[blue!50, ultra thin] ([xshift=#5, yshift=#2mm-\height+4*#3]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height+4*#3]A);%
+          \draw[gray!50, ultra thin] ([xshift=#5, yshift=#2mm-\height-2*#3]start) -- ([xshift=#5-0.07cm, yshift=#2mm-\height-2*#3]A);%
+        }%
+      \end{tikzpicture}%
+    }%
+  ]%
+\hspace{-1.1\myboxwidth}\large{#6}% Ancien : \noindent  \hspace{-1.5\myboxwidth} \large{#6}
+  \end{tcolorbox}%
+}
+
+\newcommand{\score}[1][\hspace{0.4cm}]{\hfill \textbf{Score : \huge{\phantom{A}}\hspace{0.5cm} /} \Large{#1  }\hfill\phantom{a}}
+\newcommand{\scoreRD}[1][]{\tccrep[seyes=false]{1.2cm}{}{\Large /} \large{\points}}
+\newcommand{\mysquare}{
+    \tcbox[sharp corners, nobeforeafter, colback=white, colframe=black, size=small, boxsep=0pt, left=4pt, right=4pt, top=4pt, bottom=4pt, halign=center, valign=center, boxrule=1.5pt]{}
+}
+
+\makeatletter
+\newcommand{\tableaucolorfract}[7]{
+    \@ifundefined{c@colored}{\newcounter{colored}}{}
+    \begin{multicols}{2}
+	\begin{spacing}{1.5}
+    \noindent \textbf{Consigne :} \\ Colorier en vert la fraction du quadrillage ci-contre correspondant à la fraction : $\frac{#5}{#6}$\\
+    \ifx\relax#7\relax
+        \textbf{Explication :} \\ Puisqu'il y a $#1 \times #2$ carreaux et qu'on en veut les $\frac{#5}{#6}$, il suffit de colorier \\
+	$\pgfmathtruncatemacro{\numtoexplain}{ #1*#2 }\numtoexplain{} 
+	 \times  #5  \div  #6 = $
+        \pgfmathtruncatemacro{\numtocolor}{#1*#2*#5/#6}\numtocolor{} carreaux.
+    \fi
+	\end{spacing}
+    \columnbreak
+    \begin{tikzpicture}
+        \pgfmathtruncatemacro{\numtocolor}{#1*#2*#5/#6}
+        \setcounter{colored}{0}
+        \foreach \i in {0,...,\numexpr#1-1\relax} {
+            \foreach \j in {0,...,\numexpr#2-1\relax} {
+                \ifx\relax#7\relax
+                    \ifnum \value{colored} < \numtocolor
+                        \fill[green] (\i*#3,\j*#3) rectangle ++(#3,#3);
+                        \addtocounter{colored}{1}
+                    \fi
+                \fi
+                \draw[#4, ultra thin] (\i*#3,\j*#3) rectangle ++(#3,#3);
+            }
+        }
+    \end{tikzpicture}
+    \end{multicols}
+	\hrule
+}
+\makeatother
+
+\newcommand{\repegal}[1]{%
+  \pgfmathtruncatemacro{\numlines}{#1 - 1}
+ \ifnum\numlines>0 % Si \numlines est supérieur à 0
+    \foreach \n in {1,...,\numlines} {%
+      \noindent = \dotfills \\ \ \\
+    }%
+  \fi
+  = \dotfills % Cette ligne sera toujours exécutée
+}
+
+\newcommand{\repModa}[3]{%
+  \pgfmathtruncatemacro{\numlines}{#1 - 1} % Calcul de #1 - 1
+  \noindent \\ \textbf{#2} % Affiche le préambule
+  \ifnum\numlines>0 % Si \numlines est supérieur à 0
+    \foreach \n in {1,...,\numlines} {%
+      \noindent  #3 \dotfills \\ \ \\
+    }%
+  \fi
+   #3 %\dotfills % Cette ligne sera toujours exécutée
+}
+\newcommand{\repModaAuto}[5]{%
+   \boxrepHead{#1}{#2}{#3}{#5}{#4}
+    }
+\newcommand{\repModaSimple}[2]{%
+\repModaAuto{1}{#2}{#1}{1}{1}
+}
+%utilisation : \repModa{1}{Décomposition}{:} ou encore \repModa{3}{Décomposer puis simplifier}{}
+\newcommand{\repModaLC}[3]{%
+  \pgfmathtruncatemacro{\numlines}{#1 - 1} % Calcul de #1 - 1
+  \noindent \\ #2 % Affiche le préambule
+  \ifnum\numlines>0 % Si \numlines est supérieur à 0
+    \foreach \n in {1,...,\numlines} {%
+      \noindent  #3 \dotfill \\ \ \\.
+    }%
+  \fi
+   #3 \dotfill % Cette ligne sera toujours exécutée
+}
+\newcommand{\emptySquare}{%
+  \tikz{%
+    \draw[black, line width=1pt, drop shadow={shadow xshift=0.08em, shadow yshift=-0.08em, fill=gray!70}] (0,0) rectangle (0.25,0.25);
+  }%
+}
+\newcommand{\repModaDoubleCheck}[3]{%
+  % Affiche les options à cocher
+  \noindent \qquad \emptySquare{} #1 \vrule \quad \emptySquare{} #2 \\ 
+  % Affiche "Justification :"
+  \noindent Justification : #3 
+}
+\newcommand{\repModaDoubleOptions}[4]{%
+  % Affiche les options à cocher
+  \noindent \qquad \emptySquare{} #1 \vrule \quad \emptySquare{} #2 \\ \ \\
+  % Affiche "Justification :"
+  \noindent #3 
+  % Calcul du nombre de lignes de pointillés
+  \pgfmathtruncatemacro{\numlines}{#4 - 1}
+  % Affiche les lignes de pointillés
+  \ifnum\numlines>0
+    \foreach \n in {1,...,\numlines} {%
+      \noindent \dotfills \dotfill \\ \ \\
+    }%
+	\dotfills
+  \fi
+  \noindent \dotfill % Cette ligne sera toujours exécutée
+}
+ \newcounter{linecounter}
+\newcommand{\repModaLignes}[3]{%
+  \setcounter{linecounter}{0}
+  \pgfmathtruncatemacro{\numlines}{#1 - 1} % Calcul de #1 - 1
+  \noindent #2 % Affiche le préambule
+  \ifnum\numlines>0 % Si \numlines est supérieur à 0
+    \foreach \n in {1,...,\numlines} {%
+     \addtocounter{linecounter}{1}
+      \noindent  (l.\arabic{linecounter}) #3 \dotfills \\ \ \\
+    }%
+  \fi
+   (l.\arabic{linecounter}) #3 \dotfills % Cette ligne sera toujours exécutée
+}
+
+\newcommand{\tableaucompetence}[1]{
+Je m'auto-évalue \textbf{avant} de commencer la fiche d'exercices, puis \textbf{à la fin} de la fiche d'exercices : 
+    \begin{table}[h]
+        \begin{tabular}{|>{\raggedright\arraybackslash}p{0.7\textwidth}|*{4}{>{\centering\arraybackslash}p{0.05\textwidth}|}}
+            \hline
+            \centering\textbf{Compétences travaillées} & \textbf{MI} & \textbf{MF} & \textbf{MS} & \textbf{TBM} \\
+            \hline
+            #1
+        \end{tabular}
+    \end{table}
+    \hrule
+}
+\newcommand{\tableaucompetenceEval}[1]{
+    \begin{table}[h]
+        \begin{tabular}{|>{\raggedright\arraybackslash}p{0.7\textwidth}|*{4}{>{\centering\arraybackslash}p{0.05\textwidth}|}}
+            \hline
+            \centering\textbf{Compétences évaluées} & \textbf{MI} & \textbf{MF} & \textbf{MS} & \textbf{TBM} \\
+            \hline
+            #1
+        \end{tabular}
+    \end{table}
+    \hrule
+}
+
+\newcommand{\competence}[1]{
+    \textcolor{black}{\faPen} #1 & & & & \\
+    \hline
+}
+\newcounter{exerciceBCounter}
+
+\endinput
