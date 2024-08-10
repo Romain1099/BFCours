@@ -1,0 +1,142 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+
+\newcommand{\vocref}[2]{\href{#1}{\color{monrose}#2}}
+\begin{document}
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{1}
+
+\chapitre[
+    \textbf{BF}
+    ]{
+    Comment démarrer avec \LaTeX% theme
+    }{
+    Boum% type_etablissement
+    }{
+    Factory% nom_etablissement
+    }{
+    % supplement ( laisser à % si vide )
+    }{
+    Document explicatif :
+    }
+
+\section{Comment fonctionne \LaTeX ?}
+
+\LaTeX est un langage de programmation développé par \vocref{https://fr.wikipedia.org/wiki/Donald_Knuth}{Donald knuth} dans les années 1980 qui permet de construire des documents pdf en gérant la \textbf{structure} du document de façon semi-automatique.\\
+
+Le principe est simple : on crée des commandes, des environnements, des packages qui permettent d'obtenir de nombreuses fonctionnalités.\\
+
+Le logiciel est gratuit et \textbf{open source} et dispose d'une \textbf{largre communauté} notamment scientifique. \\
+
+N'importe quel document texte comportant l'extension \frquote{.tex} peut être considéré comme un fichier \LaTeX. \\
+
+\subsection{Quelques liens}
+
+\textbf{Les essentiels :}\\
+\begin{itemize}[label = \bccrayon]
+	\item Pour \textbf{télécharger un compilateur} \LaTeX : \vocref{https://miktex.org/download}{MikTeX}
+	\item Le forum \LaTeX par excellence : \vocref{https://tex.stackexchange.com/}{LaTeX stack exchange}
+	\item Le repo principal des packages en ligne. C'est là que l'on trouve la plupart des \textbf{documentations} : \vocref{https://ctan.org/}{CTAN}\\
+		Je l'utilise surtout depuis un moteur de recherche externe : \frquote{<nom\_du\_package> CTAN}
+	\item Pour télécharger mon package \frquote{bfcours} et ses à-côtés : \vocref{https://github.com/Romain1099/BFCours.git}{BFCours}
+\end{itemize}
+
+\textbf{Les non-moins importants :}\\
+
+\begin{itemize}[label=\bccrayon]
+
+	\item Document d'explications générales en \LaTeX : \vocref{https://tuteurs.ens.fr/logiciels/latex/}{site d'archives des tuteurs de l'ENS}.\\On n'a pas fait plus concis et complet pour prendre \LaTeX en main.
+	\item Toutes les documentations de mon repo github : \\
+		\begin{itemize}[label=\faPen]
+			\item tcolorbox pour toutes les \textbf{boites} 
+			\item Tikz-euclide pour les constructions géométriques. Il est tout de même bon de noter que GeoGebra permet l'export d'une figure comme code LaTeX - tikz.
+			\item TikZ pour l'impatient $\longrightarrow$ TikZ est le module de \textbf{dessin} de \LaTeX par excellence. Des bases sont à \textbf{maîtriser} pour bien progresser en \LaTeX. 
+			\item rdexo et rdcrep - packages pour l'enseignement ou la présentation de ressources. 
+		\end{itemize}
+	
+\end{itemize}	
+
+\section{Comment installer \LaTeX ?}
+
+\subsection{Installation}
+
+Aller sur la page de téléchargement de MikTeX et choisir la version \textbf{adaptée à votre système d'exploitation}.\\
+\textbf{Cocher} l'option \textbf{installer les packages à la volée} ( on-the-fly ) pour permettre plus de souplesse dans les premières compilations.\\
+\textbf{Décocher} l'option d'installation pour tous les utilisateurs. Cela rend plus simple l'utilisation de la console MikTeX.
+
+
+\subsection{Setup du répertoire des packages locaux}
+
+Suivre les étapes suivantes \textbf{une seule fois} :
+\begin{enumerate}
+	\item Coller le dossier \textbf{localtexmf} récupéré sur mon repo github \textbf{n'importe ou sur votre machine}. L'essentiel est qu'il reste à cet emplacement. \\
+	\item Copier le chemin d'accès de ce dossier. \\
+	\item Ouvrir la \frquote{console MikTeX} et aller au menu \frquote{Settings}.
+	\item Aller dans l'onglet \frquote{Directories}.
+	\item Appuyer sur le bouteon \frquote{+} et \textbf{coller} le chemin d'accès au dossier \textbf{localtexmf}.
+	\item Confirmer les changements et quitter la console. 
+\end{enumerate}
+
+Parfait : vous pouvez utiliser le package bfcours et les packages de Régis Deleuze ( suite rd ) dans vos documents. 
+
+\subsection{Première compilation}
+
+Ouvrir le document \frquote{new\_document.tex}. \\
+Dans l'application \textbf{TeXWork} qui s'ouvre, on accède au code source de la page qu'il faut \textbf{compiler}.\\
+
+Pour cela, avec le package \textbf{bfcours} il est nécessaire d'utiliser le compilateur \frquote{LuaLaTeX} qui permet d'accéder à des programmes secondaires ( code en langage lua ).\\
+Sélectionner le compilateur \frquote{LuaLaTeX} dans la barre de sélection en haut à gauche de l'écran. \\
+Compiler ensuite votre premier document en cliquant sur le \textbf{triangle vert} en haut à gauche de l'écran. \\
+
+
+\section{Mes habitudes}
+
+Pour produire des documents de façon aisée, il est nécessaire de réfléchir à une structure des fichiers. \\
+
+On pourra s'inspirer du fonctionnement de mes \frquote{notes de stages} en herboristerie : \vocref{https://github.com/Romain1099/Herboristerie-2024.git}{Stage Arsimed 2024}\\
+
+L'IDE \textbf{VScode} offre de nombreuses extensions dédiées à \LaTeX à explorer. De simples modules d'autocomplétion permettront une bien meilleure expérience. \\
+
+Extension \textbf{PDF Viewer} qui permet de lire des documents pdf directement dans VScode.\\
+Il doit y avoir un module permettant de compiler directement des documents latex dans VScode mais je n'ai plus la référence en tete. 
+
+
+\end{document}
