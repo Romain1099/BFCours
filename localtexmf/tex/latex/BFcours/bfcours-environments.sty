@@ -2,16 +2,7 @@
 \ProvidesPackage{bfcours-environments}[2024/06/29 v1.0 Environnements pour bfcours]
 
 
-\definecolor{defi}{RGB}{56,128,77}
-\definecolor{ex}{RGB}{39,61,112}
-\definecolor{nota}{RGB}{144,55,222}
-\definecolor{rem}{RGB}{128,128,128}
-\definecolor{thm}{RGB}{207,8,77}
-\definecolor{prop}{RGB}{255,0,0}
-\definecolor{demo}{RGB}{255,128,0}
-\definecolor{act}{RGB}{255,128,0}
-\definecolor{meth}{RGB}{151,74,0}
-
+% La gestion des couleurs se passe dans le fichier 'bfcours-colors.sty'
 
 
 \tcbset{enhanced,
@@ -38,6 +29,7 @@ fonttitle=\bfseries\large,
 #3
 \end{exo}
 }
+
 
 \newtcolorbox{Env}[2][]{enhanced,
 before skip=2mm,after skip=2mm,
@@ -83,8 +75,7 @@ overlay={
         \end{#1}
 }
 
-\NewDocumentEnvironment{Theo}{o +b}{
-%\newtcolorbox{Theo}[2][]{
+\NewDocumentEnvironment{Theoreme}{o +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -118,14 +109,29 @@ overlay={
     ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
 \ifx#1\empty
     \else
-      \node[anchor=north east, fill=white, draw=defi!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+      \node[anchor=north east, fill=white, draw=thm!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
     \fi%
 }
 ]
-
+\CouleurTexteAccent{thm}
+\CouleursTabular{thm}{thm}{white}{thm!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{thm}{Salmon!30!white}{black}{yellow!10!white}{thm}
+\couleurItem{thm}
 #2
-
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
 \end{tcolorbox}
+}
+
+\NewDocumentEnvironment{Theo}{o +b}{
+  \begin{Theoreme}[#1]
+    #2
+  \end{Theoreme}
 }
 
 \newtcolorbox{TheoA}[2][thm]{enhanced,
@@ -155,8 +161,9 @@ coltitle =#1!80!black!}
 %colback=yellow!10!white,colframe=red!50!black,colbacktitle=Salmon!30!white,
 %coltitle=black,center title}
 
+
 %Définitions
-\NewDocumentEnvironment{Defi}{o +b}{
+\NewDocumentEnvironment{Definition}{o +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -190,91 +197,81 @@ overlay={
     ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
 \ifx#1\empty
     \else
-      \node[anchor=north east, fill=white, draw=defi!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
-    \fi%
+    % Calcul dynamique de la largeur avec \dimexpr
+    \node[anchor=north east, fill=white, draw=defi!50, rounded corners] 
+    at ([xshift=-0.1\columnwidth]frame.north east) 
+    {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+      \centering \textbf{#1}
+    \end{minipage}}; % Correctement fermer la minipage ici
+  \fi%
 }
 ]
 
+\CouleurTexteAccent{defi}
+\CouleursTabular{defi}{defi}{white}{defi!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{defi}{defi!30!white}{black}{defi!5}{defi}
+\couleurItem{defi}
 #2
-
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
 \end{tcolorbox}
 }
 
-\NewDocumentEnvironment{DEUXDefi}{o +b}{
-\begin{tcolorbox}[
-enhanced,
-before skip=2mm,after skip=2mm,
-colback=defi!5,colframe=defi!50,boxrule=0pt,
-attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
-varwidth boxed title*=-3cm,
-boxed title style={frame code={
-\path[fill=white!20!defi]
-([yshift=-1mm,xshift=-1mm]frame.north west)
-arc[start angle=0,end angle=180,radius=1mm]
-([yshift=-1mm,xshift=1mm]frame.north east)
-arc[start angle=180,end angle=0,radius=1mm];
-\path[left color=defi!100!black,right color=defi!100!black]
-([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
-[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
--- (frame.south east) -- (frame.south west)
--- ([xshift=-1mm,yshift=-1mm]frame.north west)
-[sharp corners]-- cycle;
-},interior engine=empty,
-},
-fonttitle=\bfseries,
-title={\large{Définition}},
-coltitle =white,
-drop shadow,
-borderline west={0.05mm}{0pt}{defi!80},
-borderline south={0.05mm}{0pt}{defi!80!black},
-overlay={
-  \draw[line width=0.5mm, defi!50] 
-    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
-  \draw[line width=0.5mm, defi!50] 
-    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
-\ifx#1\empty
-    \else
-      \node[anchor=north east, fill=white, draw=defi!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
-    \fi%
-  %\node[anchor=north east, fill=white, draw=defi!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth}\textbf{#1} \end{minipage}}; % Boîte en overlay
-}
-]
+%\NewDocumentEnvironment{Defi}{o}{
+%  \begin{Definition}[#1]
+%}{
+%  \end{Definition}
+%}
 
-#2
 
-\end{tcolorbox}
-}
 
-\newtcolorbox{DefiTROIS}[1][]{
-  enhanced,
-  before skip=2mm,
-  after skip=2mm,
-  colback=defi!5,
-  colframe=defi!50,
-  boxrule=0pt,
-  attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
-  varwidth boxed title*=-3cm,
-  boxed title style={frame code={
-    % ... (same as before)
-  }},
-  fonttitle=\bfseries,
-  title={\large{Définition}},
-  coltitle=white,
-  drop shadow,
-  borderline west={0.05mm}{0pt}{defi!80},
-  borderline south={0.05mm}{0pt}{defi!80!black},
-  overlaytext={},
-  code={\def\overlaytext{#1}},
-  overlay={
-    % ... (same as before)
-    \if\relax\detokenize{\overlaytext}\relax
-    \else
-      \node[anchor=north east, fill=white, draw=defi!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth}\underline{\textbf{\overlaytext}} \end{minipage}};
-    \fi
-  }
-}
 %Exemples
-\NewDocumentEnvironment{Exemple}{o +b}{
+\tcbset{
+    exempleboxstyle/.style={
+        colback=gray!5, % Couleur de fond de la box (blanc pour ne pas cacher les traits)
+        colframe=black,  % Couleur de la bordure
+        fonttitle=\large\bfseries,
+        boxrule=0.5mm, % Épaisseur des bordures
+        coltitle=white,
+        sharp corners=south, % Coins droits en bas
+        rounded corners=northwest, % Coin en haut à gauche arrondi
+        attach boxed title to top left={yshift=-4mm, xshift=-2mm}, % Titre décalé vers la gauche
+        boxed title style={
+            colback=gray!80!black, % Fond du titre
+            colframe=gray!80!black, % Bordure autour du titre
+            sharp corners,
+            boxrule=0mm, % Pas de bordure pour le titre
+            rounded corners, % Coins arrondis pour le titre
+        },
+        before upper={}, % Ajouter un espacement avant le contenu
+        frame hidden, % On masque la bordure par défaut
+    }
+}
+
+\NewDocumentEnvironment{Exemple}{O{} +b}{
+\begin{tcolorbox}[title=Exemple(s), exempleboxstyle,overlay={ % Utilisation de TikZ pour ajouter les éléments de décoration
+            % Ligne verticale sous le titre
+            \draw[gray!80!black, line width = 1.5pt] (frame.north west)++(0.075,-0.2cm) -- ++(0,-2cm);
+            % Ligne horizontale à droite du titre
+            \draw[gray!80!black, line width = 1.5pt] (title.east) -- ++(3cm,0);
+            % Codage d'angle en bas à droite, corrigé pour être orienté vers le bas
+            \draw[gray!80!black, line width = 1.5pt] (frame.south east)++(-2cm,0.075cm) -- ++(1.925cm,0) -- ++(0,2cm);
+		\ifx#1\empty
+		    \else
+		      \node[anchor=west, fill=white, draw=gray!80!black, rounded corners] at ([xshift=3cm]title.east) {\begin{minipage}{0.5\columnwidth} \centering \textbf{#1} \end{minipage}};
+		    \fi%
+        },
+before upper={\vspace{0.5cm}}]
+\CouleurTexteAccent{nota!80!black}
+#2
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+\vspace{-0.2cm}
+}
+
+\NewDocumentEnvironment{OldExemple}{o +b}{
 \begin{tcolorbox}[enhanced,
 before skip=2mm,after skip=2mm,
 colback=ex!5,colframe=ex!50,boxrule=0pt,
@@ -292,7 +289,7 @@ arc[start angle=180,end angle=0,radius=1mm];
 -- (frame.south east) -- (frame.south west)
 -- ([xshift=-1mm,yshift=-1mm]frame.north west)
 [sharp corners]-- cycle;
-},interior engine=empty,
+},interior engine={},
 },
 fonttitle=\bfseries,
 title={\large{Exemple}\scriptsize{(s)}},
@@ -311,7 +308,6 @@ overlay={
     \fi%
 }
 ]
-
 #2
 
 \end{tcolorbox}
@@ -319,7 +315,7 @@ overlay={
 
 %Notations
 
-\NewDocumentEnvironment{Notation}{o +b}{
+\NewDocumentEnvironment{OldNotation}{o +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -353,19 +349,34 @@ overlay={
     ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
 \ifx#1\empty
     \else
-      \node[anchor=north east, fill=white, draw=nota!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+      \node[anchor=north east, fill=white, draw=nota!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
     \fi%
 }
 ]
 
+\CouleurTexteAccent{nota!80!black}
+\CouleursTabular{nota}{nota}{white}{nota!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{nota}{nota!30!white}{black}{nota!5}{nota}
 #2
 
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
 \end{tcolorbox}
 }
 
 
+\NewDocumentEnvironment{Notation}{o +b}{
+  \begin{cracked}[Notation][#1][defi][defi][3.5cm]
+    #2
+  \end{cracked}
+}
 
-%Notations
+
+%Vocabulaire
 
 \NewDocumentEnvironment{Vocabulaire}{o +b}{
 \begin{tcolorbox}[
@@ -401,20 +412,29 @@ overlay={
     ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
 \ifx#1\empty
     \else
-      \node[anchor=north east, fill=white, draw=nota!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+      \node[anchor=north east, fill=white, draw=nota!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
     \fi%
 }
 ]
-
+\CouleurTexteAccent{nota!80!black}
+\CouleursTabular{nota}{nota}{white}{nota!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{nota}{nota!30!white}{black}{nota!5}{nota}
+\couleurItem{nota}
 #2
-
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
 \end{tcolorbox}
 }
 
 
 %Aides
 
-\NewDocumentEnvironment{Aide}{o +b}{
+\NewDocumentEnvironment{OldAide}{o +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -448,20 +468,33 @@ overlay={
     ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
 \ifx#1\empty
     \else
-      \node[anchor=north east, fill=white, draw=nota!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+      \node[anchor=north east, fill=white, draw=nota!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
     \fi%
 }
 ]
 
+\CouleurTexteAccent{nota!80!black}
+\CouleursTabular{nota}{nota}{white}{nota!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{nota}{nota!30!white}{black}{nota!5}{nota}
 #2
 
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
 \end{tcolorbox}
 }
 
-
+\NewDocumentEnvironment{Aide}{o +b}{
+  \begin{cracked}[Aide][#1][nota][nota][2.5cm]
+    #2
+  \end{cracked}
+}
 %Démonstrations
 
-\NewDocumentEnvironment{Demo}{o +b}{
+\NewDocumentEnvironment{Demonstration}{o +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -495,15 +528,30 @@ overlay={
     ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
 \ifx#1\empty
     \else
-      \node[anchor=north east, fill=white, draw=nota!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+      \node[anchor=north east, fill=white, draw=demo!50, rounded corners] at ([xshift=-0.01\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
     \fi%
 }
 ]
 
+\CouleurTexteAccent{demo!80!black}
+\CouleursTabular{demo}{demo}{white}{demo!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{demo}{demo!30!white}{black}{demo!5}{demo}
+\couleurItem{demo}
 #2
-
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
 \end{tcolorbox}
 }
+%\NewDocumentEnvironment{Demo}{o +b}{
+%  \begin{Demonstration}[#1]
+%    #2
+%  \end{Demonstration}
+%}
 
 
 %Remarques 
@@ -554,7 +602,9 @@ overlay={
 %\definecolor{headerrmq}{RGB}{0, 128, 0} % Couleur du fond de l'en-tête
 \NewDocumentEnvironment{Remarque}{o +b}{
     \begin{bclogo}[noborder=true,logo={\bccrayon},arrondi=0.1,barre=snake]{Remarques :}
-        #2
+      \CouleurTexteAccent{thm!80!black}
+      #2
+      \ResetCouleurTexteAccent
     \end{bclogo}
 }
 
@@ -597,13 +647,23 @@ overlay={
     ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
 \ifx#1\empty
     \else
-      \node[anchor=north east, fill=white, draw=rem!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+      \node[anchor=north east, fill=white, draw=rem!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
     \fi%
 }
 ]
 
+\CouleurTexteAccent{rem!80!black}
+\CouleursTabular{rem}{rem}{white}{rem!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{rem}{rem!30!white}{black}{rem!5}{rem}
+\couleurItem{rem}
 #2
-
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
 \end{tcolorbox}
 }
 
@@ -737,13 +797,23 @@ overlay={
     ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
 \ifx#1\empty
     \else
-      \node[anchor=north east, fill=white, draw=prop!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+      \node[anchor=north east, fill=white, draw=prop!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
     \fi%
 }
 ]
 
+\CouleurTexteAccent{prop!80!black}
+\CouleursTabular{prop}{prop}{white}{prop!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{prop}{prop!30!white}{black}{prop!5}{prop}
+\couleurItem{prop}
 #2
-
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
 \end{tcolorbox}
 }
 
@@ -754,6 +824,7 @@ overlay={
 \NewDocumentEnvironment{Activite}{o +b}{
 \begin{tcolorbox}[
 enhanced,
+breakable,
 before skip=2mm,after skip=2mm,
 colback=act!5,colframe=act!50,boxrule=0pt,
 attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
@@ -785,15 +856,26 @@ overlay={
     ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
 \ifx#1\empty
     \else
-      \node[anchor=north east, fill=white, draw=act!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+      \node[anchor=north east, fill=white, draw=act!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
     \fi%
 }
 ]
 
+\CouleurTexteAccent{act!80!black}
+\CouleursTabular{act}{act}{white}{act!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{act}{act!30!white}{black}{act!5}{act}
+\couleurItem{act}
 #2
-
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
 \end{tcolorbox}
 }
+
 
 
 
@@ -832,13 +914,23 @@ overlay={
     ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
 \ifx#1\empty
     \else
-      \node[anchor=north east, fill=white, draw=meth!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+      \node[anchor=north east, fill=white, draw=meth!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
     \fi%
 }
 ]
 
+\CouleurTexteAccent{meth!80!black}
+\CouleursTabular{meth}{meth}{white}{meth!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{meth}{meth!30!white}{black}{meth!5}{meth}
+\couleurItem{meth}
 #2
-
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
 \end{tcolorbox}
 }
 
@@ -902,5 +994,83 @@ overlay={
 
 \end{PunitionBox}
 }
+
+\NewDocumentEnvironment{cracked}{O{Propriété} O{} O{orange} O{orange} O{2.5cm} +b}
+{%
+\begin{tcolorbox}[
+    enhanced,
+    frame code = {},
+    interior code = {},
+    colback=white,
+    drop shadow,
+    overlay={
+        % On dessine l'overlay du cadre sauf sous le titre
+        \filldraw[
+            decoration={random steps, segment length=0.4cm},
+            decorate,
+            draw=#3, % Utiliser la couleur passée en argument
+            ultra thick,
+            fill=#3!5!white
+        ] (frame.south west) rectangle (frame.north east);
+        
+        % Le node qui contient le titre avec une police sans empattement et en gras large
+        \node[
+            rotate=10,
+            anchor=north west,
+            align=center,
+            draw=#4, % Utiliser la couleur passée en argument
+            fill=#4, % Utiliser la couleur passée en argument
+            decoration={random steps, segment length=0.2cm},
+            decorate,
+            text=white,
+            text width=#5, % Largeur du titre ajustée
+            inner ysep=3pt,
+            inner xsep=5pt,
+            ultra thick,
+            font={\bfseries\fontsize{16pt}{20pt}\selectfont}, % Police sans empattement, large et gras
+        ] at ([xshift=-3mm, yshift=-3mm]frame.north west) {\centering\textbf{#1}}; % Titre personnalisé passé en argument
+
+        \ifx#2\empty
+      \else
+        \node[anchor=north east, fill=white, draw=#3!50, rounded corners] at ([xshift=-0.1\columnwidth,yshift=-0.25cm]frame.north east) 
+        {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+          \centering \textbf{#2}
+        \end{minipage}}; % Correctement fermer la minipage ici
+      \fi%
+    },
+    title={},
+    attach boxed title to top left={yshift=-6mm, xshift=-1mm},
+    boxed title style = {
+        interior code = {}, 
+        frame code = {},
+        center title,
+    },
+    title style = {\color{white}},
+    colframe=#3, % Couleur du cadre passée en argument
+    colback=white,
+    fonttitle = {\large\textbf},
+    left=5mm,   % Ajuster la marge à gauche
+    right=5mm,  % Ajuster la marge à droite
+    top=10mm,   % Ajuster la marge en haut (ajouté plus de marge pour le titre)
+    bottom=5mm, % Ajuster la marge en bas
+    drop fuzzy shadow,
+]
+}
+{%
+\CouleurTexteAccent{#3!80!black}
+\CouleursTabular{#3}{#3}{white}{#3!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{#3}{#3!30!white}{black}{#3!5}{#3}
+\couleurItem{#3}
+#6
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+
+\end{tcolorbox}
+}
+%\begin{cracked}[Exemple][red][red] test \end{cracked}
+
+
 
 \endinput

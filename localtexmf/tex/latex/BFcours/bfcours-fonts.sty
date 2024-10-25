@@ -1,6 +1,10 @@
 % Nom du fichier : bfcours-fonts.sty
 \ProvidesPackage{bfcours-fonts}[2024/06/29 v1.0 Polices pour bfcours]
 
+%%%%
+%Le fichier n'est actuellement pas appelé par le package.
+%Les spolices sont gérées dans bfcours.sty
+%%%%
 \RequirePackage{unicode-math}
 \setmainfont{fourier}%{TeX Gyre Schola}
 \setmathfont{TeX Gyre Schola Math}
@@ -8,6 +12,7 @@
 
 \RequirePackage{fontawesome5}
 \RequirePackage{siunitx}
+\sisetup{output-decimal-marker={,}}
 \RequirePackage{xfp}
 
 \endinput

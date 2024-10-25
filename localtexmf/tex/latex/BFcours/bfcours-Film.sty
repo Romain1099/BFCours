@@ -1,0 +1,114 @@
+\ProvidesPackage{bfcours-Film}[2024/09/09 v1.0 Outils de réalisation d'un film d'images pour bfcours]
+
+\newlength{\oH}
+\newlength{\oW}
+\newlength{\rH}
+\newlength{\rW}
+\newlength{\cH}
+\newlength{\cW}
+
+\newcommand\ClipImage[3]{% width, height, image
+\settototalheight{\oH}{\includegraphics{#3}}%
+\settowidth{\oW}{\includegraphics{#3}}%
+\setlength{\rH}{\oH * \ratio{#1}{\oW}}%
+\setlength{\rW}{\oW * \ratio{#2}{\oH}}%
+\ifthenelse{\lengthtest{\rH < #2}}{%
+    \setlength{\cW}{(\rW-#1)*\ratio{\oH}{#2}}%
+    \adjincludegraphics[height=#2,clip,trim=0 0 \cW{} 0]{#3}%
+}{%
+    \setlength{\cH}{(\rH-#2)*\ratio{\oW}{#1}}%
+    \adjincludegraphics[width=#1,clip,trim=0 \cH{} 0 0]{#3}%
+}%
+}
+
+
+% %
+% % Explanation for movie film strip cells: 
+% %
+% %  The basic cell is made of a black colorbox (colorbox).
+% %              \colorbox{color}{text} : same color as \textcolor{color}{text}
+% %  Multiple lines of text can be placed inside a colorbox providing that they are included in a minipage of a specified width.
+% %              \begin{minipage}{width} text \end{minipage}
+% %  The first and last lines of text are composed of nine small colored (white) rules (boxes) equally spaced with \hfill. The color of each rule is the same as the textcolor.
+% %              \textcolor{color}{text}
+% %              \rule[depth]{width}{height}
+% %              \null is the same as \hbox{} and it can be used for a material which reserves no space but shows TeX that there is a box which is taken into account for typesetting (Herbert: http://tex.stackexchange.com/questions/24919/what-is-null-and-when-do-we-need-to-use-it)
+% %
+% %
+% %
+
+\newcommand{\whitebox}{\hfill\textcolor{white}{\rule[1mm]{1.8mm}{2.8mm}}\hfill}
+
+\newcommand{\SetColorForColoredSmallBoxes}[1]{%
+\def\ColoredSmallBox{\hfill\textcolor{#1}{\rule[1mm]{1.8mm}{2.8mm}}\hfill}}
+
+\SetColorForColoredSmallBoxes{white}
+
+\newcommand{\filmbox}[1]{%  ( Jonas Granholm )
+    \setlength{\fboxsep}{0pt}%
+    \colorbox{black}{%
+        \begin{minipage}{3.2cm}
+            \rule{0mm}{4.8mm}\whitebox\whitebox\whitebox\whitebox\whitebox%
+            \whitebox\whitebox\whitebox\whitebox\null\\%
+            \null\hfill\includegraphics[width=3cm]{#1}\hfill\null\\[1mm]%
+            \null\whitebox\whitebox\whitebox\whitebox\whitebox%
+            \whitebox\whitebox\whitebox\whitebox\null
+        \end{minipage}}}
+
+\newcommand{\filmboxClipImage}[1]{%
+    \setlength{\fboxsep}{0pt}%
+    \colorbox{black}{%
+        \begin{minipage}{3.2cm}
+            \rule{0mm}{4.8mm}%
+            \ColoredSmallBox\whitebox\ColoredSmallBox\whitebox\ColoredSmallBox
+            \whitebox\ColoredSmallBox\whitebox\ColoredSmallBox\null\\%
+            \null\hfill\ClipImage{3cm}{3cm}{#1}\hfill\null\\[1mm]%
+            \null\whitebox\whitebox\whitebox\whitebox\whitebox%
+            \whitebox\whitebox\whitebox\whitebox\null
+        \end{minipage}}}
+
+\newcommand{\filmboxClipTex}[2][4.5cm]{%
+    \setlength{\fboxsep}{0pt}%
+    \colorbox{black}{%
+        \begin{minipage}{#1}
+            \rule{0mm}{4.8mm}%
+            \ColoredSmallBox\whitebox\ColoredSmallBox\whitebox\ColoredSmallBox
+            \whitebox\ColoredSmallBox\whitebox\ColoredSmallBox\null%\\%
+            \null\hfill#2\hfill\null\\[1mm]%
+            \null\whitebox\whitebox\whitebox\whitebox\whitebox%
+            \whitebox\whitebox\whitebox\whitebox\null
+        \end{minipage}}}
+
+\newcommand{\filmTrois}[3]{
+\noindent
+\filmboxClipImage{#1}\filmboxClipImage{#2}\filmboxClipImage{#3}\\
+}
+\newcommand{\filmQuatre}[4]{
+\noindent
+\filmboxClipImage{#1}\filmboxClipImage{#2}\filmboxClipImage{#3}\filmboxClipImage{#4}\\
+}
+\newcommand{\filmCinq}[5]{
+\noindent
+\filmboxClipImage{#1}\filmboxClipImage{#2}\filmboxClipImage{#3}\filmboxClipImage{#4}\filmboxClipImage{#5}\\
+}
+\newcommand{\filmSix}[6]{
+\noindent
+\filmboxClipImage{#1}\filmboxClipImage{#2}\filmboxClipImage{#3}\filmboxClipImage{#4}\filmboxClipImage{#5}\filmboxClipImage{#6}\\
+}
+\newcommand{\filmMethodeQuatre}[4]{
+\noindent
+\filmboxClipTex{#1}\filmboxClipTex{#2}\filmboxClipTex{#3}\filmboxClipTex{#4}
+}
+\makeatletter
+\NewDocumentCommand{\filmt}{O{4.7cm} O{6cm} m m}{%
+	\noindent%
+	\filmboxClipTex[#1]{%
+    		\begin{tcolorbox}[colback=white,bicolor,nobeforeafter, colbacklower=gray!50, colframe=black,height=#2]%
+			#3%
+		\tcblower%
+			#4%
+ 	   	\end{tcolorbox}%
+	}%
+}%
+\makeatother
+\endinput

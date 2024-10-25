@@ -1,0 +1,107 @@
+% Nom du fichier : bfcours-environments.sty
+\ProvidesPackage{bfcours-sectionning}[2024/06/29 v1.0 Sections pour bfcours]
+
+
+\RequirePackage{graphicx}
+\RequirePackage[explicit]{titlesec}
+
+% Fonction Lua pour compter les caractères et calculer la largeur
+\begin{luacode*}
+function calc_width(text)
+  local char_count = string.len(text) -- Compte le nombre de caractères dans la chaîne
+  local char_width = 0.21 -- On estime qu'un caractère occupe 0.2 cm en moyenne
+  local total_width = char_count * char_width + 3 -- Largeur totale en cm
+  local max_width = 0.8 * 21 -- Estimation de 0.6\textwidth en cm (exemple : 0.6 * 21 cm = 12.6 cm)
+  local final_width = math.min(total_width, max_width) -- Prendre le maximum entre la largeur calculée 
+  tex.print(string.format("%.2f", final_width)) -- Affiche la largeur en cm
+end
+\end{luacode*}
+
+% Commande LaTeX pour calculer la largeur du texte
+\newcommand{\calcwidth}[1]{%
+  \directlua{calc_width("#1")}cm%
+}
+
+\tcbset{
+    SectionBox/.style={%
+        enhanced, 
+	   nobeforeafter,
+        boxsep = 0pt,
+	    left = 0pt,
+	    right = 4mm,
+	    top=0pt,
+	   bottom=0pt,
+        colback=white,
+		fonttitle=\Large\bfseries,
+        colframe=white,
+        attach boxed title to top left={yshift*=-\tcboxedtitleheight}, 
+        boxed title size=title,
+        boxed title style={%
+            sharp corners, 
+            rounded corners=northwest, 
+            colback=BaseColor!80!black, 
+            boxrule=0pt,
+		 height=0.9cm,
+		 top=3pt,
+		 bottom=3pt
+            %fontsize = 9pt,
+        },
+        underlay boxed title={%
+            \path[shade, left color=BaseColor!80!black, right color=BaseColor!80!black] (title.south west)--(title.south east) 
+                to[out=0, in=180] ([xshift=5mm]title.east)--
+                (title.center-|frame.east)
+                [rounded corners=\kvtcb@arc] |- 
+                (frame.north) -| cycle; 
+        },
+    },
+    plain/.style={colback=white,
+        colframe=white}
+    }
+
+\tcbset{
+  SubSectionBox/.style={
+enhanced, 
+colframe=white,
+colback=BaseColor!80!black,
+bicolor,
+boxsep = 0pt,
+	    left = 0pt,
+	    right = 20pt,
+	    top=6pt,
+		bottom=6pt,
+sharp corners=west,
+nobeforeafter, 
+halign upper=center,
+colbacklower=white, 
+colframe=white,
+sidebyside, % Mise en page côte à côte
+    sidebyside gap=5mm, % Espacement entre le titre et le contenu
+	lefthand width=1cm,
+    sidebyside adapt=none, % Proportion pour l'upper et lower (ici, upper est plus grand)
+left skip=1cm,
+overlay={% Code personnalisé pour dessiner le cadre avec arrondi
+      \draw[BaseColor!80!black, line width=2pt, rounded corners=10pt] (interior.north west) -- (interior.north east) -- (interior.south east) -- (interior.south west);
+    }
+}
+}
+
+%\definecolor{BaseColor}{cmyk}{0, 0.71, 0.22, 0.02} %rose un peu dégueu
+%\definecolor{BaseColor}{rgb}{0.6, 0.4, 6.8} %violet pas trop mal mais bon
+\definecolor{BaseColor}{rgb}{0.2, 0.2, 0.2}
+
+\titlespacing*{\section}{0pt}{0pt}{0pt}
+\titlespacing*{\subsection}{0pt}{0pt}{0pt}
+\titleformat{\section}[block]
+	{\gdef\sectionlabel{}
+	\Large\bfseries}
+	{\gdef\sectionlabel{\thesection\ }}{0pt}
+	{\noindent\begin{tcolorbox}[width=\textwidth,height=0.9cm,left=4mm,SectionBox,title=\color{white}{\thesection.\ #1}]\end{tcolorbox}}
+
+\titleformat{\subsection}[block]
+	{\gdef\subsectionlabel{}
+	\large\bfseries}
+	{\gdef\subsectionlabel{\thesubsection\ }}{0pt}
+  {\begin{tcolorbox}[SubSectionBox,width=\calcwidth{#1}]\color{white}{\thesubsection} \tcblower #1\end{tcolorbox}} % Utilisation de tcolorbox pour encadrer le titre
+
+
+\endinput

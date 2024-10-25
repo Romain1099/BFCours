@@ -1,4 +1,10 @@
 \ProvidesPackage{bfcours-entete-tableaux}[2024/06/29 v1.0 Tableaux pour bfcours]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%Commandes pour tableau numération%%%%%%%%%%%%
+%%%%%%%%%               Pas ouf, à revoir                %%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \newcommand{\drawComma}{%
   \begin{tikzpicture}
     \node at (0,0) {\Huge{\textbf{,}}};
@@ -120,5 +126,59 @@
 %    \tableauDeci{1}{3}
 %  \end{minipage}
 %\end{lrbox}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% Commandes Tableaux stylés %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%style tcolorbox pour les tableaux : 
+\tcbset{
+    TableauBox/.style={%
+colframe=\currentTableFrameColor,colback=\currentTableColbackColor,colupper=\currentTableColupperColor,
+colbacktitle=\currentTableColbackTitleColor, coltitle=\currentTableColTitleColor,
+%before upper = {\arrayrulecolor{blue!50!black}\renewcommand{\arraystretch}{1.2}},
+% before upper*=\begin{tabular}{cc},
+% after upper*=\end{tabular},
+ fonttitle=\bfseries,nobeforeafter,center title,left=0mm,right=0mm,top=0mm,bottom=0mm,boxsep=0mm,
+    toptitle=0.5mm,bottomtitle=0.5mm,}
+}
+
+%%Second style tableaux en tabularx
+\newtcolorbox{tcbtabx}[3][]{%
+    enhanced,
+    fonttitle=\bfseries\large,
+    fontupper=\normalsize,
+    colback=\currentSecondaryTableColbackColor,
+    colframe=\currentSecondaryTableFrameColor,
+    colbacktitle=\currentSecondaryTableColbackTitleColor,
+    coltitle=\currentSecondaryTableColTitleColor,
+    drop fuzzy shadow,
+    width=#3,
+    center title,
+    title=#1,
+    tabularx*={\arrayrulewidth0.5mm\renewcommand\arraystretch{1.4}}%
+        {#2} % Structure du tableau passée en paramètre
+}
+%Exemple : 
+%\begin{tcbtab}{|*{14}{c|}}%[Carrés parfaits à connaître]{|*{14}{c|}}%{0.8\textwidth}
+%    nombre $a$&0&1&2&3&4&5&6&7&8&9&10&11&12\\
+%    \hline
+%    $a$ \frquote{au carré}&0&1&4&9&16&25&36&49&64&81&100&121&144\\
+%    \hline
+%\end{tcbtab}
+
+%Tableaux classique en tabular
+\newtcolorbox{tcbtab}[2][]{%
+    TableauBox,
+    drop fuzzy shadow,%
+    %width=#3,
+    center title,
+    title=#1,
+    hbox,
+    %tabulars*={\renewcommand\arraystretch{1.2}}%
+    before upper*=\begin{tabular}{#2},
+    after upper*=\end{tabular} % Structure du tableau passée en paramètre
+}
 
 \endinput

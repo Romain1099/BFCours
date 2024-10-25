@@ -16,4 +16,100 @@
 \definecolor{lightyellow}{rgb}{1.0, 1.0, 0.6}
 \definecolor{lightred}{rgb}{1.0, 0.6, 0.6}
 
+
+% Couleurs liées aux environnements
+\definecolor{defi}{RGB}{56,128,77}
+\definecolor{ex}{RGB}{39,61,112}
+\definecolor{nota}{RGB}{144,55,222}
+\definecolor{rem}{RGB}{128,128,128}
+\definecolor{thm}{RGB}{207,8,77}
+\definecolor{prop}{RGB}{255,0,0}
+\definecolor{demo}{RGB}{255,128,0}
+\definecolor{act}{RGB}{255,128,0}
+\definecolor{meth}{RGB}{151,74,0}
+
+% Couleurs liées aux commandes d'accentuation
+%\newcommand{\vocColor}{red!65!black}%Pour les mots de vocabulaire
+\newcommand{\lienInterneColor}{red!50!yellow}%pour les lien internes au document.
+\definecolor{monrose}{HTML}{FF1493}%Couleur de correction officielle, et les liens externes au document
+
+
+% Système de coloration automatique de bfcours
+% Pour les accentuations de texte
+\newcommand{\currentAccentColor}{black}
+
+% Pour les tableaux primaires
+\newcommand{\currentTableFrameColor}{blue!50!black}
+\newcommand{\currentTableColbackTitleColor}{blue!50!black}
+\newcommand{\currentTableColTitleColor}{white}
+
+\newcommand{\currentTableColbackColor}{white}
+\newcommand{\currentTableColupperColor}{red!50!black}
+
+% Pour les tableaux secondaires
+\newcommand{\currentSecondaryTableFrameColor}{red!50!black}
+\newcommand{\currentSecondaryTableColbackTitleColor}{Salmon!30!white}
+\newcommand{\currentSecondaryTableColTitleColor}{black}
+
+\newcommand{\currentSecondaryTableColbackColor}{yellow!10!white}
+\newcommand{\currentSecondaryTableColupperColor}{red!50!black}
+
+% Commande générale pour changer les couleurs des tableaux
+\newcommand{\CouleursTabular}[5]{
+    % Couleurs pour les tableaux primaires
+    \renewcommand{\currentTableFrameColor}{#1}
+    \renewcommand{\currentTableColbackTitleColor}{#2}
+    \renewcommand{\currentTableColTitleColor}{#3}
+    \renewcommand{\currentTableColbackColor}{#4}
+    \renewcommand{\currentTableColupperColor}{#5}
+    \arrayrulecolor{#1} % Couleur des filets des tableaux
+}
+\newcommand{\CouleursSecondaryTabular}[5]{
+    % Couleurs pour les tableaux secondaires (si besoin de distinctions)
+    \renewcommand{\currentSecondaryTableFrameColor}{#1}
+    \renewcommand{\currentSecondaryTableColbackTitleColor}{#2}
+    \renewcommand{\currentSecondaryTableColTitleColor}{#3}
+    \renewcommand{\currentSecondaryTableColbackColor}{#4}
+    \renewcommand{\currentSecondaryTableColupperColor}{#5}
+}
+
+% Exemple d'utilisation
+% \CouleursTabular{blue!50!black}{blue!50!black}{white}{white}{red!50!black}{yellow!10!white}
+\newcommand{\ResetCouleursTabular}{
+    \renewcommand{\currentTableFrameColor}{blue!50!black}
+    \renewcommand{\currentTableColbackTitleColor}{blue!50!black}
+    \renewcommand{\currentTableColTitleColor}{white}
+    
+    \renewcommand{\currentTableColbackColor}{white}
+    \renewcommand{\currentTableColupperColor}{red!50!black}
+    \arrayrulecolor{couleur_theme}
+}
+\newcommand{\ResetCouleursSecondaryTabular}{
+    % Pour les tableaux secondaires
+    \renewcommand{\currentSecondaryTableFrameColor}{red!50!black}
+    \renewcommand{\currentSecondaryTableColbackTitleColor}{Salmon!30!white}
+    \renewcommand{\currentSecondaryTableColTitleColor}{black}
+    
+    \renewcommand{\currentSecondaryTableColbackColor}{yellow!10!white}
+    \renewcommand{\currentSecondaryTableColupperColor}{red!50!black}
+}
+
+\newcommand{\CouleurTexteAccent}[1]{
+    \renewcommand{\currentAccentColor}{#1}
+}
+
+\newcommand{\ResetCouleurTexteAccent}{
+    \renewcommand{\currentAccentColor}{black}
+}
+
+
+%Couleurs pour les énumérations : 
+\newcommand{\itemBaseColor}{gray!80!black}
+
+\newcommand{\couleurItem}[1]{
+    \renewcommand{\itemBaseColor}{#1}
+}
+\newcommand{\resetItemBaseColor}{
+    \renewcommand{\itemBaseColor}{gray!80!black}
+}
 \endinput

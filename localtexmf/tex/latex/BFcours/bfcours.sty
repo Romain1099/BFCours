@@ -76,6 +76,12 @@
 \RequirePackage{bm}
 \RequirePackage{contour}
 
+
+\RequirePackage{adjustbox} %  Martin Sharrer package
+
+\RequirePackage{ifthen}
+
+
 \setmainfont{TeX Gyre Schola}
 \setmathfont{TeX Gyre Schola Math}
 
@@ -91,8 +97,11 @@
 
 \RequirePackage{bfcours-EnteteExplications}
 \RequirePackage{bfcours-EnteteOperations}
-\RequirePackage{bfcours-boite_reponse_insertbox}
+\RequirePackage{bfcours-boiteReponseInsertbox}
 \RequirePackage{bfcours-exoplus}
+\RequirePackage{bfcours-Impression}
+\RequirePackage{bfcours-Film}
+\RequirePackage{bfcours-useCanMathalea}
 
 \tcbset{enhanced,fonttitle=\bfseries\large,
 colback=gray!10!white,colframe=black,colbacktitle=gray!30!white,
@@ -102,8 +111,14 @@ coltitle=black,center title}
 \RequirePackage{rdcrep}
 \RequirePackage{rdexo}
 \RequirePackage{bfcours-use_rdexo_rdcrep}
-
+\RequirePackage{bfcours-iconsInsert} % A importer avant sectionning
+\RequirePackage{bfcours-sectionning}
 
 
 \usetikzlibrary{positioning}
 \usetikzlibrary{tikzmark}
+\usetikzlibrary{%
+decorations.pathmorphing,shadows
+}
+
+

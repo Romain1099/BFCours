@@ -1,6 +1,6 @@
 \ProvidesPackage{bfcours-use_rdexo_rdcrep}[29/06/2024 - Cas d'utilisation de rdexo/crep etc pour bfcours]
 
-\definecolor{monrose}{HTML}{FF1493}
+%\definecolor{monrose}{HTML}{FF1493} %-> Stockée dans le fichier bfcours-colors.sty
 % Nouvelle commande pour définir couleur_theme
 \newcommand{\setcouleurtheme}[1]{%
     \ifnumequal{#1}{0}{%
@@ -65,17 +65,28 @@
         boxsep=3pt
     },
     %   style optionnel pour les bo�tes lowerbox d�port�es
-    saved lower style/.style={
-        enhanced jigsaw,
-        opacityback=0,
-        fontupper=\footnotesize,
-        adjusted title=\ding{110}~\thelabel~\thelowernum~:,
-        coltitle=black,
-        fonttitle=\sffamily\footnotesize,
-        opacitybacktitle=0,
-        titlerule=0.6pt,
-        bottomtitle=1pt, toptitle=0pt,
-        top=5pt
+    correction style/.style={
+ 	enhanced jigsaw,
+ 	opacityback=0,%
+	%halign = left,
+ 	fontupper=\sffamily,
+	adjusted title={%
+	\tcbox[rdexo/bouyachakka/header label,%
+		%halign title = left,
+	 	colback=\pgfkeysvalueof{/tcb/rdexo/griba/lower bg color}, boxsep=2pt]%	
+	 	{\large{Solution de l'exercice}~\tcbox[rdexo/griba/numexo style,
+	 	coltext=\pgfkeysvalueof{/tcb/rdexo/griba/lower bg color},boxsep = 2pt]%
+	 	{\large{\bfseries\thecorrectionnum}}}%
+    	},
+	 coltitle=black,
+	 fonttitle=\sffamily\bfseries,
+	 opacitybacktitle=0,
+	 titlerule=0.6pt,
+	 titlerule style=\pgfkeysvalueof{/tcb/rdexo/griba/lower bg color},
+	 bottomtitle=1pt, toptitle=0pt,
+	 top=5pt,%
+	 %halign = left,
+	 halign title = left,
     },
     % style optionnel pour les tags
     tag style/.style={
@@ -171,7 +182,19 @@
         interior engine=empty,
         fontupper=\rdexotitlefont\itshape,
         coltext=rdexotitlecol
-    }
+    },
+    header label/.style={
+	enhanced jigsaw,
+	rdexo resest padding,
+	left=2pt, right=2pt,
+	fontupper=\sffamily\bfseries,
+	on line,
+	halign = left,
+	colback=\pgfkeysvalueof{/tcb/rdexo/griba/bg color},
+	coltext=\pgfkeysvalueof{/tcb/rdexo/griba/fg color},
+	frame engine=empty, boxrule=0pt,
+	sharp corners=west
+     }
 }
 
 \rdexoSkin{bouyachakka}%
@@ -203,7 +226,7 @@ skin = bouyachakka,
 lower ={box=crep},
 display score,
 display level,
-save lower,
+breakable,
 score=\points,
 level=\rdifficulty,
 overlay={\node[inner sep=0pt,

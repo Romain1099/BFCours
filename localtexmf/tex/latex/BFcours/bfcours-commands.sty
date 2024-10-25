@@ -152,7 +152,7 @@
 }
 
 \newcommand{\score}[1][\hspace{0.4cm}]{\hfill \textbf{Score : \huge{\phantom{A}}\hspace{0.5cm} /} \Large{#1  }\hfill\phantom{a}}
-\newcommand{\scoreRD}[1][]{\tccrep[seyes=false]{1.2cm}{}{\Large /} \large{\points}}
+\newcommand{\scoreRD}[1][]{\tccrep[seyes=false]{1.2cm}{}{\Large /} \large{\num{\points}}}
 \newcommand{\mysquare}{
     \tcbox[sharp corners, nobeforeafter, colback=white, colframe=black, size=small, boxsep=0pt, left=4pt, right=4pt, top=4pt, bottom=4pt, halign=center, valign=center, boxrule=1.5pt]{}
 }
@@ -269,7 +269,7 @@
    (l.\arabic{linecounter}) #3 \dotfills % Cette ligne sera toujours exécutée
 }
 
-\newcommand{\tableaucompetence}[1]{
+\newcommand{\oldtableaucompetence}[1]{
 Je m'auto-évalue \textbf{avant} de commencer la fiche d'exercices, puis \textbf{à la fin} de la fiche d'exercices : 
     \begin{table}[h]
         \begin{tabular}{|>{\raggedright\arraybackslash}p{0.7\textwidth}|*{4}{>{\centering\arraybackslash}p{0.05\textwidth}|}}
@@ -292,11 +292,44 @@ Je m'auto-évalue \textbf{avant} de commencer la fiche d'exercices, puis \textbf
     \end{table}
     \hrule
 }
-
+\newcommand{\tableaucompetence}[1]{
+%textbf{avant} de commencer la fiche d'exercices, puis \textbf{à la fin} de la fiche d'exercices : 
+        \begin{tcbtab}{|>{\raggedright\arraybackslash}p{0.68\textwidth}|*{4}{>{\centering\arraybackslash}p{0.05\textwidth}|}}
+            \hline
+            \centering\textbf{Compétences travaillées} & \cellcolor{red!30!white}\textbf{MI} &\cellcolor{orange!30!white} \textbf{MF} &\cellcolor{yellow!30!white} \textbf{MS} &\cellcolor{green!30!white} \textbf{TBM} \\
+            \hline
+            #1
+        \end{tcbtab}
+}
 \newcommand{\competence}[1]{
-    \textcolor{black}{\faPen} #1 & & & & \\
+   \cellcolor{gray!10}\textcolor{black}{\faPen} #1 & & & & \\
     \hline
 }
 \newcounter{exerciceBCounter}
+
+\newcommand{\tableauPresenteEvalSixieme}[2]{
+  \begin{minipage}{0.7\textwidth}\begin{tcolorbox}[colback=white, colframe=black, width=\textwidth, boxrule=2pt, arc=2pt,bottom=0pt, auto outer arc, boxsep=0pt, nobeforeafter]%0.700
+    \begin{tabularx}{\textwidth}{XXX}
+      \textbf{Nom :} \tcfillcrep{} &\textbf{Prénom :} \tcfillcrep{} 
+    \end{tabularx}
+  \end{tcolorbox}\end{minipage}  \begin{minipage}{0.295\textwidth}\hfill\begin{tcolorbox}[colback=white, colframe=black, width=\textwidth, boxrule=2pt, arc=2pt,bottom=0pt, auto outer arc, boxsep=0pt, nobeforeafter]%0.280
+ \textbf{Bilan :\tccrep[seyes=false]{1cm}{}/#2\tccrep[seyes=false]{1.5cm}{}} 
+  \end{tcolorbox}
+	\end{minipage} \\%\vspace{-0.5cm}
+}
+
+
+%Commandes d'accentuation du texte 
+\newcommand{\voc}[1]{\textbf{\color{\currentAccentColor}#1}\index{#1}}
+\newcommand{\acc}[1]{\textbf{\color{\currentAccentColor}#1}}
+
+\newcommand{\lien}[2]{\hyperref[#1]{\bfseries\color{\lienInterneColor}#2}}
+\newcommand{\vocref}[2]{
+    \href{#1}{\bfseries\color{monrose} #2\index{#2}}
+}
+\newcommand{\vocnoindexref}[2]{
+    \href{#1}{\bfseries\color{monrose} #2}
+}
+
 
 \endinput
