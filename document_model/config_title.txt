@@ -1,0 +1,16 @@
+TITLE_CONFIG_DICT = {
+    Exercices light.tex: generate_exercise_title,
+    Exercices heavy.tex : generate_exercise_title,
+    Cours.tex : ,
+    Devoir.tex : ,
+    Devoir_maison.tex : generate_dm_title,
+    Découverte.tex : ,
+    Groupe.tex : ,
+    Info.tex : ,
+    Jeux.tex : ,
+    Nouveau.tex : ,
+    Rapport incident.tex : generate_rapport_title,
+    Recap_seance.tex : generate_cours_title,
+    SOUAP.tex : ,
+    Test.tex: Titre par défaut Test,
+}

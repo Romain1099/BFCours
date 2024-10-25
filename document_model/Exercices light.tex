@@ -1,0 +1,101 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+\input{enonce_figures}
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+% Activer ou désactiver l'affichage des boîtes
+\displayitempointsfalse % Ne pas afficher les boîtes
+%\displayitempointstrue % Afficher les boîtes
+
+\begin{document}
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{0}
+
+\def\points{\phantom{AAA}}
+\def\difficulty{\phantom{AAA}}
+\chapitre[
+    % niveau : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
+    ]{
+    % theme : ,Equations
+    }{
+    % type_etablissement : Collège,Lycée
+    }{
+    % nom_etablissement : Amadis Jamyn,Eugène Belgrand
+    }{
+    % supplement : ,\tableauPresenteEvalSixieme{}{10},\tableofcontents
+    }{
+    % type_document_principal : Exercices
+    }
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+% contenu_principal : \input{enonce},
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{1}
+
+\chapitre[
+    % niveau
+    ]{
+    % theme
+    }{
+    % type_etablissement
+    }{
+    % nom_etablissement
+    }{
+    % supplement
+    }{
+    % type_document_secondaire : Solution,
+    }
+
+\tcbset{
+    rdexo/default/.cd,correction style/.style={
+        before upper=%
+        \textbf{\thelabel~
+        \thecorrectionnum~:~}
+    }
+}
+
+% contenu_secondaire : ,\input{solutions},\rdexocorrection[columns=1]{0},\rdexocorrection[columns=2]{0},
+\setlength{\columnseprule}{0.4pt}
+    \begin{multicols}{2}
+    \rdexocorrection{0}
+    \end{multicols}
+
+
+\end{document}
