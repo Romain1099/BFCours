@@ -71,33 +71,33 @@
 }
 
 % Commande pour écrire du texte dans le fichier annexe
-\newcommand{\writeToFile}[1]{
-    \immediate\write\imprimfile{\detokenize{#1}} % Utilise \detokenize pour éviter que LaTeX n'évalue immédiatement le contenu
+\newcommand{\writeToFile}[1]{%
+    \immediate\write\imprimfile{\detokenize{#1}}% Utilise \detokenize pour éviter que LaTeX n'évalue immédiatement le contenu
   #1%
 }
 
-\newcommand{\imp}[1]{
-	\begin{aImprimer}
-		\tikzmark{start-\theprintsection} % Marque de début pour la ligne continue
-		\writeToFile{#1}
+\newcommand{\imp}[1]{%
+	\begin{aImprimer}%
+		\tikzmark{start-\theprintsection}% % Marque de début pour la ligne continue
+		\writeToFile{#1}%
   		\tikzmark{end-\theprintsection} % Marque de fin pour la ligne continue.
 %           \drawLeftLine{\theprintsection} % Dessiner la ligne continue entre les marques start et end
-	\end{aImprimer}
-}
+	\end{aImprimer}%
+}%
 
 % Commande pour inclure un fichier et générer les parties à imprimer
-\newcommand{\inputImprim}[1]{
+\newcommand{\inputImprim}[1]{%
   % Créer un nom de fichier pour l'impression
-  \renewcommand{\impressFileName}{#1-to-print}
-  \immediate\openout\imprimfile=\impressFileName.tex
-  
+  \renewcommand{\impressFileName}{#1-to-print}%
+  \immediate\openout\imprimfile=\impressFileName.tex%
+  %
   % Lecture du fichier source et traitement
-  \begingroup
-    \input{#1}
-  \endgroup
+  \begingroup%
+    \input{#1}%
+  \endgroup%
   
   % Fermer le fichier à imprimer une fois l'input terminé
-  \immediate\closeout\imprimfile
+  \immediate\closeout\imprimfile%
 }
 
 \endinput

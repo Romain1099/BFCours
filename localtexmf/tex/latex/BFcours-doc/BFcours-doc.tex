@@ -1,0 +1,155 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+\usepackage{bfcours-quatrieme}
+\usepackage{verbatim}
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+\input{enonce_figures}
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+% Activer ou désactiver l'affichage des boîtes
+%\displayitempointsfalse % Ne pas afficher les boîtes
+\displayitempointstrue % Afficher les boîtes
+\usepackage{listings} % Pour afficher le code
+\usepackage{tcolorbox} % Pour créer des boîtes de rendu
+%\tcbuselibrary{listingsutf8} % Support UTF-8 dans les listings
+\lstdefinestyle{tcblatex}{
+    language=[LaTeX]TeX,
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=10pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    keepspaces=true,
+    columns=flexible
+}
+%\tcbuselibrary{minted}
+\tcbuselibrary{listings}
+\tcbset{listing engine=listings}
+% Nouvelle boîte de documentation avec code/rendu
+
+\begin{document}
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{0}
+
+\def\points{1}
+\def\rdifficulty{1}
+\chapitre[
+    BF% : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
+    ]{
+    Environnements% : ,Equations
+    }{
+    R.Deschamps% : Collège,Lycée
+    }{
+    % : Amadis Jamyn,Eugène Belgrand
+    }{
+    % : ,\tableauPresenteEvalSixieme{}{10},\tableofcontents
+    }{
+    Documentation% : Exercices
+    }
+
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+\tableofcontents
+\phantom{\voc{nobug}}
+
+\input{how_to_latex}
+
+\section{Présentation générale de BFcours}
+\input{presentation}
+
+\section{Présentation des environnements de BFcours}
+\input{envs}% : \input{enonce},
+\section{Présentation des tableaux dans BFcours}
+
+\input{tableaux}
+\newpage
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{1}
+
+\chapitre[
+    BF%
+    ]{
+    Environnements%
+    }{
+    R.Deschamps%
+    }{
+    %
+    }{
+    %
+    }{
+    Commandes% : Solution,
+    }
+
+\tcbset{
+    rdexo/default/.cd,correction style/.style={
+        before upper=%
+        \textbf{\thelabel~
+        \thecorrectionnum~:~}
+    }
+}
+\section{Présentation des commandes utilisables dans BFcours}
+
+\input{commandes}% : ,\input{solutions},\rdexocorrection[columns=1]{0},\rdexocorrection[columns=2]{0},
+
+
+%\section{Présentation des interactions avec les logiciels BFcours}
+%\input{interaction}
+
+
+\newpage
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{1}
+
+%\chapitre[
+%    BF%
+%    ]{
+%    Exemples d'utilisation%
+%    }{
+%    R.Deschamps%
+%    }{
+ %   %
+ %   }{
+ %   %
+ %   }{
+ %   BFcours% : Solution,
+ %   }
+%
+%    \input{Exemples}
+\end{document}

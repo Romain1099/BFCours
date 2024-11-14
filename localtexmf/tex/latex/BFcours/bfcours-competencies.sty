@@ -1,0 +1,95 @@
+% Nom du fichier : bfcours-colors.sty
+\ProvidesPackage{bfcours-competencies}[2024/06/29 v1.0 Gestion de l'index des compétences pour bfcours]
+% Initialisation des listes pour éviter les doublons
+\newcommand{\complist}{}
+\newcommand{\compwordlist}{}
+\newcommand{\newcomplist}{}
+% Commande \compentry pour collecter les mots depuis le fichier .voc lors de la lecture
+\newcommand{\compentry}[1]{%
+  %  \edef\upperword{\MakeUppercase{#1}}
+  %\ifinlist{\upperword}{\compwordlist}{}{%
+    %\listadd{\compwordlist}{#1}%
+    \listadd{\complist}{#1}%
+  }%
+
+
+% Lire le fichier .voc au tout début pour initialiser l'index
+\InputIfFileExists{\jobname.comp}{}{}
+
+% Ouvrir le fichier .voc pour ajouter de nouveaux mots sans écraser les anciens
+\newwrite\compfile
+\immediate\openout\compfile=\jobname.comp
+%\newcommand{\uppercasecompword}{}
+%\newcommand{\compword}{}
+\newcounter{compprintcounter}
+\setcounter{compprintcounter}{0}
+% Définition de la commande \comp
+\newcommand{\ncomp}[1]{%
+\stepcounter{compprintcounter}
+  % Écrire dans le fichier seulement si le mot capitalisé n'est pas déjà dans la liste
+  \ifinlist{#1}{\compwordlist}{}{%
+        \immediate\write\compfile{\string\compentry{#1}}%{\thecompprintcounter}%{\thenumexo}}%
+        %\listadd{\compwordlist}{\MakeLowercase{#1}}%
+        \listadd{\compwordlist}{#1}%
+        %\listadd{\compwordlist}{\MakeUppercase{#1}}%
+        \hypertarget{comp:#1}{}
+    }%
+    %\textbf{\color{\currentAccentColor}#1}%% Affichage du mot en gras dans le texte
+}
+
+% Fermeture du fichier .voc à la fin du document
+\AtEndDocument{%
+  \immediate\closeout\compfile
+}
+
+
+% Commande pour afficher l'index des mots de vocabulaire
+\newcommand{\printcompindex}{%
+\setcounter{compprintcounter}{0}
+  % Afficher l'index s'il n'est pas vide
+  \ifx\complist\empty
+\else
+	\renewcommand{\mycompetenceDict}{}
+	 \forlistloop{\makecomptexts}{\complist}
+    \foreach \compitinence in \mycompetenceDict {%
+         \edef\exercicesintitule{\csname comp@\detokenize{\compitinence}\endcsname}%
+         
+	 \listadd{\newcomplist}{\compitinence \hfill \exercicesintitule}
+       }
+    \tableaucompetenceEval{
+          \forlistloop{\printonecomp}{\mycompetenceDict}
+     }
+  \fi
+\setcounter{compprintcounter}{0}
+}
+
+\newcommand{\mycompetenceDict}{}
+
+\newcommand{\makecomptexts}[1]{
+	\stepcounter{compprintcounter}
+	%\renewcommand{\mycompetenceDict}{} % Liste des compétences rencontrées
+	\ifcsundef{comp@\detokenize{#1}}{% Si la compétence n'existe pas encore
+    \expandafter\xdef\csname comp@\detokenize{#1}\endcsname{Ex.\thecompprintcounter}%
+    \listadd{\mycompetenceDict}{#1} % Ajout de la compétence à la liste principale
+  }{% Si la compétence existe déjà, ajoute le numéro d'exercice
+    \expandafter\xdef\csname comp@\detokenize{#1}\endcsname{\csname comp@\detokenize{#1}\endcsname, Ex.\thecompprintcounter}%
+  }%
+}
+
+% Commande pour afficher chaque compétence avec ses exercices
+\newcommand{\printonecomp}[1]{%
+  \edef\exercices{\csname comp@\detokenize{#1}\endcsname}%
+  \competence{#1 \hfill \exercices}
+}
+% Commande pour afficher chaque élément de l'index
+\newcommand{\printcompitem}[1]{%
+  \edef\temp{#1}%
+  \expandafter\splitcompitem\temp\relax%
+}
+
+\def\splitcompitem#1\relax{%
+  \stepcounter{compprintcounter}%
+  \competence{#1 \hfill \hyperlink{comp:#1}{Ex. \thecompprintcounter}}%
+}
+
+\endinput

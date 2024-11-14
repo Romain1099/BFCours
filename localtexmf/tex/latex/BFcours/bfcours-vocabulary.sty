@@ -1,0 +1,97 @@
+% Nom du fichier : bfcours-colors.sty
+\ProvidesPackage{bfcours-vocabulary}[2024/06/29 v1.0 Gestion de l'index vocabulaire pour bfcours]
+% Initialisation des listes pour éviter les doublons
+\newcommand{\voclist}{}
+\newcommand{\vocwordlist}{}
+
+% Commande \vocentry pour collecter les mots depuis le fichier .voc lors de la lecture
+\newcommand{\vocentry}[2]{%
+  %  \edef\upperword{\MakeUppercase{#1}}
+  %\ifinlist{\upperword}{\vocwordlist}{}{%
+    %\listadd{\vocwordlist}{#1}%
+    \listadd{\voclist}{{#1}{#2}}%
+  }%
+
+
+% Lire le fichier .voc au tout début pour initialiser l'index
+\InputIfFileExists{\jobname.voc}{}{}
+
+% Ouvrir le fichier .voc pour ajouter de nouveaux mots sans écraser les anciens
+\newwrite\vocfile
+\immediate\openout\vocfile=\jobname.voc
+\newcommand{\uppercaseword}{}
+\newcommand{\word}{}
+
+% Définition de la commande \voc
+\renewcommand{\voc}[1]{%
+  % Écrire dans le fichier seulement si le mot capitalisé n'est pas déjà dans la liste
+  \ifinlist{#1}{\vocwordlist}{}{%
+        \immediate\write\vocfile{\string\vocentry{#1}{\thepage}}%
+        \listadd{\vocwordlist}{\MakeLowercase{#1}}%
+        \listadd{\vocwordlist}{#1}%
+        \listadd{\vocwordlist}{\MakeUppercase{#1}}%
+        \hypertarget{voc:#1}{}
+    }%
+    \textbf{\color{\currentAccentColor}#1}%% Affichage du mot en gras dans le texte
+}
+
+% Fermeture du fichier .voc à la fin du document
+\AtEndDocument{%
+  \immediate\closeout\vocfile
+}
+
+% Commande pour afficher l'index des mots de vocabulaire
+\newcommand{\printvocindex}{%
+  % Afficher l'index s'il n'est pas vide
+  \ifx\voclist\empty
+    \begin{tcolorbox}[enhanced,
+title=Vocabulaire utilisé,
+colframe=blue!50!black,
+colback=gray!5,
+ arc=1mm,
+colbacktitle=blue!50!black,
+ fonttitle=\bfseries,coltitle=white,
+ attach boxed title to top text left=
+ {yshift=-0.50mm},
+ boxed title style={skin=enhancedfirst jigsaw,
+ size=small,arc=1mm,bottom=-1mm,
+ interior style={fill=none,
+ top color=blue!50!black,
+ bottom color=gray!5}}]
+      Aucun mot de vocabulaire n'a été défini.
+    \end{tcolorbox}
+  \else
+    \begin{tcolorbox}[enhanced,
+title=Vocabulaire utilisé,
+colframe=blue!50!black,
+colback=gray!10,
+ arc=1mm,
+colbacktitle=blue!50!black,
+ fonttitle=\bfseries,coltitle=white,
+ attach boxed title to top text left=
+ {yshift=-0.50mm},
+ boxed title style={skin=enhancedfirst jigsaw,
+ size=small,arc=1mm,bottom=-1mm,
+ interior style={fill=none,
+ top color=blue!50!black,
+ bottom color=blue!50!black}}]
+      \begin{multicols}{3} % Ajuster à deux colonnes
+        \begin{itemize}
+          \forlistloop{\printvocabularyitem}{\voclist}
+        \end{itemize}
+      \end{multicols}
+    \end{tcolorbox}
+  \fi
+}
+
+% Commande pour afficher chaque élément de l'index
+\newcommand{\printvocabularyitem}[1]{%
+  \edef\temp{#1}%
+  \expandafter\splitvocitem\temp\relax%
+}
+
+\def\splitvocitem#1#2\relax{%
+  \item \textbf{#1} \hyperlink{voc:#1}{(p.~#2)}%
+}
+
+\endinput

@@ -13,7 +13,7 @@
 \newcommand\nodispC[1]{\color{red}{\textbf{\nocarf{#1}}}\quad\phantom{a}}
 \newcommand\hole[1]{\vspace{0.2cm} \  \masquer{\phantom{a}\phantom{a}\phantom{a}} \  }
 \newcommand{\opaddsol}[3][Calcul]{
-\tcboxmath[colback=white,colbacktitle=blue!75!white,colframe=blue!75!white,right=1pt,left=1pt,top=1pt,bottom=1pt,coltitle=white,fonttitle=\scriptsize,title=\textbf{#1}]{\opadd[intermediarystyle=\nodispM,decimalsepsymbol={ ,},voperator=center,lineheight=2.3\baselineskip,resultstyle=\nodispM,carrystyle=\nodispC ,operandstyle=\nodispM,columnwidth=1.5em]%,operandstyle.1.1=\hole,
+\tcboxmath[colback=white,colbacktitle=blue!75!white,colframe=blue!75!white,right=1pt,left=1pt,top=1pt,bottom=1pt,coltitle=white,fonttitle=\scriptsize,title=\textbf{#1}]{\opadd[intermediarystyle=\repsim,decimalsepsymbol={ ,},voperator=center,lineheight=2.3\baselineskip,resultstyle=repsim[0.5cm],carrystyle=\repsim ,operandstyle=\repsim,columnwidth=1.5em]%,operandstyle.1.1=\hole,
 %operandstyle.1.-2=\hole,
 %operandstyle.2.3=\hole,
 %resultstyle.2=\hole]
@@ -23,7 +23,7 @@
 
 \newcommand{\opaddsolB}[3][Calcul]{
 \tcboxmath[colback=white, colbacktitle=blue!75!white,colframe=blue!75!white,right=1pt,left=1pt,top=1pt,bottom=1pt,coltitle=white,fonttitle=\scriptsize,title=\textbf{#1}]
-{\opadd[intermediarystyle=\nodispM,decimalsepsymbol={ ,},voperator=center,lineheight=2.3\baselineskip,resultstyle=\nodispM,carrystyle=\nodispC ,operandstyle=\textbf,columnwidth=1.5em]%,operandstyle.1.1=\hole,
+{\opadd[intermediarystyle=\repsim[0.5cm],decimalsepsymbol={ ,},voperator=center,lineheight=2.3\baselineskip,resultstyle=\nodispM,carrystyle=\nodispC ,operandstyle=\textbf,columnwidth=1.5em]%,operandstyle.1.1=\hole,
 %operandstyle.1.-2=\hole,
 %operandstyle.2.3=\hole,
 %resultstyle.2=\hole]

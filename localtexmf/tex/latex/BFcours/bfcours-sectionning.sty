@@ -92,16 +92,24 @@ overlay={% Code personnalisé pour dessiner le cadre avec arrondi
 \titlespacing*{\section}{0pt}{0pt}{0pt}
 \titlespacing*{\subsection}{0pt}{0pt}{0pt}
 \titleformat{\section}[block]
-	{\gdef\sectionlabel{}
-	\Large\bfseries}
-	{\gdef\sectionlabel{\thesection\ }}{0pt}
-	{\noindent\begin{tcolorbox}[width=\textwidth,height=0.9cm,left=4mm,SectionBox,title=\color{white}{\thesection.\ #1}]\end{tcolorbox}}
+	{\gdef\sectionlabel{}%
+	\Large\bfseries}%
+	{\gdef\sectionlabel{\thesection\ }}{0pt}%
+	{\vspace{-0.75cm}\noindent\begin{tcolorbox}[width=\textwidth,height=0.9cm,left=4mm,SectionBox,title=\color{white}{\ifx\sectionlabel\empty #1 \else \thesection.\ #1\fi}]\end{tcolorbox}}%
+%
+\titleformat{\subsection}[block]%
+	{\gdef\subsectionlabel{}%
+	\large\bfseries}%
+	{\gdef\subsectionlabel{\thesubsection\ }}{0pt}%
+  {\begin{tcolorbox}[SubSectionBox,width=\calcwidth{#1}]\color{white}{\thesubsection} \tcblower #1\end{tcolorbox}}% % Utilisation de tcolorbox pour encadrer le titre
 
-\titleformat{\subsection}[block]
-	{\gdef\subsectionlabel{}
-	\large\bfseries}
-	{\gdef\subsectionlabel{\thesubsection\ }}{0pt}
-  {\begin{tcolorbox}[SubSectionBox,width=\calcwidth{#1}]\color{white}{\thesubsection} \tcblower #1\end{tcolorbox}} % Utilisation de tcolorbox pour encadrer le titre
-
-
+\makeatletter
+\renewcommand\tableofcontents{%
+    \section*{\contentsname}%\makebox[\linewidth][c]{\contentsname}%
+      %\@mkboth{\MakeUppercase\contentsname}{\MakeUppercase\contentsname}}%
+    \vspace{-0.25cm}\begin{multicols}{2}%
+    \@starttoc{toc}%
+    \end{multicols}
+    }
+\makeatother
 \endinput

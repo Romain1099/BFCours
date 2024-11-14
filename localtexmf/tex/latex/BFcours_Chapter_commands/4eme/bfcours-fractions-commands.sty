@@ -1,0 +1,59 @@
+\ProvidesPackage{bfcours-fractions-commands}[30/10/2024 v1.0 Commandes spécifiques à la séquence fractions en 4ème pour bfcours]
+\newcommand{\exoDefFractionQuotient}[2]{
+    $#2 \times \dfrac{#1}{#2}=#1$ 
+    \begin{crep}
+        $\dfrac{#1}{#2}$ est le quotient de $\repsim{#1}$ par $\repsim{#2}$.\\
+        C'est le nombre qui, multiplié par $\repsim{#2}$ vaut $\repsim{#1}$.
+    \end{crep}
+}
+% Commande personnalisée pour les fractions égales avec flèches continues
+\newcommand{\fracEgales}[5]{
+    \begin{tikzpicture}
+        % Style des flèches
+        \tikzset{arrow style/.style={->, thick, draw=\currentAccentColor}}%, shorten >=2pt, shorten <=2pt
+        \tikzset{line style/.style={thick, draw=\currentAccentColor}}
+        \tikzset{node style/.style={ellipse, draw=\currentAccentColor, fill=\currentAccentColor!20, inner sep=3pt, text=black}}
+    
+        % Position des éléments
+        \node at (0,0) {\Large{\(\frac{#1}{#2}\)}};
+        \node at (2.6,0) {\Large{\(\frac{#3}{#4}\)}};
+        \node[node style] (div1) at (1.3,1) {\(#5\)};
+        \node[node style] (div2) at (1.3,-1) {\(#5\)};
+        \node at (1.3,0) {\(=\)};
+    
+        % Flèches continues vers le haut
+        \draw[line style] (0,0.4) to[out=90, in=180] (div1.west); % Ligne simple
+        \draw[arrow style] (div1.east) to[out=0, in=90] (2.6,0.4);  % Ligne avec pointe de flèche
+
+        % Flèches continues vers le bas
+        \draw[line style] (0,-0.4) to[out=-90, in=180] (div2.west); % Ligne simple
+        \draw[arrow style] (div2.east) to[out=0, in=-90] (2.6,-0.4);  % Ligne avec pointe de flèche
+    \end{tikzpicture}
+}
+\newcommand{\bigFracEgales}[5]{
+    \begin{tikzpicture}[baseline={(frac1.base)}]
+        % Style des flèches
+        \tikzset{arrow style/.style={->, thick, draw=\currentAccentColor}}%, shorten >=2pt, shorten <=2pt
+        \tikzset{line style/.style={thick, draw=\currentAccentColor}}
+        \tikzset{node style/.style={ellipse, draw=\currentAccentColor, fill=\currentAccentColor!20, inner sep=3pt, text=black}}
+    
+        % Position des éléments
+        \node (frac1) at (0,0) {\Large{\(\frac{#1}{#2}\)}};
+        \node (frac2) at (4,0) {\Large{\(\frac{#3}{#4}\)}};
+        \node[node style] (div1) at (2,1.5) {\(#5\)};
+        \node[node style] (div2) at (2,-1.5) {\(#5\)};
+        \node at (2,0) {\(=\)};
+    
+        % Flèches continues vers le haut
+        \draw[line style] (frac1.north) to[out=90, in=180] (div1.west); % Ligne simple
+        \draw[arrow style] (div1.east) to[out=0, in=90] (frac2.north);  % Ligne avec pointe de flèche
+
+        % Flèches continues vers le bas
+        \draw[line style] (frac1.south) to[out=-90, in=180] (div2.west); % Ligne simple
+        \draw[arrow style] (div2.east) to[out=0, in=-90] (frac2.south);  % Ligne avec pointe de flèche
+    \end{tikzpicture}
+}
+
+
+
+\endinput

@@ -7,38 +7,14 @@
     \textbf{\hyperlink{hautpage}{#1}}\label{subsec:#1}
   }
 }
-\newcommand\reponse[1]{
-\begin{tcolorbox}[nobeforeafter,title=\textbf{Réponse},fonttitle=\scriptsize,colbacktitle=red!50!black,coltitle=white,colback=white]
-\ifnum\value{profseyescounter}=0
-        \color{white}
-    \else
-        \color{red!50!black}\bfseries
-    \fi
-#1
-\end{tcolorbox}
-}
-\newcommand\reponseT[2]{
-\begin{tcolorbox}[nobeforeafter,title=\textbf{#1},fonttitle=\scriptsize,colbacktitle=red!50!black,coltitle=white,colback=white]
-\ifnum\value{profseyescounter}=0
-        \color{white}
-    \else
-        \color{red!50!black}\bfseries
-    \fi
-#2
-\end{tcolorbox}
-}
-\def\boitecouleur{gray!75!black}
+
+\newcommand{\boitecouleur}{gray!75!black}
 \newcommand\boite[2]{
-\begin{tcolorbox}[nobeforeafter,title=#1,halign title=flush left,fonttitle=\bfseries,colbacktitle=\boitecouleur,coltitle=white,colback=white]%red!50!black
+\begin{tcolorbox}[nobeforeafter,title=#1,halign title=flush left,fonttitle=\bfseries,colbacktitle=\boitecouleur,coltitle=white,colback=\boitecouleur!5!white,colframe=\boitecouleur]%red!50!black
 #2
 \end{tcolorbox}
 }
 
-\newcommand\boitesemaine[2]{
-\begin{tcolorbox}[nobeforeafter,title=\addblocktoc{#1},colbacktitle=red!50!black,coltitle=white,colback=white]
-#2
-\end{tcolorbox}
-}
 \newcommand\bg[2]{
 \begin{tcolorbox}[tcbox raise base, breakable, nobeforeafter, capture=hbox, title=\textbf{#1},colbacktitle=nota,coltitle=white,colback=white]
 #2
@@ -49,7 +25,7 @@
 #1
 \end{tcolorbox}
 }
-\newcommand\boiteT[3][\textwidth]{
+\newcommand\boiteT[3][\columnwidth]{
 \begin{tcolorbox}[nobeforeafter,width=#1,title=\textbf{#2},fonttitle=\scriptsize,colbacktitle=red!50!black,coltitle=white,colback=white]
 #3
 \end{tcolorbox}

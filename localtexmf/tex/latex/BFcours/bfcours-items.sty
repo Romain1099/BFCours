@@ -18,21 +18,5 @@
 % Définition des thèmes et environnements
 % (Ajoutez ici les définitions de vos thèmes et environnements)
 
-% Initialisation du compteur pour les labels et de la variable booléenne
-\newcounter{itempointcounter}
-\newif\ifdisplayitempoints % Déclaration du booléen
-
-% Définition de la commande \itempoint (tout-en-un avec compteur et booléen)
-\NewDocumentCommand{\itempoint}{O{1} O{-0.5cm}}{%
-    \stepcounter{itempointcounter}% Incrémentation du compteur
-    \tikzmark{mylabel\theitempointcounter}% Placement du marqueur avec identifiant unique
-	\ifdisplayitempoints% Condition sur l'affichage
-     \tikz[remember picture, overlay]{% Overlay pour superposer la boîte
-            \node[anchor=base, draw=black, fill=gray!10, rounded corners, inner sep=3pt, outer sep=0pt, minimum width=1.4cm, align=center] at ($(pic cs:mylabel\theitempointcounter) + (\linewidth - 0.7cm, #2)$) { % Placement de la boîte avec décalage en X
-                $\ifdim #1pt = 1pt 1 \,\text{pt} \else \num{#1} \,\text{pts} \fi$%
-            };
-        }%
-    \fi
-}
 
 \endinput

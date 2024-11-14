@@ -8,7 +8,7 @@
 \tcbuselibrary{breakable}
 \tcbuselibrary{xparse}
 \usetikzlibrary{shapes.geometric}
-\usetikzlibrary{babel}% sinon bug avec \rdexostars pour une valeur décimale du niveau
+\usetikzlibrary{babel}% sinon bug avec \rdexostars pour une valeur dï¿½cimale du niveau
 \RequirePackage{pifont}
 \RequirePackage{ifluatex}
 \ifluatex
@@ -21,14 +21,14 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Boîtes
+%   Boï¿½tes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newsavebox{\rdexo@boxA}
 \newsavebox{\rdexo@boxB}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Booléens
+%   Boolï¿½ens
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newif\ifrdexo@numexo
@@ -62,7 +62,7 @@
 
 \newcounter{rdexo@numexo}
 \newcounter{rdexo@real@numexo}
-\newcounter{rdexo@correction@startnum}% En cas d'utilisation de \rdexocorrection{0}, ce compteur donne le numéro du premier exercice de la liste
+\newcounter{rdexo@correction@startnum}% En cas d'utilisation de \rdexocorrection{0}, ce compteur donne le numï¿½ro du premier exercice de la liste
 \setcounter{rdexo@correction@startnum}{1}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,7 +83,7 @@
 \NewDocumentCommand{\rdexonofrench}{ s +m }{%
 \IfBooleanTF{#1}%
 {%
-% Test "paresseux" pour déterminer si utilisation d'un moteur LuaLaTeX (ou XeLateX) (test sur juste un caractère)
+% Test "paresseux" pour dï¿½terminer si utilisation d'un moteur LuaLaTeX (ou XeLateX) (test sur juste un caractï¿½re)
 \ifnum\catcode`:=\active\edef\rdexo@frenchactivechar{1}\shorthandoff{;:!?}\else\edef\rdexo@frenchactivechar{0}\fi%
 \scantokens\expandafter{#2\noexpand}\relax% Ne fonctionne pas en l'absence du \relax... pourquoi ??
 \ifnum\rdexo@frenchactivechar=1 \shorthandon{;:!?}\fi%
@@ -362,7 +362,7 @@
 
 
 
-% Code © matexmatics : https://tex.stackexchange.com/a/706073/30654
+% Code ï¿½ matexmatics : https://tex.stackexchange.com/a/706073/30654
 
 \ExplSyntaxOn
 \clist_new:N \l__searching_tags_clist
@@ -419,7 +419,7 @@
 %%%%%%%%%%%
 
 
-% Code expl3 d'après : https://tex.stackexchange.com/a/173427/30654
+% Code expl3 d'aprï¿½s : https://tex.stackexchange.com/a/173427/30654
 
 \def\rdexo@hlist#1{\rdexo_hlist:n { #1 }}
 
@@ -453,10 +453,10 @@
  }
 
 
-% D'après : https://tex.stackexchange.com/a/308244/30654
-% Nombres d'éléments d'une liste
+% D'aprï¿½s : https://tex.stackexchange.com/a/308244/30654
+% Nombres d'ï¿½lï¿½ments d'une liste
 % Pour une liste "simple" : \rdexocountlist{a,b,c,} = 3
-% Pour une liste implicite, utiliser la version étoilée
+% Pour une liste implicite, utiliser la version ï¿½toilï¿½e
 %   \def\liste{a,b,c}
 %   \rdexocountlist*{\liste} = 3 (tandis que \rdexocountlist{\liste} = 1 !)
 
@@ -480,7 +480,7 @@
 
 \newcommand\rdexoMod[2]{\fpeval{((#1)-(#2)*floor((#1)/(#2)))}}% Modulo
 
-% Construction de la macro \rdexo@matrixcontent destinée à être insérée dans \matrix
+% Construction de la macro \rdexo@matrixcontent destinï¿½e ï¿½ ï¿½tre insï¿½rï¿½e dans \matrix
 % #1 = nb colonnes
 \def\rdexo@tikzlist@macrobuilder#1{%
 \def\rdexo@matrixcontent{}%
@@ -543,29 +543,29 @@
 
 \NewDocumentCommand{\rdexotikzlist}{ O{} m }
 % #1 = options
-% #2 = liste (séparateur = {,})
+% #2 = liste (sï¿½parateur = {,})
 {%
 \if\relax\detokenize\expandafter{\romannumeral-`\Q#2}\relax% Liste vide
 \else%
 \begingroup%
 \pgfkeys{/rdexo tikz list/.cd, #1}%
 %
-% Nombre d'éléments de la liste
+% Nombre d'ï¿½lï¿½ments de la liste
 \edef\rdexo@nbelem{\rdexocountlist*{#2}}%
 % Sauvegarde de la liste dans \rdexo@tikzlist
-% (on développe #2 car sinon, #2 est considéré comme un seul élément dans la boucle \foreach de \rdexo@tikzlist@macrobuilder)
+% (on dï¿½veloppe #2 car sinon, #2 est considï¿½rï¿½ comme un seul ï¿½lï¿½ment dans la boucle \foreach de \rdexo@tikzlist@macrobuilder)
 \expandafter\def\expandafter\rdexo@tikzlist\expandafter{#2}%
 % Nombre maximal de colonnes
 \ifnum\rdexo@tikzlist@maxcols=0 \edef\rdexo@tikzlist@maxcols{\rdexo@nbelem}\fi%
 %
 \loop%
-% Construction de la macro interne à \matrix
+% Construction de la macro interne ï¿½ \matrix
 \rdexo@tikzlist@macrobuilder{\rdexo@tikzlist@maxcols}%
-% Construction de la boîte
+% Construction de la boï¿½te
 \rdexo@tikzlist@matrixbuilder%
-% On mesure la largeur de la boîte
+% On mesure la largeur de la boï¿½te
 \settowidth{\rdexo@tmplength}{\usebox{\rdexo@boxA}}%
-% Si nbcols=1 ou si largeur < \linewidth => terminé
+% Si nbcols=1 ou si largeur < \linewidth => terminï¿½
 \edef\rdexo@tikzlist@maxcols{\fpeval{\rdexo@tikzlist@maxcols-1}}%
 %
 \ifnum\rdexo@tikzlist@maxcols= 0 \rdexo@notoverfalse%
@@ -723,7 +723,7 @@
     file@options/.code=\setrdexo{file@options@style/.style={#1}},
     file@options=,
     rdexo@inside@raster/.code={%
-        %   À l'intérieur d'un raster, les boîtes sont mal alignées si breakable=true
+        %   ï¿½ l'intï¿½rieur d'un raster, les boï¿½tes sont mal alignï¿½es si breakable=true
         \ifdefined\tcb@raster@box@width\pgfkeysalso{breakable=false}\fi%
     },
     %
@@ -790,24 +790,24 @@
 }
 
 
-% Boîte de sauvegarde
-% Note : J'ai essayé avec des \begin{tcolorbox} ou avec des \NewTColorBox ou ...
-% mais, c'est la seule façon de définir la boîte de sauvegarde qui fonctionne
-% lorsque l'exercice est inclus dans une boîte personnalisée (définie par un \NewTColorBox)
+% Boï¿½te de sauvegarde
+% Note : J'ai essayï¿½ avec des \begin{tcolorbox} ou avec des \NewTColorBox ou ...
+% mais, c'est la seule faï¿½on de dï¿½finir la boï¿½te de sauvegarde qui fonctionne
+% lorsque l'exercice est inclus dans une boï¿½te personnalisï¿½e (dï¿½finie par un \NewTColorBox)
 \newenvironment{rdexo@savebox}{%
 \tcolorbox[savedelimiter=rdexo@savebox,lowerbox=ignored, nirvana, savelowerto=\rdexo@savefile]
 }%
 {\endtcolorbox}
 
 
-% Boîte pour rotation à 180°
+% Boï¿½te pour rotation ï¿½ 180ï¿½
 \NewTColorBox{rdexo@mirrorbox}{}{%
 blankest, rdexo@boxlower@width
 }
 
 
-% À utiliser en cas de plusieurs \tcblower dans un exercice avec la clé "display lower=true" : il ne peut y avoir qu'un seul
-% \tcblower utilisé comme séparateur entre le contenu de la upper box et celui de la lower box
+% ï¿½ utiliser en cas de plusieurs \tcblower dans un exercice avec la clï¿½ "display lower=true" : il ne peut y avoir qu'un seul
+% \tcblower utilisï¿½ comme sï¿½parateur entre le contenu de la upper box et celui de la lower box
 \def\rdexotcblower{\tcblower}
 
 \def\exocorrection{}
@@ -817,10 +817,10 @@ blankest, rdexo@boxlower@width
 
 
 \NewDocumentCommand{\rdexo@splitcontent}{m m m +m}
-%   #4 = contenu à séparer en, au maximum, trois parties :
+%   #4 = contenu ï¿½ sï¿½parer en, au maximum, trois parties :
 %           la upper box : tout ce qui est avant \tcblower
 %           la lower box : tout ce qui est entre \tcblower et \exocorrection
-%           la correction : tout ce qui est après \exocorrection
+%           la correction : tout ce qui est aprï¿½s \exocorrection
 %   #1 = macro pour le contenu de la upper box
 %   #2 = macro pour le contenu de la lower box
 %   #3 = macro pour le contenu de la correction
@@ -828,30 +828,30 @@ blankest, rdexo@boxlower@width
  {
     \tl_set:Nn \l__rdexo_content_tl {#4}
     %
-    %   Test si macros à développer
+    %   Test si macros ï¿½ dï¿½velopper
     %
-    %   La ou les macros à développer au préalable sont contenues dans \rdexo@macrostoexpand
-    %   qu'il convient de développer une fois avant de stocker dans \l_tmpa_tl
+    %   La ou les macros ï¿½ dï¿½velopper au prï¿½alable sont contenues dans \rdexo@macrostoexpand
+    %   qu'il convient de dï¿½velopper une fois avant de stocker dans \l_tmpa_tl
     \tl_set:No \l_tmpa_tl \rdexo@macrostoexpand
     %
     \tl_if_eq:NNTF \l_tmpa_tl \l__rdexo_relax
-        %   Par défaut, \rdexo@macrostoexpand = \relax, il n'y a rien à faire
+        %   Par dï¿½faut, \rdexo@macrostoexpand = \relax, il n'y a rien ï¿½ faire
         {}
         {
         %   \rdexo@macrostoexpand n'est pas vide
-        %   Les différentes macros à développer sont stockées dans une séquence
+        %   Les diffï¿½rentes macros ï¿½ dï¿½velopper sont stockï¿½es dans une sï¿½quence
             \seq_set_split:NnV \l__rdexo_macros_to_expand_seq {,} {\l_tmpa_tl}
-        %   On parcourt ensuite la séquence, macro par macro
+        %   On parcourt ensuite la sï¿½quence, macro par macro
             \seq_map_inline:Nn \l__rdexo_macros_to_expand_seq
             {
-                % On développe une fois la macro
+                % On dï¿½veloppe une fois la macro
                 \tl_set:No \l_tmpa_tl ##1
-                % On remplace la macro par son développement dans \l__rdexo_content_tl
+                % On remplace la macro par son dï¿½veloppement dans \l__rdexo_content_tl
                 \tl_replace_all:NnV \l__rdexo_content_tl {##1} \l_tmpa_tl
             }
         }
     %
-    %   /Fin du test sur les macros à développer
+    %   /Fin du test sur les macros ï¿½ dï¿½velopper
     %
     %
     %
@@ -910,31 +910,31 @@ blankest, rdexo@boxlower@width
     \rdexo@displayexotrue%
 \else%
     \begingroup%
-    % On récupère la liste des tags dans \rdexotmp
+    % On rï¿½cupï¿½re la liste des tags dans \rdexotmp
         \tcbset{rdexo/.cd, #1}%
         \xdef\rdexo@tmp{\rdexo@exotags}%
     \endgroup%
     % Recherche
     \TF@tagtest{\rdexo@tags@matchcase}{\rdexo@tagfilter}{\rdexo@tmp}{\rdexo@displayexotrue}{\rdexo@displayexofalse}\ifhmode\unskip\fi%
     % note : dans un tcbraster, il peut y avoir des espaces superflus introduits lorsque \rdexo@displayexofalse
-    % d'où le \unskip (note de la note : impossible de trouver l'origine de ces espaces superflus !)
+    % d'oï¿½ le \unskip (note de la note : impossible de trouver l'origine de ces espaces superflus !)
 \fi%
 %
 %
 \ifrdexo@displayexo%
 \begingroup%
-\stepcounter{rdexo@numexo}% pas de refstepcounter qui provoque un retour à la ligne dans un tcbraster
-\stepcounter{rdexo@real@numexo}% compteur unique (la clé "numexo" a pu être employée pour redéfinir rdexo@numexo)
+\stepcounter{rdexo@numexo}% pas de refstepcounter qui provoque un retour ï¿½ la ligne dans un tcbraster
+\stepcounter{rdexo@real@numexo}% compteur unique (la clï¿½ "numexo" a pu ï¿½tre employï¿½e pour redï¿½finir rdexo@numexo)
 \tcbset{rdexo/.cd, #1, file@options@style, exo \therdexo@numexo/.try}%
 \expandafter\def\expandafter\rdexotags\expandafter{\rdexo@exotags}% Commande \rdexotags publique
 %
 \rdexo@splitcontent{\rdexo@upper@content}{\rdexo@lower@content}{\rdexo@correction@content}{#2}%
 %
 \ifrdexo@correctionaslower%
-%   Si la clé correction as lower  vaut true, le contenu de la correction est transféré dans la lower box
+%   Si la clï¿½ correction as lower  vaut true, le contenu de la correction est transfï¿½rï¿½ dans la lower box
 \let\rdexo@lower@content\rdexo@correction@content%
 \else%
-%   Sinon, la correction (si non vide) est stockée
+%   Sinon, la correction (si non vide) est stockï¿½e
 \if\relax\detokenize\expandafter{\romannumeral-`\Q\rdexo@correction@content}\relax%
 \else%
 \global\expandafter\let\csname rdexo@correction@content@\therdexo@numexo\endcsname\rdexo@correction@content%
@@ -963,8 +963,8 @@ blankest, rdexo@boxlower@width
 \tcbset{rdexo@raster@style/.style={}}%
 \@ifpackageloaded{rdcrep}{\rdexo@creploadedtrue}{\rdexo@creploadedfalse}%
 %
-%   Type de boîte pour la lowerbox : default ou crep
-%   Boîte : default
+%   Type de boï¿½te pour la lowerbox : default ou crep
+%   Boï¿½te : default
 \let\rdexo@lowerbox\tcolorbox%
 \let\endrdexo@lowerbox\endtcolorbox%
 %
@@ -972,7 +972,7 @@ blankest, rdexo@boxlower@width
     \tcbset{rdexo/rdexo@lower@style/.prefix style={lower default style, /tcb/rdexo/\rdexo@skin/lower style/.try}}%
 \else%
 \ifrdexo@creploaded%
-%   Boîte : crep
+%   Boï¿½te : crep
     \let\rdexo@lowerbox\crep%
     \let\endrdexo@lowerbox\endcrep%
 \fi%
@@ -1001,7 +1001,7 @@ blankest, rdexo@boxlower@width
 %
 \tcbset{rdexo@raster@style/.append style={rdexo@user@raster}}%
 %
-%   lowerbox par défaut (quand mirror=false)
+%   lowerbox par dï¿½faut (quand mirror=false)
 \def\rdexo@LOWERBOX{%
 \begingroup%
 \rdexo@lowerbox[/tcb/rdexo/rdexo@lower@style, rdexo@boxlower@width]
@@ -1013,15 +1013,15 @@ blankest, rdexo@boxlower@width
 %
 \ifrdexo@mirror%
 %
-% Boîte tournée !
+% Boï¿½te tournï¿½e !
 %
-% Comme les solutions basées sur la clé /tcb/rotate=180 ou /tcb/ticz={...} ne fonctionnent pas en toutes circonstances,
-% l'idée consiste à sauvegarder la lowerbox dans une boîte (\rdexo@boxA) et à faire subir à cette boîte une rotation de 180°.
-% MAIS, il faut d'abord obtenir les dimensions de la boîte affichée dans le raster. Pour cela, on utilise un raster "caché"
-% (=> contenu dans une boîte) et on récupère la hauteur de la lowerbox (sauvegardée dans rdexo@rastergroup).
-% De surcroît, en cas d'utilisation de "seyes", il faut forcer la tracé des lignes Seyes avec l'option "forced height".
+% Comme les solutions basï¿½es sur la clï¿½ /tcb/rotate=180 ou /tcb/ticz={...} ne fonctionnent pas en toutes circonstances,
+% l'idï¿½e consiste ï¿½ sauvegarder la lowerbox dans une boï¿½te (\rdexo@boxA) et ï¿½ faire subir ï¿½ cette boï¿½te une rotation de 180ï¿½.
+% MAIS, il faut d'abord obtenir les dimensions de la boï¿½te affichï¿½e dans le raster. Pour cela, on utilise un raster "cachï¿½"
+% (=> contenu dans une boï¿½te) et on rï¿½cupï¿½re la hauteur de la lowerbox (sauvegardï¿½e dans rdexo@rastergroup).
+% De surcroï¿½t, en cas d'utilisation de "seyes", il faut forcer la tracï¿½ des lignes Seyes avec l'option "forced height".
 %
-% Raster caché (raster equal height group=rdexo@rastergroup n'a aucun effet si raster equal height=none, ce qui nous arrange !)
+% Raster cachï¿½ (raster equal height group=rdexo@rastergroup n'a aucun effet si raster equal height=none, ce qui nous arrange !)
 \begin{lrbox}{\rdexo@boxA}%
 \begin{tcbraster}[raster columns=\rdexo@raster@columns, rdexo@raster@style, raster equal height group=rdexo@rastergroup@\therdexo@real@numexo]
 \begin{rdexo@exo}[#1, rdexo@boxexo@width]
@@ -1033,8 +1033,8 @@ blankest, rdexo@boxlower@width
 \end{tcbraster}%
 \end{lrbox}%
 %
-% Construction de la boîte aux bonnes dimensions (use height from group=rdexo@rastergroup + "forced height" n'a aucun effet
-% si le style "seyes" n'est pas activté).
+% Construction de la boï¿½te aux bonnes dimensions (use height from group=rdexo@rastergroup + "forced height" n'a aucun effet
+% si le style "seyes" n'est pas activtï¿½).
 \begin{lrbox}{\rdexo@boxB}%
 \begingroup%
 \rdexo@lowerbox[/tcb/rdexo/rdexo@lower@style, rdexo@boxlower@width, /tcb/crep/forced height/.try, use height from group=rdexo@rastergroup@\therdexo@real@numexo]
@@ -1044,7 +1044,7 @@ blankest, rdexo@boxlower@width
 \endgroup%
 \end{lrbox}%
 %
-% Redéfinition de \rdexo@LOWERBOX qu'on encapsule dans une boîte vide pour ne pas perturber le tcbraster à venir
+% Redï¿½finition de \rdexo@LOWERBOX qu'on encapsule dans une boï¿½te vide pour ne pas perturber le tcbraster ï¿½ venir
 \def\rdexo@LOWERBOX{%
 \begin{rdexo@mirrorbox}
 \rotatebox{180}{\usebox{\rdexo@boxB}}%
@@ -1057,7 +1057,7 @@ blankest, rdexo@boxlower@width
 \begin{tcbraster}[raster columns=\rdexo@raster@columns, rdexo@raster@style]
 %
 \ifnum\rdexo@lower@position=1 %
-% Boîte lower à gauche
+% Boï¿½te lower ï¿½ gauche
 \rdexo@LOWERBOX%
 %
 \begin{rdexo@exo}[#1, rdexo@boxexo@width]
@@ -1067,7 +1067,7 @@ blankest, rdexo@boxlower@width
 %
 \else%
 %
-% Boîte lower à droite ou dessous
+% Boï¿½te lower ï¿½ droite ou dessous
 \begin{rdexo@exo}[#1, rdexo@boxexo@width]
 %#2%
 \rdexo@upper@content%
@@ -1105,7 +1105,7 @@ blankest, rdexo@boxlower@width
 
 \def\rdexopath#1{\def\rdexoinput@path{#1}}
 
-\rdexopath{{./}}%   path par défaut
+\rdexopath{{./}}%   path par dï¿½faut
 
 \ifx\rdexoinput@path\@undefined%
   \let\rdexoinput@path\input@path%
@@ -1140,7 +1140,7 @@ blankest, rdexo@boxlower@width
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Création des skins
+%   Crï¿½ation des skins
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -1173,7 +1173,7 @@ blankest, rdexo@boxlower@width
 
 
 \tcbset{%
-    % les styles pour un skin doivent être rangés dans la branche /tcb/rdexo/<nom du skin>
+    % les styles pour un skin doivent ï¿½tre rangï¿½s dans la branche /tcb/rdexo/<nom du skin>
     rdexo/default/.cd,
     % Couleurs
     bg color/.initial=gray!10,
@@ -1213,11 +1213,11 @@ blankest, rdexo@boxlower@width
                     \thetags%
                     \end{tcolorbox}}{}%
     },
-    %   style optionnel pour la boîte destinée à contenir la lowerbox
+    %   style optionnel pour la boï¿½te destinï¿½e ï¿½ contenir la lowerbox
     lower style/.style={
         boxsep=3pt
     },
-    %   style optionnel pour les boîtes contenant les corrections
+    %   style optionnel pour les boï¿½tes contenant les corrections
     correction style/.style={
         enhanced jigsaw,
         opacityback=0,
@@ -1283,9 +1283,9 @@ blankest, rdexo@boxlower@width
     score and level/.style={
         overlay={
             \path (frame.east) coordinate (x) (frame.north west) coordinate (saved frame nw) ;
-            % Quand on inclut le score, une nouvelle boîte \tcbox est créée ce qui implique (bug ?) que
-            % (frame) fait désormais référence à la boîte contenant le score. D'où la nécessité de
-            % sauvegarder la position (frame.north west) utilisée pour les tags.
+            % Quand on inclut le score, une nouvelle boï¿½te \tcbox est crï¿½ï¿½e ce qui implique (bug ?) que
+            % (frame) fait dï¿½sormais rï¿½fï¿½rence ï¿½ la boï¿½te contenant le score. D'oï¿½ la nï¿½cessitï¿½ de
+            % sauvegarder la position (frame.north west) utilisï¿½e pour les tags.
             \TFScore{%
                 \node[anchor=east, inner xsep=2pt] (y) at (frame.east) {\tcbox[rdexo/default/score style]{\theScore}} ;
                 \path (y.west) coordinate (x) ;
@@ -1343,7 +1343,7 @@ blankest, rdexo@boxlower@width
 
 
 \tcbset{%
-    % les styles pour un skin doivent être rangés dans la branche /tcb/rdexo/<nom du skin>
+    % les styles pour un skin doivent ï¿½tre rangï¿½s dans la branche /tcb/rdexo/<nom du skin>
     rdexo/pooja/.cd,
     % Couleurs
     bg color/.initial=gray!20,
@@ -1372,11 +1372,11 @@ blankest, rdexo@boxlower@width
                         \thetags%
                         \end{tcolorbox}}{}%
     },
-    %   style optionnel pour la boîte destinée à contenir la lowerbox
+    %   style optionnel pour la boï¿½te destinï¿½e ï¿½ contenir la lowerbox
     lower style/.style={
         boxsep=3pt
     },
-    %   style optionnel pour les boîtes contenant les corrections
+    %   style optionnel pour les boï¿½tes contenant les corrections
     correction style/.style={
         enhanced jigsaw,
         opacityback=0,
@@ -1514,7 +1514,7 @@ blankest, rdexo@boxlower@width
 
 
 \tcbset{%
-    % les styles pour un skin doivent être rangés dans la branche /tcb/rdexo/<nom du skin>
+    % les styles pour un skin doivent ï¿½tre rangï¿½s dans la branche /tcb/rdexo/<nom du skin>
     rdexo/rikid/.cd,
     % Couleurs
     bg color/.initial=rdexored,
@@ -1551,11 +1551,11 @@ blankest, rdexo@boxlower@width
                                 \thetags%
                                 \end{tcolorbox}}{}%
     },
-    %   style optionnel pour la boîte destinée à contenir la lowerbox
+    %   style optionnel pour la boï¿½te destinï¿½e ï¿½ contenir la lowerbox
     lower style/.style={
         boxsep=3pt
     },
-    %   style optionnel pour les boîtes contenant les corrections
+    %   style optionnel pour les boï¿½tes contenant les corrections
     correction style/.style={
         enhanced jigsaw,
         opacityback=0,
@@ -1701,7 +1701,7 @@ blankest, rdexo@boxlower@width
 
 
 \tcbset{%
-    % les styles pour un skin doivent être rangés dans la branche /tcb/rdexo/<nom du skin>
+    % les styles pour un skin doivent ï¿½tre rangï¿½s dans la branche /tcb/rdexo/<nom du skin>
     rdexo/griba/.cd,
     % Couleurs
     bg color/.initial=black,
@@ -1738,11 +1738,11 @@ blankest, rdexo@boxlower@width
                                     \thetags%
                                     \end{tcolorbox}}{}%
     },
-    % style optionnel pour la boîte destinée à contenir la lowerbox
+    % style optionnel pour la boï¿½te destinï¿½e ï¿½ contenir la lowerbox
     lower style/.style={
         boxsep=3pt
     },
-    % style optionnel pour les boîtes contenant les corrections
+    % style optionnel pour les boï¿½tes contenant les corrections
     correction style/.style={
         enhanced jigsaw,
         opacityback=0,
@@ -1882,7 +1882,7 @@ blankest, rdexo@boxlower@width
 
 
 
-% Inspiré de https://tex.stackexchange.com/a/11395/30654
+% Inspirï¿½ de https://tex.stackexchange.com/a/11395/30654
 
 \newlength{\rdexostars@raise}
 
@@ -1969,8 +1969,8 @@ blankest, rdexo@boxlower@width
           \path [clip] ($(star\partstar.outer point 3)!(star\partstar.outer point 2)!(star\partstar.outer point 4)$) rectangle
           ($(star\partstar.outer point 2 |- star\partstar.outer point 1)!\starpart!(star\partstar.outer point 1 -| star\partstar.outer point 5)$);
           \fill (\partstar*1em, 0) node[scorestars, fill=rdexostars@starcolor]  {};
-      \else % en mode vertical, l'aire représentée n'est pas vraiment correcte... mais pas complétement fausse non plus
-            % Utilisation de GeoGebra pour approcher le calcul de \starpart en fonction du pourcentage de l'aire à représenter
+      \else % en mode vertical, l'aire reprï¿½sentï¿½e n'est pas vraiment correcte... mais pas complï¿½tement fausse non plus
+            % Utilisation de GeoGebra pour approcher le calcul de \starpart en fonction du pourcentage de l'aire ï¿½ reprï¿½senter
             \edef\starpart{\fpeval{15.7*\starpart^5-36.7*\starpart^4+31.15*\starpart^3-11.9*\starpart^2+2.7*\starpart}}
           \path [clip] ($(star\partstar.outer point 3)!(star\partstar.outer point 2)!(star\partstar.outer point 4)$)
                     rectangle

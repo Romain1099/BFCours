@@ -1,7 +1,7 @@
 % Nom du fichier : bfcours-environments.sty
 \ProvidesPackage{bfcours-environments}[2024/06/29 v1.0 Environnements pour bfcours]
 
-
+\RequirePackage{bfcours-competencies}
 % La gestion des couleurs se passe dans le fichier 'bfcours-colors.sty'
 
 
@@ -9,7 +9,16 @@
 fonttitle=\bfseries\large,
 %fontupper=\normalsize\sffamily
 }
+\newcounter{contentcounter}
+\setcounter{contentcounter}{0}
 
+\newcommand{\liencontent}[2]{%
+  \stepcounter{contentcounter}
+  \hypertarget{subsec:\thecontentcounter}{}
+  \addcontentsline{toc}{subsection}{\protect\numberline{}\textbf{#1} - {\color{blue!90!black}#2}}
+  \label{subsec:#1\thecontentcounter}
+  \textbf{#1}
+}
 
 
 % Définition de l'environnement tcolorboxNone
@@ -25,11 +34,204 @@ fonttitle=\bfseries\large,
 }
 
 \NewDocumentEnvironment{EXO}{m m +b}{
-\begin{exo}[exotitle=#1, tags={#2}]
+\begin{exo}[exotitle=\begin{minipage}[t]{0.5\textwidth}#1\end{minipage}, tags={#2}]
 #3
 \end{exo}
 }
 
+\newcommand{\getsavedtotalpoints}{
+	\pgfmathparse{int(\savedtotalpoints)==\savedtotalpoints ? int(\savedtotalpoints) : \savedtotalpoints}%
+	\num{\pgfmathresult}\phantom{A}%
+}
+% Définition du compteur global de points et de la liste de points
+\newcounter{itempointcounter}
+\newcommand{\totalpoints}{0} % Total des points
+\newcommand{\exopoints}{0} % Total des points
+\newcommand{\exopointslist}{} % Liste des points pour chaque exercice
+
+
+\newif\ifdisplayitempoints % Déclaration du booléen
+
+% Définition de la commande \itempoint (tout-en-un avec compteur et booléen)
+\NewDocumentCommand{\itempoint}{m O{-0pt}}{%
+    \stepcounter{itempointcounter}% Incrémentation du compteur
+	%code d'indexation à mettre ici
+	%\addtocounter{totalpoints}{#1}% Ajout au total des points
+	\pgfmathparse{\totalpoints + #1}%
+    \xdef\totalpoints{\pgfmathresult} % Mise à jour de totalpoints
+	\pgfmathparse{\exopoints + #1}%
+    \xdef\exopoints{\pgfmathresult} % Mise à jour de totalpoints
+	%\addtocounter{exopoints}{#1}% Ajout au total des points
+    \tikzmark{mylabel\theitempointcounter}% Placement du marqueur avec identifiant unique
+	\ifdisplayitempoints% Condition sur l'affichage
+     \tikz[remember picture, overlay]{% Overlay pour superposer la boîte
+            \node[anchor=base, draw=black, fill=gray!10, rounded corners, inner sep=3pt, outer sep=0pt, minimum width=1.4cm, align=center] at ($(pic cs:mylabel\theitempointcounter) + (\linewidth - 0.7cm, #2)$) { % Placement de la boîte avec décalage en X
+                %$\ifdim #1pt = 1pt 1 \,\text{pt} \else \num{#1} \,\text{pts} \fi$%
+			%$\num{#1} \,\text{pts}$
+			\pgfmathparse{#1} % Parse la valeur pour la manipuler en décimal
+			    \let\value=\pgfmathresult
+			    % Condition pour afficher "pt" ou "pts" en fonction de la comparaison avec 1
+			    \ifdim \value pt < 1pt
+			        % Si \value est inférieur à 1, affiche en singulier avec décimales
+			        \num{\value} \,\text{pt}%
+			    \else
+			        \ifdim \value pt = 1pt
+			            % Si \value est exactement 1, affiche en singulier sans décimales
+			            1 \,\text{pt}%
+			        \else
+			            % Si \value est supérieur à 1, affiche en pluriel
+			            \pgfmathparse{int(\value)==\value ? int(\value) : \value}%
+			            \num{\pgfmathresult} \,\text{pts}%
+			        \fi
+			    \fi
+            };
+        }%
+    \fi
+}
+
+\newcounter{baremepointcounter}
+\setcounter{baremepointcounter}{0}
+
+% Déclaration du booléen pour activer ou non l'affichage des points
+\newif\ifdisplaybaremepoints
+\displaybaremepointsfalse % Active par défaut l'affichage des points
+%\displaybaremepointstrue % Active par défaut l'affichage des points
+
+% Définition de la commande \baremepoint
+\NewDocumentCommand{\baremepoint}{m m}{%
+    \stepcounter{baremepointcounter}% Incrémentation du compteur
+    
+    % Calcul et définition du titre en fonction des points
+    \pgfmathparse{#2} % Parse la valeur
+	\let\value=\pgfmathresult
+	\ifdim \value pt < 1pt
+        % Si \value est inférieur à 1, affiche en singulier avec décimales
+        \xdef\bpointtitle{$\num{\value} \,\text{pt}$}%
+    \else
+        \ifdim \value pt = 1pt
+            % Si \value est exactement 1, affiche en singulier sans décimales
+            \xdef\bpointtitle{$1 \,\text{pt}$}%
+        \else
+            % Si \value est supérieur à 1, affiche en pluriel
+            \pgfmathparse{int(\value)==\value ? int(\value) : \value}%
+            \xdef\bpointtitle{$\num{\pgfmathresult} \,\text{pts}$}%
+        \fi
+    \fi
+    % Création de la boîte en overlay avec le titre des points
+    \ifdisplaybaremepoints
+	\tikz[remember picture] \node[inner sep=0pt, outer sep=0pt, anchor=base] (baremecontent\thebaremepointcounter) {%
+	        #1% Légèrement coloré en fond rouge clair
+	    };
+        \tikz[remember picture, overlay]{%
+            \node[draw=red, rounded corners, inner sep=3pt, outer sep=0pt, anchor=south, 
+                  fill=red!5, text=red] 
+            at ($(baremecontent\thebaremepointcounter.north) + (0,0.2cm)$) % Position de la boîte de points au-dessus
+            {\bpointtitle}; % Affiche le titre avec points
+        }
+\else
+\tikz[remember picture] \node[inner sep=0pt, outer sep=0pt, anchor=base] (baremecontent\thebaremepointcounter) {%
+        #1% Légèrement coloré en fond rouge clair
+    };
+    \fi
+}
+
+% Définition de la commande \itempoint (tout-en-un avec compteur et booléen)
+\NewDocumentCommand{\myolditempoint}{m O{-0pt}}{%
+    \stepcounter{itempointcounter}% Incrémentation du compteur
+    \tikzmark{mylabel\theitempointcounter}% Placement du marqueur avec identifiant unique
+	\ifdisplayitempoints% Condition sur l'affichage
+     \tikz[remember picture, overlay]{% Overlay pour superposer la boîte
+            \node[anchor=base, draw=black, fill=gray!10, rounded corners, inner sep=3pt, outer sep=0pt, minimum width=1.4cm, align=center] at ($(pic cs:mylabel\theitempointcounter) + (\linewidth - 0.7cm, #2)$) { % Placement de la boîte avec décalage en X
+                %$\ifdim #1pt = 1pt 1 \,\text{pt} \else \num{#1} \,\text{pts} \fi$%
+			$\num{#1} \,\text{pts}$
+            };
+        }%
+    \fi
+}
+
+
+%\newcommand{\exopointslist}{} % Liste des points pour chaque exercice
+\newcommand{\printexopoint}[1]{%
+#1
+}
+
+
+% Initialisation du drapeau \isfirst
+\newif\ifisfirst
+\isfirsttrue % Initialise à true pour le premier élément
+
+\newcounter{persoexocounter}
+\setcounter{persoexocounter}{0}
+% Fonction pour accéder au i-ème élément de exopointslist
+
+\NewDocumentCommand{\getexopoint}{m}{%
+   \xdef\points{1}%
+    \foreach \val [count=\i] in \savedexopointslist {%
+        \ifnum\i=#1 
+		\xdef\points{\val}
+		% Parse le nombre avec pgfmath pour arrondir
+            \pgfmathparse{ifthenelse(int(\val)==\val, int(\val), \val)}%
+            \xdef\points{\pgfmathresult}%
+	   \fi
+    }%
+}
+
+\def\savedexopointslist{}
+\def\savedtotalpoints{}
+% Lecture du fichier bfpoints.tex au début du document, s'il existe
+\IfFileExists{bfpoints_\jobname.tex}{\input{bfpoints_\jobname.tex}}{}
+
+% Écriture dans bfpoints.tex à la fin du document
+\AtEndDocument{%
+    \newwrite\pointsfile
+    \immediate\openout\pointsfile=bfpoints_\jobname.tex
+    \immediate\write\pointsfile{\noexpand\renewcommand{\noexpand\savedtotalpoints}{\totalpoints}}%
+    \immediate\write\pointsfile{\noexpand\renewcommand{\noexpand\savedexopointslist}{\exopointslist}}%
+    \immediate\closeout\pointsfile
+}
+% Environnement EXOEVAL avec LaTeX pour le calcul des points
+\NewDocumentEnvironment{EXOEVAL}{m m +b}{
+\stepcounter{persoexocounter}
+\getexopoint{\thepersoexocounter}
+\begin{exo}[exotitle=\begin{minipage}{0.4\textwidth}#1\end{minipage}\hfill\begin{minipage}{0.18\textwidth}\vfill\renewcommand{\arraystretch}{0.75} % 0.6 est un exemple, à ajuster selon la hauteur souhaitée
+\begin{tcbtabcomp}{|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.9cm}}
+    \hline
+    \rule[0pt]{0pt}{8pt}\cellcolor{red!30!white}\textbf{MI} &\cellcolor{orange!30!white} \textbf{MF} &\cellcolor{yellow!30!white} \textbf{MS} &\cellcolor{green!30!white} \textbf{TBM} \\
+    \hline
+   \renewcommand{\arraystretch}{1.2}\rule[0pt]{0pt}{11pt}  & & & \\
+\end{tcbtabcomp}\vfill\end{minipage}\hfill, tags={#2}]%
+{\ncomp{#2}}%
+\renewcommand{\exopoints}{0}% Ajout au total des points
+#3
+
+\end{exo}
+%
+%Points : \theexopoints. \\
+ % Premier élément sans virgule
+  \ifisfirst
+        % Premier élément, pas de virgule
+        \xdef\exopointslist{\exopoints}%
+       \global\isfirstfalse % Passe \isfirst à false pour les éléments suivants
+    \else
+        \edef\oldpointslist{\exopointslist}
+	   \xdef\exopointslist{\oldpointslist , \exopoints} % Ajout avec virgule
+    \fi
+%\exopointslist
+}
+
+
+\NewDocumentEnvironment{OLDEXOEVAL}{m m +b}{
+\begin{exo}[exotitle=\begin{minipage}{0.4\textwidth}#1\end{minipage}\hfill\begin{minipage}{0.18\textwidth}\vfill\renewcommand{\arraystretch}{0.75} % 0.6 est un exemple, à ajuster selon la hauteur souhaitée
+\begin{tcbtabcomp}{|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.9cm}}
+    \hline
+    \rule[0pt]{0pt}{8pt}\cellcolor{red!30!white}\textbf{MI} &\cellcolor{orange!30!white} \textbf{MF} &\cellcolor{yellow!30!white} \textbf{MS} &\cellcolor{green!30!white} \textbf{TBM} \\
+    \hline
+   \renewcommand{\arraystretch}{1.2}\rule[0pt]{0pt}{11pt}  & & & \\
+\end{tcbtabcomp}\vfill\end{minipage}\hfill, tags={#2}]%
+\begingroup\ncomp{#2}\endgroup%
+#3
+\end{exo}
+}
 
 \newtcolorbox{Env}[2][]{enhanced,
 before skip=2mm,after skip=2mm,
@@ -75,7 +277,7 @@ overlay={
         \end{#1}
 }
 
-\NewDocumentEnvironment{Theoreme}{o +b}{
+\NewDocumentEnvironment{Theoreme}{O{} +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -97,7 +299,7 @@ arc[start angle=180,end angle=0,radius=1mm];
 },interior engine=empty,
 },
 fonttitle=\bfseries,
-title={\large{Théorème}},
+title={\large{\liencontent{Théorème}{#1}}},
 coltitle =white,
 drop shadow,
 borderline west={0.05mm}{0pt}{thm!80},
@@ -128,7 +330,7 @@ overlay={
 \end{tcolorbox}
 }
 
-\NewDocumentEnvironment{Theo}{o +b}{
+\NewDocumentEnvironment{Theo}{O{} +b}{
   \begin{Theoreme}[#1]
     #2
   \end{Theoreme}
@@ -163,7 +365,7 @@ coltitle =#1!80!black!}
 
 
 %Définitions
-\NewDocumentEnvironment{Definition}{o +b}{
+\NewDocumentEnvironment{Definition}{O{} +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -185,7 +387,7 @@ arc[start angle=180,end angle=0,radius=1mm];
 },interior engine=empty,
 },
 fonttitle=\bfseries,
-title={\large{Définition}},
+title={\large{\liencontent{Définition}{#1}}},
 coltitle =white,
 drop shadow,
 borderline west={0.05mm}{0pt}{defi!80},
@@ -251,7 +453,7 @@ overlay={
 }
 
 \NewDocumentEnvironment{Exemple}{O{} +b}{
-\begin{tcolorbox}[title=Exemple(s), exempleboxstyle,overlay={ % Utilisation de TikZ pour ajouter les éléments de décoration
+\begin{tcolorbox}[title=\liencontent{Exemple(s)}{#1}, exempleboxstyle,overlay={ % Utilisation de TikZ pour ajouter les éléments de décoration
             % Ligne verticale sous le titre
             \draw[gray!80!black, line width = 1.5pt] (frame.north west)++(0.075,-0.2cm) -- ++(0,-2cm);
             % Ligne horizontale à droite du titre
@@ -271,7 +473,7 @@ before upper={\vspace{0.5cm}}]
 \vspace{-0.2cm}
 }
 
-\NewDocumentEnvironment{OldExemple}{o +b}{
+\NewDocumentEnvironment{OldExemple}{O{} +b}{
 \begin{tcolorbox}[enhanced,
 before skip=2mm,after skip=2mm,
 colback=ex!5,colframe=ex!50,boxrule=0pt,
@@ -315,7 +517,7 @@ overlay={
 
 %Notations
 
-\NewDocumentEnvironment{OldNotation}{o +b}{
+\NewDocumentEnvironment{OldNotation}{O{} +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -369,8 +571,8 @@ overlay={
 }
 
 
-\NewDocumentEnvironment{Notation}{o +b}{
-  \begin{cracked}[Notation][#1][defi][defi][3.5cm]
+\NewDocumentEnvironment{Notation}{O{} +b}{
+  \begin{cracked}[\liencontent{Notation}{#1}][#1][defi][defi][3.5cm]
     #2
   \end{cracked}
 }
@@ -378,7 +580,7 @@ overlay={
 
 %Vocabulaire
 
-\NewDocumentEnvironment{Vocabulaire}{o +b}{
+\NewDocumentEnvironment{Vocabulaire}{O{} +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -400,7 +602,7 @@ arc[start angle=180,end angle=0,radius=1mm];
 },interior engine=empty,
 },
 fonttitle=\bfseries,
-title={\large{Vocabulaire}},
+title={\large{\liencontent{Vocabulaire}{#1}}},
 coltitle =white,
 drop shadow,
 borderline west={0.05mm}{0pt}{nota!80},
@@ -434,7 +636,7 @@ overlay={
 
 %Aides
 
-\NewDocumentEnvironment{OldAide}{o +b}{
+\NewDocumentEnvironment{OldAide}{O{} +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -487,14 +689,14 @@ overlay={
 \end{tcolorbox}
 }
 
-\NewDocumentEnvironment{Aide}{o +b}{
-  \begin{cracked}[Aide][#1][nota][nota][2.5cm]
+\NewDocumentEnvironment{Aide}{O{} +b}{
+  \begin{cracked}[\liencontent{Aide}{#1}][#1][nota][nota][2.5cm]
     #2
   \end{cracked}
 }
 %Démonstrations
 
-\NewDocumentEnvironment{Demonstration}{o +b}{
+\NewDocumentEnvironment{Demonstration}{O{} +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -516,7 +718,7 @@ arc[start angle=180,end angle=0,radius=1mm];
 },interior engine=empty,
 },
 fonttitle=\bfseries,
-title={\large{Démonstration}},
+title={\large{\liencontent{Démonstration}{#1}}},
 coltitle =white,
 drop shadow,
 borderline west={0.05mm}{0pt}{demo!80},
@@ -547,7 +749,7 @@ overlay={
 \ResetCouleurTexteAccent
 \end{tcolorbox}
 }
-%\NewDocumentEnvironment{Demo}{o +b}{
+%\NewDocumentEnvironment{Demo}{O{} +b}{
 %  \begin{Demonstration}[#1]
 %    #2
 %  \end{Demonstration}
@@ -555,7 +757,7 @@ overlay={
 
 
 %Remarques 
-\NewDocumentEnvironment{RemarqueOld}{o +b}{
+\NewDocumentEnvironment{RemarqueOld}{O{} +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -600,7 +802,7 @@ overlay={
 }
 
 %\definecolor{headerrmq}{RGB}{0, 128, 0} % Couleur du fond de l'en-tête
-\NewDocumentEnvironment{Remarque}{o +b}{
+\NewDocumentEnvironment{Remarque}{O{} +b}{
     \begin{bclogo}[noborder=true,logo={\bccrayon},arrondi=0.1,barre=snake]{Remarques :}
       \CouleurTexteAccent{thm!80!black}
       #2
@@ -611,7 +813,7 @@ overlay={
 %Solutions
 \newcounter{tempprofseyes}
 
-\NewDocumentEnvironment{Solution}{o +b}{
+\NewDocumentEnvironment{Solution}{O{} +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -635,7 +837,7 @@ arc[start angle=180,end angle=0,radius=1mm];
 },interior engine=empty,
 },
 fonttitle=\bfseries,
-title={\large{Solution}},
+title={\large{\liencontent{Solution}{#1}}},
 coltitle =white,
 drop shadow,
 borderline west={0.05mm}{0pt}{rem!80},
@@ -763,7 +965,7 @@ overlay={
 
 %Propriétés 
 
-\NewDocumentEnvironment{Propriete}{o +b}{
+\NewDocumentEnvironment{Propriete}{O{} +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -785,7 +987,7 @@ arc[start angle=180,end angle=0,radius=1mm];
 },interior engine=empty,
 },
 fonttitle=\bfseries,
-title={\large{Propriété}},
+title={\large{\liencontent{Propriété}{#1}}},
 coltitle =white,
 drop shadow,
 borderline west={0.05mm}{0pt}{prop!80},
@@ -821,7 +1023,7 @@ overlay={
 
 
 %Activités
-\NewDocumentEnvironment{Activite}{o +b}{
+\NewDocumentEnvironment{Activite}{O{} +b}{
 \begin{tcolorbox}[
 enhanced,
 breakable,
@@ -844,7 +1046,7 @@ arc[start angle=180,end angle=0,radius=1mm];
 },interior engine=empty,
 },
 fonttitle=\bfseries,
-title={\large{Activité}},
+title={\large{\liencontent{Activité}{#1}}},
 coltitle =white,
 drop shadow,
 borderline west={0.05mm}{0pt}{act!80},
@@ -880,7 +1082,7 @@ overlay={
 
 
 %Méthodes
-\NewDocumentEnvironment{Methode}{o +b}{
+\NewDocumentEnvironment{Methode}{O{} +b}{
 \begin{tcolorbox}[
 enhanced,
 before skip=2mm,after skip=2mm,
@@ -902,7 +1104,7 @@ arc[start angle=180,end angle=0,radius=1mm];
 },interior engine=empty,
 },
 fonttitle=\bfseries,
-title={\large{Méthode}},
+title={\large{\liencontent{Méthode}{#1}}},
 coltitle =white,
 drop shadow,
 borderline west={0.05mm}{0pt}{meth!80},

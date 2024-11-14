@@ -137,13 +137,23 @@
     TableauBox/.style={%
 colframe=\currentTableFrameColor,colback=\currentTableColbackColor,colupper=\currentTableColupperColor,
 colbacktitle=\currentTableColbackTitleColor, coltitle=\currentTableColTitleColor,
+breakable,
 %before upper = {\arrayrulecolor{blue!50!black}\renewcommand{\arraystretch}{1.2}},
 % before upper*=\begin{tabular}{cc},
 % after upper*=\end{tabular},
  fonttitle=\bfseries,nobeforeafter,center title,left=0mm,right=0mm,top=0mm,bottom=0mm,boxsep=0mm,
     toptitle=0.5mm,bottomtitle=0.5mm,}
 }
-
+\tcbset{
+    CompTab/.style={%
+colframe=\currentTableFrameColor,colback=\currentTableColbackColor,colupper=\currentTableColupperColor,
+colbacktitle=\currentTableColbackTitleColor, coltitle=\currentTableColTitleColor,
+before upper = {\arrayrulecolor{blue!50!black}\renewcommand{\arraystretch}{0.2}},
+% before upper*=\begin{tabular}{cc},
+% after upper*=\end{tabular},
+ fonttitle=\bfseries,nobeforeafter,left=0pt,right=0pt,top=0pt,bottom=0pt,boxsep=0pt,
+    toptitle=0.5mm,bottomtitle=0.5mm,}
+}
 %%Second style tableaux en tabularx
 \newtcolorbox{tcbtabx}[3][]{%
     enhanced,
@@ -180,5 +190,16 @@ colbacktitle=\currentTableColbackTitleColor, coltitle=\currentTableColTitleColor
     before upper*=\begin{tabular}{#2},
     after upper*=\end{tabular} % Structure du tableau passée en paramètre
 }
-
+%Tableaux classique en tabular
+\newtcolorbox{tcbtabcomp}[2][]{%
+    CompTab,
+    drop fuzzy shadow,%
+    %width=#3,
+    center title,
+    title=#1,
+    hbox,
+    %tabulars*={\renewcommand\arraystretch{1.2}}%
+    before upper*=\begin{tabular}{#2},
+    after upper*=\end{tabular} % Structure du tableau passée en paramètre
+}
 \endinput

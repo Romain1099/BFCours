@@ -1,0 +1,76 @@
+\subsection{Mode manuel}
+
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\tcbox[TableauBox,title=Carrés parfaits à connaître]{%
+\arrayrulecolor{blue!50!black}\renewcommand{\arraystretch}{1.2}%
+    \begin{tabular}{|*{14}{c|}}
+    \hline
+    nombre $a$&0&1&2&3&4&5&6&7&8&9&10&11&12\\
+    \hline
+    $a$ \frquote{au carré}&0&1&4&9&16&25&36&49&64&81&100&121&144\\
+    \hline
+    \end{tabular}
+}
+\end{tcblisting}
+\subsection{Mode standard sans titre}
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{tcbtab}[Carrés parfaits à connaître]{c|*{12}{c|}c}%{0.8\textwidth}
+    nombre $a$&0&1&2&3&4&5&6&7&8&9&10&11&12\\
+    \hline
+    $a$ \frquote{au carré}&0&1&4&9&16&25&36&49&64&81&100&121&144\\
+\end{tcbtab}
+\end{tcblisting}
+\subsection{Mode standard avec titre}
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{tcbtab}[Carrés parfaits à connaître]{c|*{12}{c|}c}%{0.8\textwidth}
+    nombre $a$&0&1&2&3&4&5&6&7&8&9&10&11&12\\
+    \hline
+    $a$ \frquote{au carré}&0&1&4&9&16&25&36&49&64&81&100&121&144\\
+\end{tcbtab}
+\end{tcblisting}
+
+
+\subsection{Mode tabularx avec style clair}
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{tcbtabx}[My table]{X|X|X}{0.5\textwidth}
+    One & Two & Three \\\hline\hline
+    1000.00 & 2000.00 & 3000.00 \\\hline
+    2000.00 & 3000.00 & 4000.00
+\end{tcbtabx}
+\end{tcblisting}

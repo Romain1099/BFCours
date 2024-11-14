@@ -1,0 +1,439 @@
+\subsection{Commandes d'accentuation du texte}
+
+La package BFcours propose deux commandes d'accentuation du texte : 
+\begin{itemize}[label = $\bullet$]
+    \item \verb+\acc+ $\rightarrow$ met en gras et colore un mot
+    \item \verb+\voc+ $\rightarrow$ comme acc, mais place le mot à l'index
+\end{itemize}
+Les deux commandes obéissent à la couleur \verb+\currentAccentColor+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{voc et acc}]
+    \begin{minipage}{0.45\textwidth}
+    \begin{lstlisting}[breaklines]
+    \voc{mot de vocabulaire}\\
+    \acc{Un autre mot}
+    \end{lstlisting}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+    \phantom{a}\\
+    \voc{mot de vocabulaire}\\
+    \acc{Un autre mot}
+    \end{minipage}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{printvocindex}]
+    \begin{minipage}{0.45\textwidth}
+        \begin{lstlisting}[breaklines]
+        \printvocindex % Affiche les mots de vocabulaire dans une boite.
+        \end{lstlisting}
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.45\textwidth}
+        \phantom{a}\\
+        \printvocindex
+    \end{minipage}
+\end{tcolorbox}   
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{newcommand}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+\pascalc
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\phantom{a}\\
+\pascalc
+\end{minipage}
+\end{tcolorbox}
+
+
+\subsection{Commandes relatives au package de Régis Deleuze}
+
+Les packages \acc{rdexo} et \acc{rdcrep} fournissent de nombreuses fonctionnalités. 
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{rdexo}]
+    \begin{minipage}{0.45\textwidth}
+    \begin{lstlisting}[breaklines]
+        \def\points{2} % Commande permettant d'attribuer les points aux exercices
+        \def\rdifficulty{2} % Permet de définir la difficulté estimée d'un exercice ( par défaut 1 )
+
+        \begin{EXO}{Titre}{Code}
+            Ceci est un exercice.
+        \end{EXO}
+    \end{lstlisting}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+    \phantom{a}\\
+    \def\points{2} % Commande permettant d'attribuer les points aux exercices
+        \def\rdifficulty{2} % Permet de définir la difficulté estimée d'un exercice ( par défaut 1 )
+
+        \begin{EXO}{Titre}{Code}
+            Ceci est un exercice.
+        \end{EXO}
+    \end{minipage}
+    \end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{points}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+    \def\points{2} % Commande permettant d'attribuer les points aux exercices
+    \points
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\phantom{a}\\
+\def\points{2} % Commande permettant d'attribuer les points aux exercices
+    \points
+\end{minipage}
+\end{tcolorbox}
+
+
+
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{tccrep}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+    \setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
+
+    \tccrep[seyes=false]{1.2cm}{123}
+    \tccrep[seyes=false]{1.2cm}{123}
+
+    ----
+
+    \setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+    \tccrep[seyes=false]{1.2cm}{123}
+    \tccrep[seyes=false]{1.2cm}{123}
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\phantom{a}\\
+    \setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
+    \tccrep[seyes=false]{1.2cm}{123}
+    \tccrep[seyes=true]{1.2cm}{123}\\
+
+    ----\\
+
+    \setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+    \tccrep[seyes=false]{1.2cm}{123}
+    \tccrep[seyes=true]{1.2cm}{123}
+\end{minipage}
+\end{tcolorbox}
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour l'environnement\texttt{crep}]
+    \begin{minipage}{0.45\textwidth}
+    \begin{lstlisting}[breaklines]
+        \setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
+    
+        \begin{crep}
+            Ceci est une réponse
+        \end{crep}
+    
+        ----
+    
+        \setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+        
+        \begin{crep}
+            Ceci est une réponse
+        \end{crep}
+    \end{lstlisting}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+    \phantom{a}\\
+    \setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
+    
+    \begin{crep}
+        Ceci est une réponse
+    \end{crep}
+
+    ----
+
+    \setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+    
+    \begin{crep}
+        Ceci est une réponse
+    \end{crep}
+    \end{minipage}
+    \end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{mysquare}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+\mysquare
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\phantom{a}\\
+\mysquare
+\end{minipage}
+\end{tcolorbox}
+
+
+
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{tableaucompetence}]
+\begin{minipage}{0.32\textwidth}
+\begin{lstlisting}[breaklines]
+\tableaucompetence{}
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.65\textwidth}
+\phantom{a}\\
+\tableaucompetence{}
+\end{minipage}
+\end{tcolorbox}
+
+
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{competence}]
+\begin{minipage}{0.32\textwidth}
+\begin{lstlisting}[breaklines]
+    \tableaucompetence{
+        \competence{C1-1}
+        \competence{C1-1}
+    }
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.65\textwidth}
+\phantom{a}\\
+    \tableaucompetence{
+        \competence{C1-1}
+        \competence{C1-1}
+    }
+\end{minipage}
+\end{tcolorbox}
+
+\subsection{Commandes relatives aux exercices et évaluations}
+
+La commande  \texttt{itempoint} permet le calcul automatique des points d'un exercice en cours. \\
+Elle permet en outre d'obtenir le total des points stocké dans un fichier annexe.\\
+
+Il est nécessaire de définir \texttt{\backslash displaybaremepointstrue} \textbf{avant le début du document} afin de profiter de l'affichage des points.\\
+Les totaux par exercice et pour le document seront tout de même calculés.
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{competence}]
+\begin{minipage}{0.65\textwidth}
+\begin{lstlisting}[breaklines]
+    \displaybaremepointsfalse % Active par défaut l'affichage des points
+	\itempoint{4}[0.5]aa\\
+	\displaybaremepointstrue % Active par défaut l'affichage des points
+	\itempoint{2}bb\\
+	\itempoint{1.5}[-0.5]cc
+\end{lstlisting}
+\end{minipage}\\
+
+\end{tcolorbox}
+\displaybaremepointsfalse % Active par défaut l'affichage des points
+	\itempoint{4}[0.5]aa\\
+	\displaybaremepointstrue % Active par défaut l'affichage des points
+\itempoint{2}bb\\
+\itempoint{1.5}[-0.5]cc
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{competence}]
+\begin{minipage}{0.65\textwidth}
+\begin{lstlisting}[breaklines]
+	Il y a \getsavedtotalpoints dans ce document.
+\end{lstlisting}
+\end{minipage}\\
+	Il y a \getsavedtotalpoints points dans ce document.
+\end{tcolorbox}
+
+\subsection{Commandes d'impression}
+
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{imp}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+    \renewcommand{\impressFileName}{commands_doc_bfcours-commands-to-print}
+    \immediate\openout\imprimfile=\impressFileName.tex
+    \begingroup
+    \imp{
+        Ceci est un texte à imprimer
+        }
+    \endgroup
+    \immediate\closeout\imprimfile
+
+    \input{commands_doc_bfcours-commands-to-print.tex}
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+    \phantom{a}\\
+    \renewcommand{\impressFileName}{commands_doc_bfcours-commands-to-print}
+    \immediate\openout\imprimfile=\impressFileName.tex
+    \begingroup
+    \imp{
+        Ceci est un texte à imprimer
+        }
+    \endgroup
+    \immediate\closeout\imprimfile
+
+    \input{commands_doc_bfcours-commands-to-print.tex}
+\end{minipage}
+\end{tcolorbox}
+
+
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{repfill}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+    \setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
+
+    \repfill{Une réponse}\\
+
+    ----\\
+
+    \setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+    \repfill{Une réponse}
+
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\phantom{a}\\
+\setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
+
+    \repfill{Une réponse}\\
+
+    ----\\
+
+    \setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+    \repfill{Une réponse}
+\end{minipage}
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{repsim}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+\repsim{123}
+\repsim[6cm]{Longue réponse}
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\phantom{a}\\
+\repsim{123}
+\repsim[6cm]{Longue réponse}
+\end{minipage}
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{frquote}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+\frquote{Citons !}
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\phantom{a}\\
+\frquote{Citons !}
+\end{minipage}
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{rdifficulty}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+\def\rdifficulty{1}
+\rdifficulty
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\phantom{a}\\
+\def\rdifficulty{1}%Difficulté prise en compte pour les environnements d'exercices
+\rdifficulty
+\end{minipage}
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{setrdexo}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+breakable,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire}
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+Setup des options retenues pour le package rdexo
+\end{minipage}
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{setrdcrep}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+    \definecolor{monrose}{HTML}{FF1493}
+    \setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+    \setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\phantom{a}\\
+Setup des options retenues pour le package rdcrep.
+\end{minipage}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!10!white, title=Exemple d'utilisation pour \texttt{filmt}]
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[breaklines]
+\filmt{%
+	\begin{center} \begin{tikzpicture}
+        \node at (0, 0) {
+            \begin{tabular}{r|l}
+                1 & 24 \\
+                 &  \\
+                 &  \\
+                 &  \\
+            \end{tabular}
+        };
+        % Ligne de division verticale
+        %\draw[thick] (0, 0.8) -- (0, -1.2);
+    \end{tikzpicture}\end{center}
+	}{
+        $24$ est égal à une fois $24$.
+}%
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\phantom{a}\\
+\filmt{%
+	\begin{center} \begin{tikzpicture}
+        \node at (0, 0) {
+            \begin{tabular}{r|l}
+                1 & 24 \\
+                 &  \\
+                 &  \\
+                 &  \\
+            \end{tabular}
+        };
+        % Ligne de division verticale
+        %\draw[thick] (0, 0.8) -- (0, -1.2);
+    \end{tikzpicture}\end{center}
+	}{
+        $24$ est égal à une fois $24$.
+}%
+\end{minipage}
+\end{tcolorbox}

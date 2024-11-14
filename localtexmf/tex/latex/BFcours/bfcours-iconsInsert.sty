@@ -2,7 +2,7 @@
 \ProvidesPackage{bfcours-iconsInsert}[2024/06/29 v1.0 Insertion d'icones pour bfcours]
 
 \newcommand{\dbiconpath}{C:/Users/Utilisateur/Documents/Professionnel/1. Reims 2023 - 2024/1. Cours/366_fonctionnement/365_Icones}
-
+\newcommand{\coverAnime}{C:/Users/Utilisateur/Documents/Professionnel/1. Reims 2023 - 2024/1. Cours/366_fonctionnement/365_Icones/Fun/covers_manga}
 
 % Fonction Lua pour sélectionner un icône aléatoire
 \begin{luacode*}
@@ -65,5 +65,40 @@ end
       tex.print("Aucun icône trouvé dans : \\dbiconpath")
     end
   }%
+}
+
+
+% Définition du chemin de base pour les images
+\newcommand{\imdbPath}{C:/Users/Utilisateur/Documents/Professionnel/1. Reims 2023 - 2024/1. Cours/366_fonctionnement/365_Icones}
+
+% Commande personnalisée pour insérer une image
+\NewDocumentCommand{\imdb}{ O{\imdbPath} m O{1cm} O{1cm} }{%
+    % Définition des chemins complets pour les extensions
+    \edef\imageJPG{#1/#2.jpg}%
+    \edef\imagePNG{#1/#2.png}%
+    \edef\imageJPEG{#1/#2.jpeg}%
+    \edef\imageErreur{#1/erreur_404.jpg} % Remplacez par le chemin de votre image 404
+    \raisebox{-0.4\height}{
+        \begin{tcolorbox}[hbox,nobeforeafter,colframe=white, colback=white, boxrule=0pt, left=0pt, right=0pt, top=0pt, bottom=0pt, boxsep=0pt, enlarge left by=-0.5pt, enlarge right by=-0.5pt]%
+    % Vérification de l'existence des fichiers et choix de l'image
+    \IfFileExists{\imagePNG}{%
+        \includegraphics[width=#3, height=#4, keepaspectratio]{\imagePNG}%
+    }{%
+        \IfFileExists{\imageJPG}{%
+            \includegraphics[width=#3, height=#4, keepaspectratio]{\imageJPG}%
+        }{%
+            \IfFileExists{\imageJPEG}{%
+                \includegraphics[width=#3, height=#4, keepaspectratio]{\imageJPEG}%
+            }{%
+                \includegraphics[width=#3, height=#4, keepaspectratio]{\imageErreur}%
+            }%
+        }%
+    }%
+	\end{tcolorbox}%
+    }
+}
+
+\newcommand{\imFonctionne}[1]{
+	\imdb{Fonctionner/#1}
 }
 \endinput{}

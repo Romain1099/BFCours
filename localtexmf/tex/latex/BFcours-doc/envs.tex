@@ -1,0 +1,329 @@
+\subsection{Philosophie générale des environnements}
+
+Les environnements de BFcours fonctionnent de façon simple et n'admettent qu'un paramètre optionnel : l'intitulé de l'environnement.\\
+
+Ces environnements agissent sur plusieurs aspects : 
+\begin{enumerate}
+    \item Mise en page basée sur le package \acc{tcolorbox} très flexible. 
+    \item Modification des couleurs : \acc{surlignage} du texte, \acc{tableaux}, \acc{items}
+    \item Référencement dans l'index sur un niveau personnalisé. 
+\end{enumerate}
+\subsection{Environnements standards de bfcours}
+
+
+\newcommand{\contenuExempleEnv}{
+    \begin{minipage}{0.3\linewidth}
+        Hello World ! \\
+        \begin{enumerate}
+            \item This is an \acc{accentued text}
+            \item This is a \voc{vocabulary text}
+        \end{enumerate}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.65\linewidth}
+        \begin{tcbtabx}[My table]{X|X|X}{\textwidth}
+            One & Two & Three \\\hline\hline
+            1000.00 & 2000.00 & 3000.00 \\\hline
+            2000.00 & 3000.00 & 4000.00
+        \end{tcbtabx}
+    \end{minipage}\\
+    \begin{center}       
+        \begin{tcbtab}[Carrés parfaits à connaître]{c|*{12}{c|}c}%{0.8\textwidth}
+            nombre $a$&0&1&2&3&4&5&6&7&8&9&10&11&12\\
+            \hline
+            $a$ \frquote{au carré}&0&1&4&9&16&25&36&49&64&81&100&121&144\\
+        \end{tcbtab}
+    \end{center}
+}
+On définit içi la macro contenant nos contenus de tests permettant de visualiser les effets des environnements de bfcours sur les colorations du document. 
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\renewcommand{\contenuExempleEnv}{
+    \begin{minipage}{0.3\linewidth}
+        Hello World ! \\
+        \begin{enumerate}
+            \item This is an \acc{accentued text}
+            \item This is a \voc{vocabulary text}
+        \end{enumerate}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.65\linewidth}
+        \begin{tcbtabx}[My table]{X|X|X}{\textwidth}
+            One & Two & Three \\\hline\hline
+            1000.00 & 2000.00 & 3000.00 \\\hline
+            2000.00 & 3000.00 & 4000.00
+        \end{tcbtabx}
+    \end{minipage}\\
+    \begin{center}       
+        \begin{tcbtab}[Carrés parfaits à connaître]{c|*{12}{c|}c}%{0.8\textwidth}
+            nombre $a$&0&1&2&3&4&5&6&7&8&9&10&11&12\\
+            \hline
+            $a$ \frquote{au carré}&0&1&4&9&16&25&36&49&64&81&100&121&144\\
+        \end{tcbtab}
+    \end{center}
+}
+
+\tcblower
+
+\contenuExempleEnv
+\end{tcblisting}
+
+\newpage
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{Theoreme}[titre]
+
+	\contenuExempleEnv
+
+\end{Theoreme}
+\end{tcblisting}
+	This is an \acc{accentued text} and this is a \voc{vocabulary text}
+%Définitions
+\newpage
+\begin{lstlisting}
+    \begin{Exemple}[titre]
+
+        \contenuExempleEnv
+    
+    \end{Exemple}
+\end{lstlisting}
+\begin{Exemple}[titre]
+
+    \contenuExempleEnv
+
+\end{Exemple}
+
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{Definition}[titre]
+
+	\contenuExempleEnv
+
+\end{Definition}
+\end{tcblisting}
+%
+\newpage
+
+%
+\newpage
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{Notation}[titre]
+
+	\contenuExempleEnv
+
+\end{Notation}
+\end{tcblisting}
+%
+\newpage
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{Vocabulaire}[titre]
+
+	\contenuExempleEnv
+
+\end{Vocabulaire}
+\end{tcblisting}
+%
+\newpage
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{Aide}[titre]
+
+	\contenuExempleEnv
+
+\end{Aide}
+\end{tcblisting}
+%
+\newpage
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{Demonstration}[titre]
+
+	\contenuExempleEnv
+\end{Demonstration}
+\end{tcblisting}
+%
+\newpage
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{Remarque}[titre]
+
+	\contenuExempleEnv
+
+\end{Remarque}
+\end{tcblisting}
+%
+\newpage
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{Propriete}[titre]
+
+	\contenuExempleEnv
+
+\end{Propriete}
+\end{tcblisting}
+%
+\newpage
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{Activite}[titre]
+
+	\contenuExempleEnv
+\end{Activite}
+\end{tcblisting}
+%
+\newpage
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\begin{Methode}[titre]
+
+	\contenuExempleEnv
+
+\end{Methode}
+\end{tcblisting}
+
+
+\subsection{Les exercices}
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\def\rdifficulty{1}
+\begin{EXO}{Calculer en respectant les priorités opératoires}{5C12}
+
+
+    \itempoint{1} Un exercice\\
+    \itempoint{2.5} Plusieurs questions mais le total est calculé automatiquement
+    
+    
+    \exocorrection
+    
+        
+    La correction de l'exercice
+
+
+\end{EXO}
+\end{tcblisting}
+
+\begin{tcblisting}{
+    colback=white,
+    colframe=black,
+    left=6mm,
+    listing options={
+        style=tcblatex,
+        numbers=left,
+        numberstyle=\tiny\color{red!75!black}
+    }
+}
+\def\rdifficulty{1}
+\displaybaremepointstrue % Active par défaut l'affichage des points
+
+\begin{EXOEVAL}{Calculer en respectant les priorités opératoires}{5C12}
+
+\itempoint{1} Un exercice d'évaluation\\
+\itempoint{2.5} Plusieurs questions mais le total est calculé automatiquement
+
+
+\exocorrection
+
+    
+La correction de l'exercice évalué
+
+\end{EXOEVAL}
+
+\end{tcblisting}

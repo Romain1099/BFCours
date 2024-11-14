@@ -24,7 +24,7 @@
 % (Ajoutez ici les définitions de vos thèmes et environnements)
 \newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
 
-\def\points{\phantom{AAA}} %Pour indiquer les points dans les exos
+\def\points{1} %Pour indiquer les points dans les exos
 
 
 \newcounter{tikzfigcounter}
@@ -282,27 +282,121 @@ Je m'auto-évalue \textbf{avant} de commencer la fiche d'exercices, puis \textbf
     \hrule
 }
 \newcommand{\tableaucompetenceEval}[1]{
-    \begin{table}[h]
-        \begin{tabular}{|>{\raggedright\arraybackslash}p{0.7\textwidth}|*{4}{>{\centering\arraybackslash}p{0.05\textwidth}|}}
+        \begin{tcbtab}{|>{\raggedright\arraybackslash}p{0.62\textwidth}|>{\centering\arraybackslash}p{0.05\textwidth}|>{\centering\arraybackslash}p{0.06\textwidth}|>{\centering\arraybackslash}p{0.06\textwidth}|>{\centering\arraybackslash}p{0.09\textwidth}|}
             \hline
-            \centering\textbf{Compétences évaluées} & \textbf{MI} & \textbf{MF} & \textbf{MS} & \textbf{TBM} \\
+            \centering\textbf{Compétences évaluées} & \cellcolor{red!30!white}\textbf{MI} &\cellcolor{orange!30!white} \textbf{MF} &\cellcolor{yellow!30!white} \textbf{MS} &\cellcolor{green!30!white} \textbf{TBM} \\
             \hline
             #1
-        \end{tabular}
-    \end{table}
-    \hrule
+        \end{tcbtab}
 }
 \newcommand{\tableaucompetence}[1]{
 %textbf{avant} de commencer la fiche d'exercices, puis \textbf{à la fin} de la fiche d'exercices : 
-        \begin{tcbtab}{|>{\raggedright\arraybackslash}p{0.68\textwidth}|*{4}{>{\centering\arraybackslash}p{0.05\textwidth}|}}
+       \begin{tcbtab}{|>{\raggedright\arraybackslash}p{0.68\textwidth}|*{4}{>{\centering\arraybackslash}p{0.05\textwidth}|}} 
             \hline
             \centering\textbf{Compétences travaillées} & \cellcolor{red!30!white}\textbf{MI} &\cellcolor{orange!30!white} \textbf{MF} &\cellcolor{yellow!30!white} \textbf{MS} &\cellcolor{green!30!white} \textbf{TBM} \\
             \hline
             #1
         \end{tcbtab}
 }
+\newcommand{\tableaurecapsequence}[1]{
+%textbf{avant} de commencer la fiche d'exercices, puis \textbf{à la fin} de la fiche d'exercices : 
+        \begin{tcbtab}{|>{\raggedright\arraybackslash}p{0.68\textwidth}|*{4}{>{\centering\arraybackslash}p{0.05\textwidth}|}}
+            \hline
+            #1
+        \end{tcbtab}
+}
+\usetikzlibrary{trees, shapes, arrows.meta}
+\usetikzlibrary{chains}
+\usetikzlibrary{shapes.symbols,positioning}
+\definecolor{myblue}{RGB}{79,129,189}
+
+\tikzset{
+myshape/.style={
+  shape=signal,
+  fill=myblue,
+  draw = myblue,
+  minimum height=3cm,
+  minimum width=3cm,
+  text=white,
+  signal pointer angle=130,
+  signal to=east,
+  signal from=west,
+  rotate=-90,
+  transform shape
+  },
+mytext/.style={
+  draw=myblue,
+  text width=7cm,
+  minimum height=3cm,
+  thick,
+  outer sep=0pt
+  },  
+mynewtext/.style={
+  %draw=myblue,
+  text width=15cm,
+  minimum height=3cm,
+  thick,
+  outer sep=0pt,
+  inner sep=0pt
+  }  
+}
+\newcounter{tmp}
+\newcommand\MyoldDesc[4][]{
+\stepcounter{tmp}%
+%\xdef\mycommentary{#4}
+%\xdef\SequenceItemription{#3}
+\node[myshape,#1] (foo\thetmp) {};
+\node[font=\color{white}] at (foo\thetmp) {\begin{minipage}{2.5cm}\begin{center}#2\end{center}\end{minipage}};
+\node[mytext,anchor=north west] (desc\thetmp) at (foo\thetmp.north west) 
+  {%
+    %\parbox[t]{2em}{\hfill$\bullet$\hfill\null}%
+    \parbox[t]{\dimexpr\linewidth-2em\relax}{#3\\\Large{$1$h}}%
+  };
+\node[mytext,anchor=north west] (comm\thetmp) at (desc\thetmp.north east) 
+  {%
+    %\parbox[t]{2em}{\hfill$\bullet$\hfill\null}%
+    \parbox[t]{\dimexpr\linewidth-2em\relax}{\begin{minipage}[t]{6.7cm}#4\end{minipage}}%
+  };
+}
+
+\newcommand\SequenceItem[4][]{
+\stepcounter{tmp}%
+%\xdef\mycommentary{#4}
+%\xdef\SequenceItemription{#3}
+\node[myshape,#1] (foo\thetmp) {};
+\node[font=\color{white}] at (foo\thetmp) {\begin{minipage}{2.5cm}\begin{center}#2\end{center}\end{minipage}};
+\node[mynewtext,anchor=north west] (desc\thetmp) at (foo\thetmp.north west) 
+  {%
+  \tcbsidebyside[
+    bicolor,
+    height=3cm,
+    width=15cm,
+    nobeforeafter,
+    bottom=2pt,
+    colback=myblue!25!white,
+    colbacklower=myblue!10!white,
+    fonttitle=\bfseries,
+    center title,
+    drop lifted shadow,
+    colframe=myblue,
+    sharp corners=northwest,
+  ]{
+        #3 
+   }{
+        #4
+    }
+  };
+}
+\newcommand{\enteteContenu}{
+\centering\textbf{Contenu de la séquence} & \cellcolor{red!30!white}\textbf{MI} &\cellcolor{orange!30!white} \textbf{MF} &\cellcolor{yellow!30!white} \textbf{MS} &\cellcolor{green!30!white} \textbf{TBM} \\
+            \hline
+}
+\newcommand{\recapHeures}{
+	\centering\textbf{Nombre d'heures} & \multicolumn{4}{c}{\thetmp \ heures}\\ 
+	\hline
+}
 \newcommand{\competence}[1]{
-   \cellcolor{gray!10}\textcolor{black}{\faPen} #1 & & & & \\
+   \cellcolor{gray!10}\textcolor{black}{$\bullet$} #1 & & & & \\
     \hline
 }
 \newcounter{exerciceBCounter}
@@ -322,6 +416,8 @@ Je m'auto-évalue \textbf{avant} de commencer la fiche d'exercices, puis \textbf
 %Commandes d'accentuation du texte 
 \newcommand{\voc}[1]{\textbf{\color{\currentAccentColor}#1}\index{#1}}
 \newcommand{\acc}[1]{\textbf{\color{\currentAccentColor}#1}}
+\newcommand{\red}[1]{{\color{red}#1}}
+\newcommand{\blue}[1]{{\color{blue}#1}}
 
 \newcommand{\lien}[2]{\hyperref[#1]{\bfseries\color{\lienInterneColor}#2}}
 \newcommand{\vocref}[2]{
@@ -329,6 +425,107 @@ Je m'auto-évalue \textbf{avant} de commencer la fiche d'exercices, puis \textbf
 }
 \newcommand{\vocnoindexref}[2]{
     \href{#1}{\bfseries\color{monrose} #2}
+}
+
+% Commande \chrono pour dessiner un cadran avec le nombre de minutes et les tics des quarts d'heure
+\newcommand{\chrono}[1]{%
+    \begin{minipage}{3cm}
+        \boite{Durée :}{
+            %\vspace{0.35cm}
+            \begin{tikzpicture}[baseline=(text.base)]
+                % Dessin du cercle du cadran
+                \node[draw, circle, minimum width=0.8cm, inner sep=0pt] (cadran) {};
+
+                % Calcul de l'angle en fonction des minutes
+                \pgfmathsetmacro{\chronoAngle}{90 - (#1 / 60) * 360}
+
+                % Remplissage de l'intervalle entre 0 et le nombre de minutes
+                \fill[red, opacity=0.7] (cadran.center) -- ++(90:0.4cm) arc (90:\chronoAngle:0.4cm) -- cycle;
+
+                % Tics des quarts d'heure
+                \foreach \tick in {0, 90, 180, 270} {
+                    \draw[thick] ([shift=(\tick:0.33cm)]cadran.center) -- ([shift=(\tick:0.38cm)]cadran.center);
+                }
+
+                % Ajout de l'aiguille des minutes
+                \draw[thick] (cadran.center) -- ++(\chronoAngle:0.38cm); % Longueur de l'aiguille proportionnelle
+
+                % Placement du texte des minutes
+                \node[anchor=west] (text) at (0.7cm,0) {#1'};
+            \end{tikzpicture}%
+        }
+        %\vspace{0.35cm}
+    \end{minipage}
+}
+
+\newcommand{\overlaychrono}[1]{
+	\begin{tikzpicture}[baseline=(text.base),overlay]
+                % Dessin du cercle du cadran
+                \node[draw, circle, minimum width=0.8cm, inner sep=0pt] (cadran) {};
+
+                % Calcul de l'angle en fonction des minutes
+                \pgfmathsetmacro{\chronoAngle}{90 - (#1 / 60) * 360}
+
+                % Remplissage de l'intervalle entre 0 et le nombre de minutes
+                \fill[red, opacity=0.7] (cadran.center) -- ++(90:0.4cm) arc (90:\chronoAngle:0.4cm) -- cycle;
+
+                % Tics des quarts d'heure
+                \foreach \tick in {0, 90, 180, 270} {
+                    \draw[thick] ([shift=(\tick:0.33cm)]cadran.center) -- ([shift=(\tick:0.38cm)]cadran.center);
+                }
+
+                % Ajout de l'aiguille des minutes
+                \draw[thick] (cadran.center) -- ++(\chronoAngle:0.38cm); % Longueur de l'aiguille proportionnelle
+
+                % Placement du texte des minutes
+                \node[anchor=west] (text) at (0.7cm,0) {#1'};
+      \end{tikzpicture}%
+}
+
+
+\stackMath
+\newcommand\reallywidehat[1]{%
+\savestack{\tmpbox}{\stretchto{%
+  \scaleto{%
+    \scalerel*[\widthof{\ensuremath{#1}}]{\kern-.6pt\bigwedge\kern-.6pt}%
+    {\rule[-\textheight/2]{1ex}{\textheight}}%WIDTH-LIMITED BIG WEDGE
+  }{\textheight}% 
+}{0.5ex}}%
+\stackon[1pt]{#1}{\tmpbox}%
+}
+
+
+% Définition du style pour les éléments dans la tcolorbox avec une case à cocher
+\NewDocumentCommand{\listnode}{ m m }{%
+    \tcbsidebyside[sidebyside adapt=both,
+    bicolor,width=3.5cm,nobeforeafter,colback=white,colbacklower=yellow!10,
+    fonttitle=\bfseries,center title,drop lifted shadow,
+    ]{
+        #1 % Case à cocher (\cb ou \ccb)
+    }{% % Petit espace après la case
+        #2 % Contenu de l'élément
+    }
+}
+
+%\checkbox[checked corr]{}
+\newcommand{\cb}{
+    \checkbox[check mark = mark14,skin = squareshadow]{}
+}
+\newcommand{\ccb}{
+    \checkbox[check mark = mark14,skin = squareshadow,checked corr]{}
+}
+% Commande personnalisée \myrdexohlist avec Lua pour découper suivant "&"
+\NewDocumentCommand{\myrdexohlist}{m}{
+    \begin{center}\begingroup
+    % Utilisation de Lua pour diviser et afficher chaque élément
+    \directlua{
+        local list = "\luatexluaescapestring{#1}"
+        for element in string.gmatch(list, "([^&]+)") do
+            tex.print(element)
+        end
+    }
+    \endgroup
+\end{center}
 }
 
 
