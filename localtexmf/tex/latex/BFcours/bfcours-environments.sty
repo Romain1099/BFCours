@@ -33,11 +33,6 @@ fonttitle=\bfseries\large,
   bottom=0pt % Pas de marge en bas
 }
 
-\NewDocumentEnvironment{EXO}{m m +b}{
-\begin{exo}[exotitle=\begin{minipage}[t]{0.5\textwidth}#1\end{minipage}, tags={#2}]
-#3
-\end{exo}
-}
 
 \newcommand{\getsavedtotalpoints}{
 	\pgfmathparse{int(\savedtotalpoints)==\savedtotalpoints ? int(\savedtotalpoints) : \savedtotalpoints}%
@@ -177,7 +172,7 @@ fonttitle=\bfseries\large,
 }
 
 \def\savedexopointslist{}
-\def\savedtotalpoints{}
+\def\savedtotalpoints{0}
 % Lecture du fichier bfpoints.tex au début du document, s'il existe
 \IfFileExists{bfpoints_\jobname.tex}{\input{bfpoints_\jobname.tex}}{}
 
@@ -189,6 +184,26 @@ fonttitle=\bfseries\large,
     \immediate\write\pointsfile{\noexpand\renewcommand{\noexpand\savedexopointslist}{\exopointslist}}%
     \immediate\closeout\pointsfile
 }
+
+\NewDocumentEnvironment{EXO}{m m +b}{
+\stepcounter{persoexocounter}
+\getexopoint{\thepersoexocounter}
+\begin{exo}[exotitle=\begin{minipage}[t]{0.5\textwidth}#1\end{minipage}, tags={#2}]
+{\ncomp{#2}}%
+\renewcommand{\exopoints}{0}% Ajout au total des points
+#3
+\end{exo}
+  \ifisfirst
+        % Premier élément, pas de virgule
+        \xdef\exopointslist{\exopoints}%
+       \global\isfirstfalse % Passe \isfirst à false pour les éléments suivants
+    \else
+        \edef\oldpointslist{\exopointslist}
+	   \xdef\exopointslist{\oldpointslist , \exopoints} % Ajout avec virgule
+    \fi
+}
+
+
 % Environnement EXOEVAL avec LaTeX pour le calcul des points
 \NewDocumentEnvironment{EXOEVAL}{m m +b}{
 \stepcounter{persoexocounter}
