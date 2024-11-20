@@ -1,0 +1,144 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+\input{enonce_figures}
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+
+\begin{document}
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{0}
+
+\def\points{\phantom{AAA}}
+\def\difficulty{\phantom{AAA}}
+\chapitre[
+    % niveau : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
+    ]{
+    % Nom_sequence : ,Equations
+    }{
+    % type_etablissement : Collège,Lycée,
+    }{
+    % nom_etablissement : Amadis Jamyn,Eugène Belgrand,CBPM
+    }{
+    % supplement : ,\tableauPresenteEvalSixieme{}{10},\tableofcontents
+    }{
+    Plan de séquence :% type_document_principal : Exercices
+    }
+
+    \begin{tikzpicture}[]
+        \SequenceItem{Introduction}{%Rappels de calculs littéral :
+            \begin{itemize}[label=$\bullet$]
+                \item Questions Flash
+            \end{itemize}
+        }{Devoirs : \begin{itemize}[label=$\bullet$]
+            \item 
+        \end{itemize}}
+        \SequenceItem[below = 1.7cm of desc1.south west]{Cours\\\large{$+$}\\Exercices}{
+            \begin{itemize}[label=$\bullet$,itemsep=0em]
+                \item Questions Flash
+            \end{itemize}
+        }{
+            Devoirs : \begin{itemize}[label=$\bullet$]
+                \item 
+            \end{itemize}
+        }
+        \SequenceItem[below = 1.7cm of desc2.south west]{Cours\\\large{$+$}\\Exercices}{%Nature d'une égalité
+        \begin{itemize}[label=$\bullet$,itemsep=0em]
+            \item Questions Flash
+            \item 
+        \end{itemize}
+        }{
+            Devoirs : \begin{itemize}[label=$\bullet$]
+                \item 
+            \end{itemize}
+        }
+        \SequenceItem[below = 1.7cm of desc3.south west]{Activité\\\large{$+$}\\\'Eval \no 1}{%Les bouteilles :\\
+        Introduction à la distributivité\\
+
+        \textbf{Test de connaissances \no 1 :} \\Début du cours
+        }{
+        }
+        \SequenceItem[below = 1.7cm of desc4.south west]{Cours\\\large{$+$}\\Exercices}{%Distributivité
+        \begin{itemize}[label=$\bullet$,itemsep=0em]
+            \item 
+        \end{itemize}
+        }{
+            Devoirs : \begin{itemize}[label=$\bullet$]
+                \item 
+            \end{itemize}
+        }
+        \SequenceItem[below = 1.7cm of desc5.south west]{Cours\\\large{$+$}\\Exercices}{%Réduire et factoriser
+        \begin{itemize}[label=$\bullet$,itemsep=0em]
+            \item 
+        \end{itemize}
+        }{
+            Devoirs : \begin{itemize}[label=$\bullet$]
+                \item 
+            \end{itemize}
+        }
+    \SequenceItem[below = 1.7cm of desc6.south west]{Cours\\\large{$+$}\\\'Eval n°2}{%Distributivité double
+        \begin{itemize}[label=$\bullet$,itemsep=0em]
+            \item 
+        \end{itemize}
+        }{
+            Devoirs : \begin{itemize}[label=$\bullet$]
+                \item 
+            \end{itemize}
+        }
+    \SequenceItem[below = 1.7cm of desc7.south west]{\'Evaluation\\\textbf{ou}\\Exercices}{
+        \begin{itemize}[label=$\bullet$,itemsep=0em]
+            \item \textbf{\'Evaluation \no 3 :} \\Ensemble du chapitre
+        \end{itemize}
+        }{
+            %Selon l'avancée de la classe, il est possible de rajouter une séance d'exercices.
+        }
+    \end{tikzpicture}
+
+    \tableaurecapsequence{
+        \recapHeures%
+
+        \enteteContenu%
+
+        \competence{Connaître le vocabulaire lié au calcul littéral}
+    }
+
+    
+
+% contenu_principal : \input{enonce},\inputImprim{enonce},
+
+
+\end{document}

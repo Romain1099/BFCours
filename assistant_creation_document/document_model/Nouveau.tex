@@ -1,0 +1,97 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+\usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
+
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+\input{enonce_figures}
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdftitle={},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+
+\begin{document}
+\chapitre[$\mathbf{6^{\text{ème}}}$]{
+Environnement de cours
+}{
+Collège
+}{
+Les Jacobins
+}{
+Reste du contenu à afficher au début du document.
+}{
+Presentation
+}
+
+\section*{Liste des environnements simplement accessibles}
+\begin{env}{Notation}
+
+\begin{multicols}{3}
+On peut faire ça avec un begin\{nom de l'environnement dans la liste suivante :\}
+\begin{enumerate}
+\item Defi	%\input{Fragments/Définitions/nomdufichier}
+\item Propriete	%\input{Fragments/Propriétés/nomdufichier}
+\item Theo		%\input{Fragments/Théorèmes/nomdufichier}
+\item Nota		%\input{Fragments/Notations/nomdufichier}
+\item Ex		%\input{Fragments/Exemples/nomdufichier}
+\item Methode	%\input{Fragments/Méthodes/nomdufichier}
+\item Remarque	%\input{Fragments/Remarques/nomdufichier}
+\item Activite	%\input{Fragments/Activités/nomdufichier}
+\end{enumerate}%
+\end{multicols}
+\end{env}
+
+
+Pour la bonne baseline : 
+\begin{verbatim}
+\setlength{\baselineskip}{2.5em}
+\vspace{0.25cm}
+\raggedright
+\end{verbatim}
+
+\newpage
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{profseyescounter}{0}
+\setcounter{prof}{0}
+\chapitre[
+    % niveau % $\mathbf{6^{\text{ème}}}$
+    ]{
+    % theme
+    }{
+    % type_etablissement
+    }{
+    % nom_etablissement
+    }{
+    % supplement
+    }{
+    % type_document
+    }
+\end{document}

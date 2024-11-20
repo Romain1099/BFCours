@@ -1,0 +1,15 @@
+VERSIONS_CONFIG_DICT = {
+    Exercices light.tex: Eleve,
+    Exercices heavy.tex : Eleve,
+    Cours.tex : Eleve,
+    Devoir.tex : Eleve,
+    Devoir_maison.tex : Eleve,
+    Découverte.tex : Eleve,
+    Groupe.tex : Eleve,
+    Info.tex : Eleve,
+    Jeux.tex : Eleve,
+    Nouveau.tex : Eleve,
+    Rapport incident.tex : Eleve,
+    SOUAP.tex : Eleve,
+    Test.tex: Titre par défaut Test,
+}

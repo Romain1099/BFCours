@@ -1,0 +1,71 @@
+import time
+import mysql.connector
+import json
+
+def get_current_datetime():
+    return datetime.today().strftime("le %d/%m/%Y à %Hh%M")
+def get_current_date():
+    return datetime.today().strftime("le %d/%m/%Y")
+def get_db_config():
+    # Configuration de la connexion à la base de données
+    return {
+        'host': 'localhost',
+        'user': 'admin',
+        'password': 'aqwZSXedc1994!',  # Remplacez par votre mot de passe
+        'database': 'coursdb'
+    }
+def intitule_seance():
+    return datetime.today().strftime("Séance du %d/%m/%Y à %Hh%M")
+def get_data_as_json(query,params=None):
+    db_config=get_db_config()
+
+    # Connexion à la base de données
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+
+    # Exécuter la requête
+    if params:
+        cursor.execute(query,params=params)
+    else:
+        cursor.execute(query)
+
+    # Récupérer les noms des colonnes
+    columns = [desc[0] for desc in cursor.description]
+
+    # Récupérer les résultats (liste de tuples)
+    result = cursor.fetchall()
+
+    # Convertir les résultats en une liste de dictionnaires
+    result_as_dict = [dict(zip(columns, row)) for row in result]
+
+    # Fermer la connexion
+    cursor.close()
+    conn.close()
+
+    # Convertir le résultat en JSON
+    return json.loads(json.dumps(result_as_dict, indent=4))
+
+def get_students_names(nom_db="eleve"):
+    wanted_attributes = ['nom', 'prenom','idEleve']
+    query = f"SELECT {', '.join(wanted_attributes)} FROM {nom_db} WHERE idEleve >2;"
+
+    json_data = get_data_as_json(query)
+    liste_noms = []
+    for eleve in json_data:
+        liste_noms.append(f"{eleve['prenom']} {eleve['nom']}")
+    return ', '.join(liste_noms)
+
+def generate_dm_title():
+    date = datetime.today().strftime("%d_%m_%Y")
+
+    return f"DM_{date}"
+def generate_devoir_title():
+    return f"Evaluation_"
+def generate_exercise_title():
+    return f"Exos_"
+def generate_cours_title():
+    return f"Compte_rendu_seance_"
+def generate_rapport_title():
+    date = datetime.today().strftime("%d_%m_%Y")
+
+    return f"rapport_{date}_"
