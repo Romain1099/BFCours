@@ -4,8 +4,9 @@ On peut build l'exe via
 instructions_compilation = '''pyinstaller --onefile --noconsole --icon=enroute.ico UI_basic_v3.py '''
 
 
-Le script utilisera les répertoires locaux. 
 
-Le .exe utilisera les répertoires miroirs du dist. 
+## License
 
-Les deux versions ne communiquent pas, aussi l'utilisateur choisira son mode de fonctionnement. 
+This project is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+
+
