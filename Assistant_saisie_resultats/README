@@ -1,0 +1,11 @@
+Pour utiliser le logiciel il suffit de run le script UI_basic_v3.py
+
+On peut build l'exe via 
+instructions_compilation = '''pyinstaller --onefile --noconsole --icon=enroute.ico UI_basic_v3.py '''
+
+
+Le script utilisera les répertoires locaux. 
+
+Le .exe utilisera les répertoires miroirs du dist. 
+
+Les deux versions ne communiquent pas, aussi l'utilisateur choisira son mode de fonctionnement. 

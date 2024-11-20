@@ -1,1 +1,9 @@
 # BFCours
+
+On trouvera dans le répertoire "documentations" toutes les documentations pour les packages bfcours et rdprof
+
+Une interface de gestion des modèles est disponible dans le répertoire "assistant_creation_document" ( documentation dans le répertoire des documentations )
+
+Les codes sources des packages bfcours et rdprof sont disponibles dans le répertoire "localtexmf"
+
+Une interface de saisie de résultats associée à la production de rapports détaillés d'une évaluation est présentée dans le répertoire "Assistant_saisie_resultats" ( documentations dans les documentations )

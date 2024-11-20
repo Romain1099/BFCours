@@ -1,0 +1,38 @@
+{
+    "AGEUGEU_Beubeubeu": {
+        "Nom": "Ageugeu",
+        "Prenom": "Beubeubeu",
+        "json_file_path": "resultats_par_etudiant/bidon-classe\\AGEUGEU_Beubeubeu\\AGEUGEU_Beubeubeu.json",
+        "csv_file_path": "resultats_par_etudiant/bidon-classe\\AGEUGEU_Beubeubeu\\AGEUGEU_Beubeubeu.csv",
+        "devoirs_path": "resultats_par_etudiant/bidon-classe\\AGEUGEU_Beubeubeu\\devoirs",
+        "tex_file_path": "resultats_par_etudiant/bidon-classe\\AGEUGEU_Beubeubeu\\AGEUGEU_Beubeubeu.tex",
+        "devoirs": [
+            "devoir_04_05_2024_texrecap.tex",
+            "devoir_15_10_2024_texrecap.tex"
+        ]
+    },
+    "JOEYSTAR_Jonathan": {
+        "Nom": "Joeystar",
+        "Prenom": "Jonathan",
+        "json_file_path": "resultats_par_etudiant/bidon-classe\\JOEYSTAR_Jonathan\\JOEYSTAR_Jonathan.json",
+        "csv_file_path": "resultats_par_etudiant/bidon-classe\\JOEYSTAR_Jonathan\\JOEYSTAR_Jonathan.csv",
+        "devoirs_path": "resultats_par_etudiant/bidon-classe\\JOEYSTAR_Jonathan\\devoirs",
+        "tex_file_path": "resultats_par_etudiant/bidon-classe\\JOEYSTAR_Jonathan\\JOEYSTAR_Jonathan.tex",
+        "devoirs": [
+            "devoir_04_05_2024_texrecap.tex",
+            "devoir_15_10_2024_texrecap.tex"
+        ]
+    },
+    "LITTLEWOOD_Boumbazar": {
+        "Nom": "Littlewood",
+        "Prenom": "Boumbazar",
+        "json_file_path": "resultats_par_etudiant/bidon-classe\\LITTLEWOOD_Boumbazar\\LITTLEWOOD_Boumbazar.json",
+        "csv_file_path": "resultats_par_etudiant/bidon-classe\\LITTLEWOOD_Boumbazar\\LITTLEWOOD_Boumbazar.csv",
+        "devoirs_path": "resultats_par_etudiant/bidon-classe\\LITTLEWOOD_Boumbazar\\devoirs",
+        "tex_file_path": "resultats_par_etudiant/bidon-classe\\LITTLEWOOD_Boumbazar\\LITTLEWOOD_Boumbazar.tex",
+        "devoirs": [
+            "devoir_04_05_2024_texrecap.tex",
+            "devoir_15_10_2024_texrecap.tex"
+        ]
+    }
+}
