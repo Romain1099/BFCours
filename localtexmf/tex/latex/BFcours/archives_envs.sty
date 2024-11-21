@@ -1,0 +1,73 @@
+\NewDocumentEnvironment{DEUXDefi}{o +b}{
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=defi!5,colframe=defi!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!defi]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=defi!100!black,right color=defi!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{Définition}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{defi!80},
+borderline south={0.05mm}{0pt}{defi!80!black},
+overlay={
+  \draw[line width=0.5mm, defi!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, defi!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=defi!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+    \fi%
+  %\node[anchor=north east, fill=white, draw=defi!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth}\textbf{#1} \end{minipage}}; % Boîte en overlay
+}
+]
+
+#2
+
+\end{tcolorbox}
+}
+
+\newtcolorbox{DefiTROIS}[1][]{
+  enhanced,
+  before skip=2mm,
+  after skip=2mm,
+  colback=defi!5,
+  colframe=defi!50,
+  boxrule=0pt,
+  attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+  varwidth boxed title*=-3cm,
+  boxed title style={frame code={
+    % ... (same as before)
+  }},
+  fonttitle=\bfseries,
+  title={\large{Définition}},
+  coltitle=white,
+  drop shadow,
+  borderline west={0.05mm}{0pt}{defi!80},
+  borderline south={0.05mm}{0pt}{defi!80!black},
+  overlaytext={},
+  code={\def\overlaytext{#1}},
+  overlay={
+    % ... (same as before)
+    \if\relax\detokenize{\overlaytext}\relax
+    \else
+      \node[anchor=north east, fill=white, draw=defi!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth}\underline{\textbf{\overlaytext}} \end{minipage}};
+    \fi
+  }
+}

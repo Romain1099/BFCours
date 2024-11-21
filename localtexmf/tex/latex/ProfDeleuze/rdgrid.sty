@@ -1,0 +1,518 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{rdgrid}[2024/10/24 rdgrid.sty]
+
+\RequirePackage{calc}
+\RequirePackage{tikz}
+
+
+\newif\ifrdgridorientation
+\newif\ifrdgriddots
+\newif\ifrdgridshownum
+\newif\ifrdgridframe
+\newif\ifrdgridlines
+
+
+% Doc ultra basique :
+%
+% On génère une grille avec l'instruction : \rdgrid[<paramètres>]{<type de grille>}{<xmax>}{<ymax>}
+%
+% On récupère le code des polygones à tracer avec GeoGebra :
+% Livret GeoGebra en ligne : https://www.geogebra.org/m/nsqt6ant
+%
+% Et voilà, l'affaire est dans le sac ! ;)
+%
+% Quelques explications supplémentaires :
+%
+% Principe de fonctionnement : la grille est générée à l'aide de multiples "tikz pic" qui possèdent chacun un nom
+%   et des coordonées prédéfinies (sous la forme "-north", "-east", ...).
+%   Par exemple, dans le cas d'une grille triangulaire, le premier triangle tracé (en bas à gauche)
+%   s'appelle "trg-0-0" et ses sommets sont accessibles à l'aide des coordonnées "trg-0-0-east", "trg-0-0-west" et
+%   "trg-0-0-north" ou "trg-0-0-south" (selon que le triangle est orienté vers le haut ou vers le bas).
+%   Dans tous les types de grilles, la coordonnée "-center" permet de cibler le "centre" de chaque polygone.
+%
+%
+% Types de grilles admises (entre parenthèses, le préfix utilisé pour le nom des polygones) :
+%   equi : pour une grille à base de triangles équilatéraux (trg)
+%   hexa : pour une grille à base d'hexagones (hexa)
+%   rhexa : pour une grille à base d'hexagones tournés (hexa)
+%   iso : pour une grille isométrique (trg)
+%
+% La taille de la grille est modifiable à l'aide du paramètre "width" ou "radius" (pour les hexagones... mais en fait, "width" marche aussi !).
+% On précise la taille sans unité, par exemple : width=0.5
+%
+% L'aspect de la grille peut être modifié avec le paramètre "grid"
+%
+% Paramètre "grid" :
+%
+% Triangles équilatéraux :
+%    1 = le premier triangle dessiné (en bas à gauche) est dirigé vers le haut
+%   -1 = vers le bas
+%
+% Hexagones (tournés)
+%   Lignes impaires :
+%       -1 = décalage d'un hexagone vers la gauche
+%        1 = décalage d'un hexagone vers la droite
+%        2 = 1 hexagone de plus de chaque côté
+%       -2 = 1 hexagone de moins de chaque côté
+%
+% Hexagones (normaux)
+%   Décalage selon les colonnes impaires :
+%       <0 = décalage d'un hexagone vers le bas
+%       >0 = décalage d'un hexagone vers le haut
+%
+% Triangles pour grille isométrique
+%    1 = le premier triangle dessiné (en bas à gauche) est dirigé vers la droite
+%   -1 = vers la gauche
+%
+% Mais, le plus simple, c'est d'utiliser GeoGebra pour visualiser l'influence du paramètre "grid" !
+%
+% Autres paramètres :
+%
+% show grid=<boolean> : pour montrer ou non le tracé des polygones constituant la grille
+% dot=<boolean> : pour montrer ou non des petits disques (ou autre chose) au niveau des sommets du quadrillage
+% dot style=<style TikZ> : style des noeuds utilisés pour le paramètre "dot"
+% dot style app=<style TikZ> : style qui vient s'ajouter au style défini par "dot style"
+% show num=<boolean> : pour montrer ou non le numéro des polygones constitutifs de la grille
+% num style=<style TikZ> : style des noeuds utilisés pour afficher les numéros des polygones
+% only dot=<style rdgrid> équivalent à "show grid=false, dot" = papier pointé !
+% scope style=<style TikZ> : la grille est affichée à l'intérieur d'un "scope" auquel on affecte le style défini
+%       par "scope style" (par défaut : "draw=gray, line width=0.5pt, line join=bevel")
+% scope style app=<style TikZ> : style qui vient s'ajouter au style défini par "scope style"
+%
+% Uniquement pour les grilles isométriques :
+%
+% frame=<boolean> : pour afficher ou non un cadre autour de la grille
+% lines=<boolean> : pour afficher ou non les lignes verticales
+%
+%
+%
+% La commande \setrdgrid{<paramètres>} permet de modifier les paramètres par défaut qui sont les suivants :
+%
+%     default/.style={
+%        width=1,
+%        grid=1,
+%        orientation=true,
+%        dot=false,
+%        dot style={inner sep=0pt, circle, minimum size=1.5pt, fill=gray},
+%        show grid=true,
+%        show num=false,
+%        num style={node font=\sffamily\bfseries\footnotesize},
+%        frame=true,
+%        lines=true,
+%        scope style={draw=gray, line width=0.5pt, line join=bevel}
+%    },
+%
+% En réalité, selon le type de grille demandé, le package charge automatiquement un style supplémentaire
+% pour modifier les paramètres par défaut ci-dessus :
+%
+%   Triangles équilatéraux :
+%       rd grid equilateral default/.style={}
+%
+%   Hexagones non tournés :
+%       rd grid hexagon default/.style={
+%            width=0.7
+%           },
+%
+%   Hexagones tournés :
+%       rd grid rhexagon default/.style={
+%            width=0.7
+%           },
+%
+%   Grille isométrique :
+%       rd grid isometric default/.style={}
+%
+% Note : pas sûr de la pertinence de ces valeurs par défaut... à voir !
+%
+% On modifie ces styles par défaut de cette manière : \setrdgrid{rd grid isometric default/.style={draw=blue}}
+%
+% Dernier "détail" : le style de chaque polygone utilisé pour dessiner la grille peut être modifié avec
+% une instruction du type : \tikzset{hexa-0-0/.style={fill=red}} (à utiliser *avant* la commande \rdgrid !)
+
+
+
+
+% Uniquement pour les "tikz pic" :
+
+% Paramètre "orientation" :
+%
+% Triangles équilatéraux :
+%   True : triangle vers le haut
+%   False : triangle vers le bas
+%
+% Hexagones :
+%   True : hexagone tourné
+%   False : hexagone normal
+%
+% Triangles pour grille isométrique
+%   True : triangle vers la droite
+%   False : triangle vers la gauche
+
+
+%Demo :
+%\begin{tikzpicture}
+%    \rdgrid[grid = -1,show grid=true]{equi}{10}{7}
+%    %\draw[color = red, line width=1.5pt] (trg-1-3-north east)--(trg-1-1-north east)--(trg-3-0-south east)--(trg-7-3-north east)--cycle;
+%    \draw[color = red, line width=1.5pt] (trg-8-4-north east)--(trg-3-0-south east)--(trg-1-0-south east)--(trg-0-2-north west)--(trg-0-2-north east)--(trg-2-0-north east)--(trg-7-5-north east)--cycle;
+%\end{tikzpicture}
+
+
+
+
+\tikzset{%
+    /rdgrid/.search also={/tikz},
+    /rdgrid/.is family,
+    /rdgrid,
+    width/.store in=\rdgridwidth,
+    radius/.forward to=/rdgrid/width,
+    orientation/.is if=rdgridorientation,
+    dot/.is if=rdgriddots,
+    dot style/.code=\tikzset{rdgriddotstyle/.style={#1}},
+    dot style app/.code=\tikzset{rdgriddotstyle/.append style={#1}},
+    show grid/.is choice,
+    show grid/true/.code=\tikzset{rdgridshowgrid/.style={draw}},
+    show grid/false/.code=\tikzset{rdgridshowgrid/.style={}},
+    show grid/.default=true,
+    grid/.store in=\rdgridtype,
+    show num/.is if=rdgridshownum,
+    num style/.code=\tikzset{rdgridnumstyle/.style={#1}},
+    only dot/.style={show grid=false, dot},
+    scope style/.code=\tikzset{rd grid scope style/.style={#1}},
+    scope style app/.code=\tikzset{rd grid scope style/.append style={#1}},
+    % uniquement pour les grilles isométriques
+    frame/.is if=rdgridframe,
+    lines/.is if=rdgridlines,
+    %
+    default/.style={
+        width=1,
+        grid=1,
+        orientation=true,
+        dot=false,
+        dot style={inner sep=0pt, circle, minimum size=1.5pt, fill=gray},
+        show grid=true,
+        show num=false,
+        num style={node font=\sffamily\bfseries\footnotesize},
+        frame=true,
+        lines=true,
+        scope style={draw=gray, line width=0.5pt, line join=bevel}
+    },
+    default,
+    %
+    rd grid rhexagon default/.style={
+            width=0.7
+        },
+    rd grid hexagon default/.style={
+            width=0.7
+        },
+    rd grid equilateral default/.style={},
+    rd grid isometric default/.style={}
+}
+
+
+\newcommand{\setrdgrid}[1]{%
+\tikzset{/rdgrid/.cd, #1}%
+}
+
+
+\ExplSyntaxOn
+\NewDocumentCommand{\rdgrid}{ O{} m m m }{%
+\str_case:nn { #2 }
+   {
+    {hexa}{\rdgridhexagon[#1]{#3}{#4}}
+    {rhexa}{\rdgridrhexagon[#1]{#3}{#4}}
+    {iso}{\rdgridisometric[#1]{#3}{#4}}
+    {equi}{\rdgridequilateral[#1]{#3}{#4}}
+   }
+}
+\ExplSyntaxOff
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% Grille triangles équilatéraux
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\tikzset{
+    /tikz,
+    pics/rdgrid equilateral/.style={%
+        code={%
+            \tikzset{/rdgrid, #1}
+            %   CODE
+            \ifrdgridorientation
+                \path[rdgridshowgrid, pic actions] (0,0) coordinate (-south west)
+                -- ++ (\rdgridwidth,0) coordinate (-south east)
+                --++ (120:\rdgridwidth) coordinate (-north)
+                --cycle
+                ;
+                \path (-south west)--(-south east) coordinate[pos=0.5] (tmp)
+                    (tmp)--(-north) coordinate[pos=0.33333] (-center) ;
+                %
+                \ifrdgriddots
+                    \foreach \x in {south west,south east,north} {
+                        \node [rdgriddotstyle] at (-\x) {} ;
+                    }
+                \fi
+            \else
+                \path[rdgridshowgrid, pic actions] (0.5*\rdgridwidth,0) coordinate (-south)
+                    --++(60:\rdgridwidth) coordinate (-north east)
+                    --++(-\rdgridwidth,0) coordinate (-north west)
+                    -- cycle
+                    ;
+                \path (-north west)--(-north east) coordinate[pos=0.5] (tmp)
+                    (tmp)--(-south) coordinate[pos=0.33333] (-center) ;
+                %
+                \ifrdgriddots
+                    \foreach \x in {north west,north east,south} {
+                        \node [rdgriddotstyle] at (-\x) {} ;
+                    }
+                 \fi
+             \fi
+        }
+    }
+}
+
+
+
+\newcommand{\rdgridequilateral}[3][]{%
+\begin{scope}[rd grid scope style, /rdgrid/.cd, rd grid equilateral default/.try, #1]
+%
+\edef\rdgridxmax{\fpeval{#2-1}}
+\edef\rdgridymax{\fpeval{#3-1}}
+\edef\rdgridxshift{\fpeval{0.5*\rdgridwidth}}
+\edef\rdgridyshift{\fpeval{0.5*sqrt(3)*\rdgridwidth}}
+%
+%
+%
+\foreach \j in {0,...,\rdgridymax} {
+    \foreach \i in {0,...,\rdgridxmax} {
+        %
+        \edef\rdgridflag{\fpeval{\rdgridtype*(-1)^(\i+\j)}}
+        %
+        \ifnum\rdgridflag=-1
+            \tikzset{/rdgrid/orientation=false}
+        \else
+            \tikzset{/rdgrid/orientation=true}
+        \fi
+        %
+        \pic[trg-\i-\j/.try] (trg-\i-\j) at (\i*\rdgridxshift,\j*\rdgridyshift) {rdgrid equilateral};
+        %
+        \ifrdgridshownum
+            \node[rdgridnumstyle] at (trg-\i-\j-center) {\i-\j} ;
+        \fi
+    }
+}
+%
+\end{scope}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% Grille hexagones
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tikzset{
+   pics/rdgrid hexagon/.style={%
+        code={%
+              \tikzset{/rdgrid, #1}
+              %   CODE
+              \path (0,0) coordinate (-center) ;
+              \ifrdgridorientation
+                  \path[rdgridshowgrid, pic actions] (30:\rdgridwidth) coordinate (-north east)--
+                  (90:\rdgridwidth) coordinate (-north)--
+                  (150:\rdgridwidth) coordinate (-north west)--
+                  (210:\rdgridwidth) coordinate (-south west)--
+                  (270:\rdgridwidth) coordinate (-south)--
+                  (330:\rdgridwidth) coordinate (-south east)--
+                  cycle;
+                  %
+                    \ifrdgriddots
+                        \foreach \x in {south west, south east, north, north east, north west, south} {
+                            \node [rdgriddotstyle] at (-\x) {} ;
+                        }
+                    \fi
+                  %
+              \else
+                  \path[rdgridshowgrid, pic actions] (0:\rdgridwidth) coordinate (-east)--
+                  (60:\rdgridwidth) coordinate (-north east)--
+                  (120:\rdgridwidth) coordinate (-north west)--
+                  (180:\rdgridwidth) coordinate (-west)--
+                  (240:\rdgridwidth) coordinate (-south west)--
+                  (300:\rdgridwidth) coordinate (-south east)--
+                  cycle;
+                  %
+                    \ifrdgriddots
+                        \foreach \x in {south west, south east, west, north east, north west, east} {
+                            \node [rdgriddotstyle] at (-\x) {} ;
+                        }
+                    \fi
+                  %
+              \fi
+        }
+    }
+}
+
+
+
+\newcommand{\rdgridrhexagon}[3][]{%
+\begin{scope}[rd grid scope style, /rdgrid/.cd, rd grid rhexagon default/.try, #1]
+\tikzset{/rdgrid/orientation=true}
+\edef\rdgridxmax{\fpeval{#2-1}}
+\edef\rdgridymax{\fpeval{#3-1}}
+\edef\rdgridcostrente{0.866025403}
+\edef\rdgridxshift{\fpeval{\rdgridwidth*\rdgridcostrente}}
+%
+\foreach \j in {0,...,\rdgridymax} {
+    \edef\rdgridbouclexmax{\rdgridxmax}
+    \ifodd\j
+        \ifnum\rdgridtype=-1
+            \edef\rdgridoddxshift{-\rdgridxshift}
+        \else
+            \ifnum\rdgridtype=1
+                \edef\rdgridoddxshift{\rdgridxshift}
+            \else
+                \ifnum\rdgridtype=2
+                    \edef\rdgridoddxshift{-\rdgridxshift}
+                    \edef\rdgridbouclexmax{\fpeval{\rdgridxmax+1}}
+                \else
+                % \rdgridtype= -2
+                    \edef\rdgridoddxshift{\rdgridxshift}
+                    \edef\rdgridbouclexmax{\fpeval{\rdgridxmax-1}}
+                \fi
+            \fi
+        \fi
+    \else
+        \edef\rdgridoddxshift{0}
+    \fi
+    %
+    \foreach \i in {0,...,\rdgridbouclexmax} {
+        \path ({2*\i*\rdgridwidth*\rdgridcostrente+\rdgridoddxshift},1.5*\rdgridwidth*\j)
+            coordinate (rdhexatmp) ;
+        \pic[hexa-\i-\j/.try] (hexa-\i-\j) at  (rdhexatmp)  {rdgrid hexagon}  ;
+        \ifrdgridshownum
+            \node[rdgridnumstyle] at (rdhexatmp) {\i-\j} ;
+        \fi
+    }
+}
+\end{scope}
+}
+
+
+\newcommand{\rdgridhexagon}[3][]{%
+\begin{scope}[rd grid scope style, /rdgrid/.cd, rd grid hexagon default/.try, #1]
+\tikzset{/rdgrid/orientation=false}
+\edef\rdgridxmax{\fpeval{#2-1}}
+\edef\rdgridymax{\fpeval{#3-1}}
+\edef\rdgridcostrente{0.866025403}
+\edef\rdgridxshift{\fpeval{1.5*\rdgridwidth}}
+\edef\rdgridyshift{\fpeval{\rdgridcostrente*\rdgridwidth}}
+%
+\foreach \j in {0,...,\rdgridymax} {
+    \foreach \i in {0,...,\rdgridxmax} {
+        \ifodd\i\relax
+            \edef\rdgridcoef{\fpeval{sign(\rdgridtype)}}
+        \else
+            \edef\rdgridcoef{0}
+        \fi
+        \pic[hexa-\i-\j/.try] (hexa-\i-\j)
+            at (\i*\rdgridxshift, {2*\j*\rdgridyshift+\rdgridcoef*\rdgridyshift}) {rdgrid hexagon} ;
+        %
+        \ifrdgridshownum
+            \node[rdgridnumstyle] at (hexa-\i-\j-center) {\i-\j} ;
+        \fi
+    }
+}
+\end{scope}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% Grille isométrique
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\tikzset{
+   /tikz,
+   pics/rdgrid isometric/.style={%
+        code={%
+            \tikzset{/rdgrid, #1}
+            %   CODE
+            \ifrdgridorientation
+            \path[rdgridshowgrid, pic actions] (0,0) coordinate (-south)
+                -- ++ (30:\rdgridwidth) coordinate (-east)
+                --++ (150:\rdgridwidth) coordinate (-north)
+                (-east) coordinate (-tmp)
+              ;
+            %
+                    \ifrdgriddots
+                        \foreach \x in {south, north, east} {
+                            \node [rdgriddotstyle] at (-\x) {} ;
+                        }
+                    \fi
+            \else
+            \path[rdgridshowgrid, pic actions] (0,0.5*\rdgridwidth)++(-30:\rdgridwidth) coordinate (-south)
+                --++(150:\rdgridwidth) coordinate (-west)
+                -- ++ (30:\rdgridwidth) coordinate (-north)
+                (-west) coordinate (-tmp)
+             ;
+            %
+                    \ifrdgriddots
+                        \foreach \x in {south, north, west} {
+                            \node [rdgriddotstyle] at (-\x) {} ;
+                        }
+                    \fi
+            \fi
+            \path (-south)--(-north) coordinate[pos=0.5] (tmp)
+                (tmp)--(-tmp) coordinate[pos=0.33333] (-center) ;
+        }
+    }
+}
+
+
+
+\newcommand{\rdgridisometric}[3][]{%
+\begin{scope}[rd grid scope style, /rdgrid/.cd, rd grid isometric default/.try, #1]
+%%
+\edef\rdgridxmax{\fpeval{#2-1}}
+\edef\rdgridymax{\fpeval{#3-1}}
+\edef\rdgridcostrente{0.866025403}
+\edef\rdgridxshift{\fpeval{\rdgridwidth*\rdgridcostrente}}
+\edef\rdgridyshift{\fpeval{0.5*\rdgridwidth}}
+\edef\rdgridxmaxcoor{\fpeval{(\rdgridxmax+1)*\rdgridxshift}}
+\edef\rdgridymaxcoor{\fpeval{(\rdgridymax+2)*\rdgridyshift}}
+%
+\foreach \j in {0,...,\rdgridymax} {
+    \foreach \i in {0,...,\rdgridxmax} {
+        \edef\rdgridflag{\fpeval{\rdgridtype*(-1)^(\i+\j)}}
+        %
+        \ifnum\rdgridflag=-1
+            \tikzset{/rdgrid/orientation=false}
+        \else
+            \tikzset{/rdgrid/orientation=true}
+        \fi
+        %
+        %
+        \pic[trg-\i-\j/.try] (trg-\i-\j) at (\i*\rdgridxshift,\j*\rdgridyshift) {rdgrid isometric};
+        %
+        \ifrdgridshownum
+            \node[rdgridnumstyle] at (trg-\i-\j-center) {\i-\j} ;
+        \fi
+    }
+}
+%
+\ifrdgridlines
+    \foreach \i in {1,...,\rdgridxmax} {
+        \draw (\i*\rdgridxshift,0) --++(0,\rdgridymaxcoor) ;
+    }
+\fi
+\ifrdgridframe%
+    \draw (0,0) rectangle (\rdgridxmaxcoor,\rdgridymaxcoor) ;
+\fi
+%%
+\end{scope}
+}

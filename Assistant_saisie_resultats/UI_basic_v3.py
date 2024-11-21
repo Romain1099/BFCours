@@ -18,7 +18,7 @@ from csv_converter import CSVConverter
 from database_sender import Student
 from UI_elements.datetime_selector import day_ui
 from tkinter import ttk
-from email_sender import emailSender
+#from email_sender import emailSender
 
 
 instructions_compilation = '''pyinstaller --onefile --noconsole --icon=enroute.ico UI_basic_v3.py '''
@@ -35,7 +35,7 @@ class HomeworkManager:
 
         #self.root.withdraw()  # Cache la fenêtre principale
         #self.create_dialog()
-    def make_email(self,row):
+    """    def make_email(self,row):
         return ""
     def send_homework(self,csv_filepath):
         if self.wanted_email_send==False:
@@ -57,7 +57,7 @@ class HomeworkManager:
                 sender=emailSender(filepath=piece_jointe,email=email,content=mail_content)
                 response=sender.send_email(attachment=bool_piece_jointe)
                 print_status=f"Mail de {nom} : {response.json()['Messages']['Status']}"
-                print(print_status)
+                print(print_status)"""
     
     def load_existing_homework(self):
         def update_devoirs(*args):
