@@ -1,0 +1,75 @@
+% Nom du fichier : bfcours-fonts.sty
+\ProvidesPackage{bfcours-fonts-dys}[2024/11/23 v1.0 Polices pour bfcours]
+
+% Mathématiques
+%\usepackage{mathtools}
+%\usepackage{amssymb}
+%\usepackage{amsfonts}
+%\usepackage{mathrsfs}
+
+\usepackage[french]{babel}
+\usepackage{etoolbox}
+\newbool{dys}
+\setbool{dys}{true}          
+\ifbool{dys}{
+% POLICE DYS
+\newcommand{\choiceFontsDys}[1]{
+\ifstrequal{#1}{Fira}{%
+  % Fira Sans + Fira Math
+  % Description : Fira Sans est une police moderne, et Fira Math est une version mathématique compatible qui maintient le style sans-serif.
+  % Utilisation : Fonctionne bien avec XeLaTeX et LuaLaTeX.
+  \usepackage{fontspec}
+  \setmainfont{Fira Sans}
+  \setsansfont{Fira Sans}
+  \usepackage{unicode-math}
+  \setmathfont{Fira Math}
+}{}
+\ifstrequal{#1}{lmodern}{%
+  % Latin Modern Sans
+  % Description : Une version sans-serif de la célèbre police Latin Modern, qui est compatible avec mathastext.
+  % Utilisation : Fonctionne avec pdfLaTeX, XeLaTeX et LuaLaTeX.
+  \usepackage{lmodern}
+  \renewcommand{\familydefault}{\sfdefault}
+  \usepackage{mathastext}
+}{}
+\ifstrequal{#1}{tgheros}{%
+  % TeX Gyre Heros + mathastext
+  % Description : TeX Gyre Heros est une alternative à Helvetica, et le package mathastext permet d'utiliser la même police pour les mathématiques.
+  % Utilisation : Fonctionne avec pdfLaTeX, XeLaTeX, ou LuaLaTeX.
+  \usepackage{tgheros}
+  \renewcommand{\familydefault}{\sfdefault}
+  \usepackage{mathastext}
+}{}
+}
+% Fira ou lmodern ou tgheros
+\choiceFontsDys{lmodern}
+
+
+%\usepackage{unicode-math}
+%\usepackage{fontspec}
+%\setmainfont{TeX Gyre Schola}
+%\setsansfont{TeX Gyre Schola}
+%\setmathfont{TeX Gyre Schola Math}
+%\setmainfont{OpenDyslexic}[Scale=1.0]
+%\setsansfont{OpenDyslexic}[Scale=1.0]
+%\setmathfont{OpenDyslexic}[Scale=1.0,range=up/{Latin,latin,num}]
+\usepackage[fontsize=14]{scrextend}
+\usepackage{setspace}
+\setstretch{1.2}
+% Une valeur d'environ 1.2 à 1.7 est souvent recommandée. Cela permet d'augmenter l'espace entre les lignes tout en offrant un léger espacement entre les mots.
+\setlength{\spaceskip}{0.8em}  
+% Une valeur d'environ 1.2em à 1.5em est couramment conseillée. Cela crée un espace plus ample entre les mots, ce qui peut aider à réduire la fatigue visuelle et à améliorer la fluidité de la lecture.
+}{
+% POLICE STANDARD
+\usepackage{fontenc}
+%\usepackage[scaled=1]{helvet}
+%\usepackage[fontsize=12]{scrextend}
+\usepackage{fourier}
+}
+
+\usepackage{fontawesome5}
+\usepackage{siunitx}
+\sisetup{output-decimal-marker={,}}
+\usepackage{xfp}
+
+\endinput

@@ -2,19 +2,23 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{bfcours}[2024/06/29 v1.0 Package pour les cours BF]
 
-% Configuration hyperref
-\RequirePackage{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=black,
-    urlcolor=black,
-}
-\RequirePackage{fourier}
 \RequirePackage{mathtools}
 \RequirePackage{amssymb}
 \RequirePackage{amsfonts}
 \RequirePackage{mathrsfs}
-\RequirePackage{unicode-math}
+\RequirePackage{ifthen}
+%\RequirePackage{bfcours-fonts}
+
+% Configuration hyperref
+\RequirePackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!85!white,
+    urlcolor=monrose,
+}
+%\RequirePackage{fourier}
+
+%\RequirePackage{unicode-math}
 \RequirePackage[svgnames,table]{xcolor}
 \RequirePackage[autolanguage,np]{numprint}
 \RequirePackage[most]{tcolorbox}
@@ -79,12 +83,14 @@
 
 \RequirePackage{adjustbox} %  Martin Sharrer package
 
-\RequirePackage{ifthen}
 
 
-\setmainfont{TeX Gyre Schola}
-\setmathfont{TeX Gyre Schola Math}
 
+%\setmainfont{TeX Gyre Schola}
+%\setmathfont{TeX Gyre Schola Math}
+%\setmathfont{STIX Two Math}[
+%  range={\blacktriangledown}
+%]
 % Inclusion des fichiers secondaires
 \RequirePackage{bfcours-colors}
 %\RequirePackage{bfcours-fonts}
