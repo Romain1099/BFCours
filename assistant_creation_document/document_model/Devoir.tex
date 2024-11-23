@@ -3,6 +3,8 @@
 \usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
 
 \usepackage{bfcours}
+\usepackage{bfcours-fonts}
+%\usepackage{bfcours-fonts-dys}
 
 \def\rdifficulty{1}
 \setrdexo{%left skip=1cm,
@@ -46,8 +48,8 @@ at (frame.south west) {\thetags[0]} ;}
 \setcounter{ExoMA}{0}
 \setcounter{prof}{0}
 
-\def\points{\phantom{AAA}}
-\def\difficulty{\phantom{AAA}}
+\def\points{1}
+\def\difficulty{1}
 \chapitre[
     % niveau : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
     ]{
@@ -57,23 +59,12 @@ at (frame.south west) {\thetags[0]} ;}
     }{
     % nom_etablissement : Amadis Jamyn,Eugène Belgrand
     }{
-    \tableauPresenteEvalSixieme{}{10}
+    \tableauPresenteEvalSixieme{}{\getsavedtotalpoints}
     }{
     Devoir :
     }
 
-%\setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
-%    \tableaucompetence{
-%        \competence{
-%		% Competencea : , 
-%	}
-%        \competence{
-%		% Competenceb : , 
-%	}
-%	\competence{
-%		%Competencec : ,
-%	}
-%    }
+\setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
 
 \vspace{-0.2cm}
 \begin{minipage}[t]{0.5\textwidth}%
@@ -124,7 +115,7 @@ at (frame.south west) {\thetags[0]} ;}
     }
 }
 
-\rdexocorrection[columns=1]{0}
+\rdexocorrection{0}
 
 
 

@@ -3,6 +3,8 @@
 \usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
 
 \usepackage{bfcours}
+\usepackage{bfcours-fonts}
+%\usepackage{bfcours-fonts-dys}
 
 \def\rdifficulty{1}
 \setrdexo{%left skip=1cm,
@@ -36,15 +38,17 @@ at (frame.south west) {\thetags[0]} ;}
     pdfproducer={LuaLaTeX},
     pdfcreator={Boum Factory}
 }
-
+% Activer ou désactiver l'affichage des boîtes
+\displayitempointsfalse % Ne pas afficher les boîtes
+%\displayitempointstrue % Afficher les boîtes
 \begin{document}
 
 \setcounter{pagecounter}{0}
 \setcounter{ExoMA}{0}
 \setcounter{prof}{0}
 
-\def\points{\phantom{AAA}}
-\def\difficulty{\phantom{AAA}}
+\def\points{1}
+\def\difficulty{1}
 \chapitre[
     % niveau : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
     ]{
@@ -65,31 +69,6 @@ at (frame.south west) {\thetags[0]} ;}
 \newpage
 \setcounter{pagecounter}{0}
 \setcounter{ExoMA}{0}
-\setcounter{prof}{0}
-
-\def\points{\phantom{AAA}}
-\def\difficulty{\phantom{AAA}}
-\chapitre[
-    % niveau
-    ]{
-    % theme
-    }{
-    % type_etablissement
-    }{
-    % nom_etablissement
-    }{
-    % supplement
-    }{
-    % type_document_principal
-    }
-\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
-
-% contenu_principal
-
-
-\newpage
-\setcounter{pagecounter}{0}
-\setcounter{ExoMA}{0}
 \setcounter{prof}{1}
 
 \chapitre[
@@ -105,7 +84,7 @@ at (frame.south west) {\thetags[0]} ;}
     }{
     % type_document_secondaire : Solution,
     }
-
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
 \tcbset{
     rdexo/default/.cd,correction style/.style={
         before upper=%
@@ -114,7 +93,7 @@ at (frame.south west) {\thetags[0]} ;}
     }
 }
 
-% contenu_secondaire : \input{solutions},\rdexocorrection[columns=1]{0},\rdexocorrection[columns=2]{0},
+\rdexocorrection{0},
 
 
 
