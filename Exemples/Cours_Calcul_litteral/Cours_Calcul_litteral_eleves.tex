@@ -1,0 +1,101 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=1cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+
+\usepackage{xparse}
+\usepackage{etoolbox}
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
+
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+\input{enonce_figures}
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+\newcommand\quadri[1]{%
+\medbreak\textcolor{gray}
+{\setlength\unitlength{5mm}
+\begin{picture}(34,#1)
+\multiput(0,0)(1,0){35}{\line(0,1){#1}}
+\put(0,0){\line(1,0){34}}
+\multiput(0,1)(0,1){#1}{\line(1,0){34}}
+\end{picture}}\smallbreak}
+
+%\AtEndDocument{\immediate\closeout\vocfile}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\begin{document}
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{0}
+
+\def\points{\phantom{AAA}}
+\def\difficulty{\phantom{AAA}}
+\chapitre[
+    $\mathbf{4^{\text{ème}}}$% : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
+    ]{
+    Calcul littéral% : ,Equations
+    }{
+    Collège% : Collège,Lycée
+    }{
+    Amadis Jamyn% : Amadis Jamyn,Eugène Belgrand
+    }{
+    \tableofcontents% : ,\tableauPresenteEvalSixieme{}{10},\tableofcontents
+    }{
+    Cours :% : Exercices
+    }
+    %\vspace{0.25cm}
+    \vfill
+    \tableaucompetence{
+        \competence{Connaître le vocabulaire lié au calcul littéral}
+        \competence{Identifier les variables d'une expression littérale}
+        \competence{Evaluer une expression littérale \hfill $C4L13$}
+        \competence{Déterminer la nature d'une égalité \hfill $C4L14$}
+        \competence{Connaître la formule de distributivité simple}
+        \competence{Développer une expression littérale \hfill $C4L21$}
+        \competence{Réduire une expression littérale \hfill $C4L22$}
+        \competence{Factoriser une expression littérale \hfill $C4L23$}
+        \competence{Connaître la formule de distributivité double}
+        \competence{Développer ou factoriser une expression à l'aide de la double distributivité \hfill $C4L24$}
+        \competence{Résoudre des problèmes en utilisant les règles du calcul littéral}
+    }
+
+    %\begin{boite}[Vocabulaire utilisé dans ce cours :]
+    %    \printindex
+    \vfill
+    \printvocindex
+    \vfill
+    \newpage
+\inputImprim{enonce}% : \inputImprim{enonce},
+
+\end{document}

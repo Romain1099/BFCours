@@ -1,0 +1,131 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+\usepackage{bfcours-fonts}
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+\input{enonce_TOOLS_figures}
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+% Activer ou désactiver l'affichage des boîtes pour les points
+%\displayitempointsfalse % Ne pas afficher les boîtes
+\displayitempointstrue % Afficher les boîtes
+
+\begin{document}
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{0}
+
+\def\points{\phantom{AAA}}
+\def\difficulty{\phantom{AAA}}
+\chapitre[
+    $\mathbf{6^{\text{ème}}}$% : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
+    ]{
+    Opérations - Distance d'un point à une droite% : ,Equations
+    }{
+    Collège% : Collège,Lycée
+    }{
+    %Amadis Jamyn% : Amadis Jamyn,Eugène Belgrand
+    }{
+    \tableauPresenteEvalSixieme{}{\getsavedtotalpoints}
+    }{
+    Devoir :
+    }
+%
+\setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
+%    \tableaucompetence{
+%        \competence{
+%		% Competencea , 
+%	}
+%        \competence{
+%		% Competenceb , 
+%	}
+%	\competence{
+%		%Competencec ,
+%	}
+%    }
+%
+\vspace{-0.2cm}
+\begin{minipage}[t]{0.5\textwidth}%
+    \printcompindex
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.4\textwidth}
+    \begin{minipage}[t]{0.75\textwidth}
+        \phantom{a}\\
+        Date : \repsim[3.5cm]{}\hfill \vrule \hfill \overlaychrono{10}
+    \end{minipage}\\
+    \begin{minipage}[t]{\textwidth}
+        \textbf{Modalités} :
+        \begin{itemize}[label=$\bullet$]
+            \item Calculatrice interdite% : \item Calculatrice interdite, \item Calculatrice autorisée,\item 
+            \item Pas de prêt de matériel
+            \item Les figures doivent être réalisées au crayon à papier bien taillé
+        \end{itemize}
+    \end{minipage}
+\end{minipage}
+
+\input{enonce_TOOLS}% : \input{enonce},
+
+\newpage
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{1}
+
+\chapitre[
+    $\mathbf{6^{\text{ème}}}$%
+    ]{
+    Opérations - Distance d'un point à une droite%
+    }{
+    Collège%
+    }{
+    Amadis Jamyn%
+    }{
+    % supplement
+    }{
+    Solution
+    }
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+\tcbset{
+    rdexo/default/.cd,correction style/.style={
+        before upper=%
+        \textbf{\thelabel~
+        \thecorrectionnum~:~}
+    }
+}
+
+\rdexocorrection{0}
+
+
+
+\end{document}

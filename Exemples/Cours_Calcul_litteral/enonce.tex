@@ -1,0 +1,438 @@
+\section{Expression littérale}
+\begin{Definition}[Expression littérale]
+    Une \voc{expression littérale} est une expression mathématique contenant une ou plusieurs lettres qui désignent des nombres.\\
+
+    Les lettres sont appelées des \voc{variables}.
+\end{Definition}
+\begin{Exemple}[Expression numérique]
+    \begin{multicols}{2}
+        \[A=5+7=12\]
+        \[B=(-5)\times 7=-35\]
+        \[C=\dfrac{5}{2}-\dfrac{2}{3}=\dfrac{5\times 3}{2\times 3}- \dfrac{2\times 2}{3\times 2}=\dfrac{15}{6}-\dfrac{4}{6}=\dfrac{11}{6}\]
+        \[D=10^{2}\times 10^{5}=10^{7}\]
+    
+    
+    \columnbreak
+
+        Toutes ces expressions sont composées uniquement de \acc{nombres}, ce sont des \acc{expressions numériques}
+    \end{multicols}
+\end{Exemple}
+\begin{Exemple}[Expression littérale]
+    \begin{multicols}{2}
+    \begin{enumerate}
+        \item La longueur $c$ d’un cercle de rayon $r$ est donnée par : \\
+        $c = 2\times {\color{red}\pi} \times \color{blue}r$ 
+        où $\color{red}\pi\approx \color{red}3{,}14$…
+        \begin{center}
+            \figureLongueurCercle
+        \end{center}
+        Cette formule comporte \acc{une variable}
+        \columnbreak
+
+        \item L’aire d’un carré est donné par $\mathbf{\color{blue}c\times c}$
+        où $\mathbf{\color{blue}c}$ représente le \acc{côté du carré}.
+        \vspace{-0.8cm}\begin{center}
+            \figureAireCarre
+        \end{center}
+    \end{enumerate}
+    
+    
+    \end{multicols}
+    \begin{enumerate}[start=3]
+        \item Dans l'égalité $6x+6y+7z=21$, il y a \acc{trois variables} : $x ; y \text{ et } z$.\\
+    \end{enumerate}
+    \solEquation
+\end{Exemple}
+\newpage
+\section{Valeur d’une expression littérale}
+
+\subsection{\'Evaluer une expression littérale}
+
+\begin{Definition}[\'Evaluer une expression littérale]
+    \voc{\'Evaluer une expression} littérale signifie \acc{attribuer} une \acc{valeur numérique} à une ou plusieurs \acc{variables}.
+
+    Il s'agit ensuite de \acc{remplacer} ces variables par les valeurs numériques, puis d'\acc{effectuer les calculs} rendus possibles.\\
+\end{Definition}
+
+\begin{Methode}
+    \begin{minipage}[t]{0.475\textwidth}
+        \'Evaluer l'expression suivante pour $x = 5$
+        \[A = 2x + t + 3\]
+
+        \textbf{Solution :}\\
+        On \acc{remplace} les variables $x$ par $5$ :\\
+        \[A = 2\times 5 + t + 3 \quad \text{t n'est pas évaluée}\]
+        \[A = 10 + t + 3\]
+        \[A = 13 + t\]
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.475\textwidth}
+        Evaluer l'expression suivante pour $x = -1$
+
+        \[B = x + (1 - x) + 3x\]
+
+        \textbf{Solution :}\\
+        On \acc{remplace} les variables $x$ par $-1$ :\\
+        \[B = -1 + (1 - (-1)) + 3\times ( -1 )\]
+        \[B = -1 + (1 + 1) - 3\]
+        \[B = -1 + 2 - 3\]
+        \[B = -2\]
+    \end{minipage}
+\end{Methode}
+
+\begin{Remarque}
+    \bcattention Penser à rajouter les signes $\times$ lorsqu'on remplace une variable qui est multipliée à un nombre.\\
+    \bcattention Les variables ayant des valeurs négatives peuvent être placées \acc{entre parenthèses} pour éviter les erreurs de calcul.
+\end{Remarque}
+
+\def\points{8}
+\begin{EXO}{\'Evaluer une expression littérale}{C4L13}
+    Calculer la valeur des expressions suivantes pour les valeurs données :
+    \begin{enumerate}
+        \begin{minipage}{0.4\textwidth}\item $A=6\times (x+3)$ lorsque $x=5$
+            \vspace{-0.25cm}\begin{crep}
+                \[A = 6\times (5+3)\]
+                \[A = 6\times 8\]
+                \[A = 48\]
+            \end{crep}
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.475\textwidth}\item $B=l\times L$ lorsque $l=3{,}5$ et $L=7$
+            \vspace{-0.25cm}\begin{crep}
+                \[B = l\times L\]
+                \[B = 3{,}5\times 7\]
+                \[B = 24{,}5\]
+            \end{crep}
+        \end{minipage}
+        \begin{minipage}{0.4\textwidth}\item $C=5\times(6-x) + 3x -7y$ lorsque $x=2$ et $y=1$
+            \vspace{-0.25cm}\begin{crep}
+                \[C = 5\times(6-2) + 3\times 2 -7\times 1 \]
+                \[C = 5\times(4) + 6 -7 \]
+            \end{crep}
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.475\textwidth}
+            \begin{crep}
+                \[C = 20 - 1\]
+                \[C = 19\]
+            \end{crep}
+        \end{minipage}
+    \end{enumerate}
+    
+\end{EXO}
+
+\subsection{Nature d'une égalité}
+\begin{Definition}
+    Une égalité est constituée de deux expressions mathématiques appelées « \voc{membres} » séparées par un signe « = ».
+\end{Definition}
+\begin{Vocabulaire}[Nature d'une égalité]
+
+    \begin{center}
+        \begin{tcbtab}[Une égalité peut être :]{c|c|c|c}
+            \voc{Nature de l'égalité}& \acc{Vraie} & \acc{Fausse} & \acc{Parfois vraie, parfois fausse} \\
+            \hline
+            \acc{Exemple} 1 & $3^2 = (-3)^2$ & $\dfrac{1}{3}=0{,}33$ & $2x=10$ \\
+            \acc{Exemple} 2 & $x+x=2x$ & $x^2=-1$ & $3x+1=5x-4$ 
+        \end{tcbtab}
+    \end{center}
+\end{Vocabulaire}
+\begin{Exemple}
+    \vspace{-0.25cm}\begin{enumerate}
+    \item L'égalité $5\times 2=6+4$ est \repsim[3cm]{vraie}, car \repsim[6cm]{$5\times 2=10$ et $6+4=10$}.\\
+    \item L'égalité $4\times 6=24+3$ est \repsim[3cm]{fausse}, car \repsim[6cm]{$4\times 6=24$ mais $24+3=27$}.
+    \item L'égalité $4x + 6 +2x = 2x\times 3 +2\times 3$ est \repsim[3cm]{vraie} car :
+        \begin{crep}
+            \begin{minipage}[t]{0.475\textwidth}
+                D'une part : \\
+                $4x + 6 + 2x = 6x + 6$
+            \end{minipage}
+            \hfill
+            \begin{minipage}[t]{0.475\textwidth}
+                D'autre part :\\
+                $2x \times 3 + 2 \times 3 = 6x + 6$
+            \end{minipage}\\\\
+            Les membres de gauche et de droite sont tous les deux égaux à la même \acc{expression littérale} $6x + 6$.\\
+            On en déduit que cette égalité est vraie quelle que soit la valeur de $x$.
+        \end{crep}
+    \end{enumerate}
+\end{Exemple}
+\def\points{6}
+\def\rdifficulty{2}
+\begin{EXO}{Déterminer la nature d'une égalité}{C4L14}
+    \vspace{-0.25cm}\begin{enumerate}
+    $3x+6=2(x+5)$ est \repsim[3cm]{fausse} car :
+    \begin{crep}
+        \begin{minipage}[t]{0.475\textwidth}
+            D'une part : \\
+            $2(x + 5) = 2x + 10$
+        \end{minipage}
+        \hfill
+        \begin{minipage}[t]{0.475\textwidth}
+            D'autre part :\\
+            $3x + 6 \neq 2x + 10$
+        \end{minipage}\\\\
+        Les deux membres ne sont pas égaux.
+    \end{crep}
+
+    \vspace{-0.25cm}$x^{2}=2x$ est \repsim[3cm]{fausse} car :
+    \begin{crep}
+        Les deux membres ne sont pas égaux pour toutes les valeurs de $x$ : \\
+        Si x = 3 par exemple, alors : $x^2 = 3^2 = 9$ mais $2x = 2\times 3 =6$
+    \end{crep}
+    \end{enumerate}
+\end{EXO}
+\vspace{-0.25cm}\begin{Remarque}
+    Parfois ces égalités, par exemple $3x+5=7$ ou $4x+4=7x+2$, peuvent être égales pour certaines valeurs de $x$, on parle d'équation.
+\end{Remarque}
+
+\newpage
+\section{Développement}
+\subsection{Introduction}
+\begin{Activite}[Les bouteilles]
+    Un restaurateur a commandé 3 caisses de jus d’orange et 5 caisses de jus de raisin.\\
+    Chaque caisse contient 24 bouteilles de jus.\\
+    \begin{enumerate}
+        \item Répondre à la question suivante de \acc{deux façons différentes} :\\
+            \textbf{Combien a-t-il commandé de bouteilles en tout ?}
+        \item Que remarque-t-on ?
+    \end{enumerate}
+    \tcblower
+    \begin{enumerate}
+        \item \begin{minipage}[t]{0.475\textwidth}
+            \acc{Première solution :}
+            \begin{crep}
+                Le restaurateur a commandé $3\times\blue{24}=72$ bouteilles de jus d'orange.\\
+                Il a également commandé $5\times\blue{24}=120$ bouteilles de jus de raisin.\\
+                Le nombre total de bouteilles s'écrit :\\
+                $3\times \blue{24} + 5 \times \blue{24} = 72 + 120 = 192$ bouteilles.
+            \end{crep}
+        \end{minipage}
+        \hfill
+        \begin{minipage}[t]{0.475\textwidth}
+            \acc{Seconde solution :}
+            \begin{crep}
+                Puisque les caisses contiennent le même nombre de bouteilles, il suffit de \acc{multiplier} le nombre de caisses \acc{au total} par le nombre de \acc{bouteilles} par caisse : \\
+                $( 3 + 5 ) \times \blue{24} = 8 \times \blue{24} = 192$ bouteilles.
+            \end{crep}
+        \end{minipage}
+
+        \item On remarque que...\begin{crep}
+            L'égalité suivante est vraie : \\
+            $( 3 + 5 ) \times \blue{24} = 3\times \blue{24} + 5 \times \blue{24}$
+        \end{crep}
+    \end{enumerate}
+    
+\end{Activite}
+\subsection{Distributivité}
+\begin{Propriete}[Distributivité simple]
+    On considère trois expressions ( numériques ou littérales ) a, b et c. \\
+    Les égalités suivantes sont \acc{toujours vérifiées} :\\
+    \begin{minipage}[t]{0.475\textwidth}
+        \begin{center}\Large$\blue{a}(\red{b}+\red{c})=\blue{a}\red{b}+\blue{a}\red{c}$\end{center}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.475\textwidth}
+        \begin{center}\Large$\blue{a}(\red{b}-\red{c})=\blue{a}\red{b}-\blue{a}\red{c}$\end{center}
+    \end{minipage} 
+\end{Propriete}
+
+\begin{Exemple}[Calculs astucieux]
+    \vspace{-0.35cm}
+    \begin{minipage}[t]{0.3\textwidth}\bclampe Pour calculer astucieusement, on peut utiliser la \voc{distributivité}.\end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.6\textwidth}
+    Puisque $101 = 100 + 1$, on peut écrire :
+    \[\blue{32} \times 101 = \blue{32} \times (\red{100} + \red{1}) = \blue{32} \times \red{100} + \blue{32} \times \red{1} = 3\,200 + 32 = \color{\currentAccentColor}{3\,232}\]
+    \end{minipage}\\
+
+    %\acc{Calculer astucieusement :}\\
+    $32\times 99=\tcfillcrep{\blue{32} \times (\red{100} - \red{1}) = \blue{32} \times \red{100} - \blue{32} \times \red{1} = 3\,200 - 32 = 3\,168}$\\
+    $13\times 102=\tcfillcrep{\blue{13} \times (\red{100} + \red{2}) = \blue{13} \times \red{100} + \blue{13} \times \red{2} = 1\,300 + 26 = 1\,326}$\\
+    $29\times 999=\tcfillcrep{\blue{29} \times (\red{1\,000} - \red{1}) = \blue{29} \times \red{1\,000} - \blue{29} \times \red{1} = 29\,000 - 29 = 28\,971}$
+\end{Exemple}
+\begin{Definition}[Développer une expression]
+    \voc{Développer}, c’est transformer un \acc{produit} en \acc{somme} (ou \acc{différence}).\\
+    Dans la pratique, développer c’est lire la formule de distributivité \acc{de la gauche vers la droite}.
+\end{Definition}
+\begin{Exemple}
+    \bclampe Pour \acc{développer} une expression, il suffit de lire la formule de distributivité \acc{de la gauche vers la droite}.\\
+    \textbf{L'expression} $A = 4(5+x)$ est un \voc{produit}. \\
+    On peut le développer en : 
+    $A = \blue{4}(\red{5}+\red{x}) = \blue{4}\times\red{5}+\blue{4}\times\red{x}$
+\end{Exemple}
+
+\def\points{4}
+\def\rdifficulty{1}
+\begin{EXO}{Développer avec la simple distributivité}{C4L21}
+    Développe les expressions suivantes :
+    \vspace{-0.35cm}\begin{multicols}{2}
+        \begin{enumerate}
+            \item $A = 5(x-2)$\begin{crep}
+            $A = \blue{5}(\red{x}-\red{2}) \\= \blue{5}\times\red{x}-\blue{5}\times\red{2}\\ = 5x - 10$
+            \end{crep}
+            \item $B = -6(-2x+4)$\begin{crep}
+            $B = \blue{-6}(\red{-2x}+\red{4}) \\= \blue{-6}\times\red{(-2x)}+\blue{(-6)}\times\red{4} \\= 12x - 24$
+            \end{crep}
+        \end{enumerate}
+    \end{multicols}
+    \begin{multicols}{2}
+        \begin{enumerate}[start=3]
+            \item $C = -x(2-3x)$\begin{crep}
+            $C = \blue{-x}(\red{2}-\red{3x}) \\= \blue{-x}\times\red{2}-\blue{-x}\times\red{(-3x)} \\= -2x - 3x^2$
+            \end{crep}
+            \item $D = -(5-x)$\begin{crep}
+            $D = \blue{-}(\red{5}-\red{x}) \\= \blue{-1}\times\red{5}-\blue{(-1)}\times\red{x} \\= -5 + x$
+            \end{crep}
+        \end{enumerate}
+    \end{multicols}
+\end{EXO}
+
+\subsection{Réduire une expression}
+\begin{Definition}[Réduire une expression]
+    \voc{Réduire} une expression, c’est l’écrire avec le moins de termes ou de facteurs possibles. \\
+    Pour cela on \acc{regroupe} les termes de \acc{même nature}. 
+\end{Definition}
+\begin{Exemple}
+    \vspace{-0.25cm}
+    \begin{multicols}{2}
+        \acc{Réduire} les expressions suivantes :
+        \begin{enumerate}
+            \item $A = 4x+3x = \repsim[3cm]{7x}$
+            \item $B = 2a+4-3a+6-2a+8a-8\\B = \repsim{5}\times a + \repsim{2}$
+        \end{enumerate}
+    \end{multicols}
+    \vspace{-0.25cm}
+    \begin{enumerate}[start=3]
+        \item $C= x^{2}+8x-7-8x+15-2x^{2}+3x = \repsim[5cm]{-x^2 + 3x + 8}$
+    \end{enumerate}
+\end{Exemple}
+\newpage
+\def\points{6}
+\def\rdifficulty{2.5}
+\begin{EXO}{Développer et réduire des expressions}{C4L22}
+    \vspace{-0.25cm}
+    \begin{multicols}{2}
+        \acc{Développer et réduire} les expressions suivantes :
+        \begin{enumerate}
+            \item $A=7(x+2)+6(x+3)\\
+             A = \repsim[5cm]{7x + 7\times 2 + 6x + 6 \times 3}\\
+             A = \repsim[5cm]{13x + 14 + 18}\\
+             A = \repsim[3cm]{13x + 32}$
+
+            \columnbreak
+
+
+            \item $B=-2(-x+3) + 2(x-5)\\
+             B = \repsim[5cm]{2x -6 + 2x - 10}\\
+             B = \repsim[3cm]{4x-16}$
+            \item $C= 7-2(x-2) = \repsim[5cm]{7 - 2x + 4}\\
+             C = \repsim[3cm]{-2x + 11}$
+        \end{enumerate}
+    \end{multicols}
+\end{EXO}  
+
+\section{Factorisation}
+
+\begin{Definition}
+    \voc{Factoriser}, c’est transformer une \voc{somme} (ou \voc{différence}) en \acc{produit}.\\
+    Une expression factorisée est formée de \voc{facteurs}.\\
+    Dans la pratique, \acc{factoriser} c’est lire la formule de distributivité \acc{de la droite vers la gauche} : \\
+    \begin{minipage}[t]{0.475\textwidth}
+        \begin{center}\Large$\blue{a}\red{b}+\blue{a}\red{c}=\blue{a}(\red{b}+\red{c})$\end{center}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.475\textwidth}
+        \begin{center}\Large$\blue{a}\red{b}-\blue{a}\red{c}=\blue{a}(\red{b}-\red{c})$\end{center}
+    \end{minipage} 
+\end{Definition}
+
+\begin{Exemple}
+    \bclampe \includegraphics[]{images/Factorisation.jpg}
+    \acc{Factoriser} les expressions suivantes puis les \voc{simplifier} le plus possible :\\
+\end{Exemple}
+
+\begin{EXO}{Factoriser des expressions}{C4L26}
+    \begin{multicols}{2}
+    \begin{enumerate}
+        \item $A=131\times13 + 131\times87\\A=\repsim[5cm]{131 \times (13  + 87)}\\A =\repsim[3cm]{131 \times 100} = \repsim[2.5cm]{13\,100}$
+        \item $B=37\times13-37\times3\\B=\repsim[5cm]{37 \times (13  - 3)}\\B =\repsim[3cm]{37 \times 10} = \repsim[2.5cm]{370}$
+        \item $C=4x-4\times 5 =\repsim[5cm]{4 \times (x  -5)}$
+        \item $D=24-8x =\repsim[5cm]{8 \times (3  - x)}$
+        \item $E=7x+42 =\repsim[5cm]{7 \times (x + 6)}$
+        \item $F=3x-3 = \repsim[5cm]{3 \times (x  - 1)}$
+        \item $G=x^{2}+3x =\repsim[5cm]{x \times (x  + 3 )}$
+        \item $H=3x^{2}+6x =\repsim[5cm]{3x \times (x  + 2)}$
+    \end{enumerate}
+\end{multicols}
+\end{EXO}
+
+\newpage
+%\vspace{-1.3cm}
+\section{Distributivité double}
+\begin{Propriete}[Double distributivité]
+    Lorsqu'on utilise la distributivité et que les deux facteurs sont des sommes ou des différences de plusieurs termes, il est \acc{utile} de connaître l'égalité suivante : \\
+    \[\Large(a+b)(c+d)=ac+ad+bc+bd\]
+\end{Propriete}
+\begin{Demonstration}
+    \begin{crep}
+        \begin{minipage}[t]{0.475\textwidth}
+            Notons $m = a + b$. \\
+            On a alors : $(a +b)(c + d) = m (c + d)$\\
+            On applique la \acc{distributivité simple} au membre de droite de l'égalité :\\
+            \[\blue{m} (c + d) = \blue{m} \times c + \blue{m} \times d
+            = \underbrace{\blue{( a + b )} \times c}_{\text{terme 1}} + \underbrace{\blue{( a + b )} \times d}_{\text{terme 2}}\]\\
+            
+        \end{minipage}
+        \hfill
+        \begin{minipage}[t]{0.475\textwidth}
+            On développe une nouvelle fois en utilisant la distributivité pour les termes $( a + b ) \times c$ et $( a + b ) \times d$ :\\
+            $
+                \red{( a + b ) \times c} + \blue{( a + b ) \times d} \\= \red{a \times c + b \times c} + \blue{a \times d + b \times d}
+            $\\
+            Finalement, on a montré que :\\
+            $(a +b)(c + d) = a \times c + b \times c + a \times d + b \times d$
+        \end{minipage}
+    \end{crep}
+\end{Demonstration}
+\vspace{-0.4cm}\begin{Remarque}
+    \bclampe Comme pour la formule de distributivité simple, il est possible de lire ces formules :
+    \begin{itemize}
+        \item De la gauche vers la droite pour \acc{développer}.
+        \item De la droite vers la gauche pour \acc{factoriser}.
+    \end{itemize}
+    On a aussi les formules suivantes, qu'il est possible de démontrer en utilisant \acc{les règles des signes}.
+    \vspace{-0.65cm}
+    \begin{multicols}{2}
+        \begin{enumerate}
+            \item $(a-b)(c+d)=ac+ad-bc-bd$
+            \item $(a-b)(c-d)=ac-ad-bc+bd$
+        \end{enumerate}
+    \end{multicols}
+\end{Remarque}
+\def\points{8}
+\def\rdifficulty{3}
+\vspace{-0.5cm}\begin{EXO}{Utiliser la double distributivité}{C4L24}
+    \acc{Développe et réduis} les expressions suivantes :\\
+    \vspace{-0.75cm}\begin{multicols}{2}
+        \begin{enumerate}
+            \item $A = (2x+3)(x+8)\\
+            A = \repsim[8cm]{2x\times x + 2x \times 8 + 3 \times x + 3 \times 8}\\
+            A = \repsim[8cm]{2x^2 + 19x + 24}$\\
+            \item $B = (-3+x)(4-5x)\\
+            B = \repsim[8cm]{-3\times 4 + (-3) \times (-5x) + x \times 4 + x \times (-5x)}\\
+            B = \repsim[8cm]{-5x^2 + 19x - 12}$
+        \end{enumerate}
+    \end{multicols}
+    \vspace{-0.75cm}\begin{multicols}{2}
+        \begin{enumerate}[start=3]
+            \item $C = 2(3+x)(3-2x)\\
+            C = \repsim[8cm]{(6+2x)(3-2x)}\\
+            C = \repsim[8cm]{6\times 3 + 6 \times (-2x) + 2x \times 3 + 2x \times (-2x)}\\
+            C = \repsim[8cm]{-4x^2 - 6x + 18}$\\
+            \item $D = 2x(1-x)-(x-3)(3x+2)\\
+            D = \repsim[8cm]{{\red{2x - 2x^2}} - ( {\blue{3x^2 + 2x - 9x - 6}})}\\
+            D = \repsim[8cm]{-2x^2 + 2x - 3x^2 - 2x + 9x + 6}\\
+            D = \repsim[8cm]{-5x^2 + 9x + 6}$\\
+        \end{enumerate}
+    \end{multicols}
+\end{EXO}

@@ -1,0 +1,1 @@
+Etant donné le caractère sensible des données élève, je propose une analyse d'un devoir factice qui m'a servi pour mes tests lors de l'élaboration du logiciel. 
