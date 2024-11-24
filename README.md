@@ -7,7 +7,7 @@ This project is licensed under the Creative Commons Attribution 4.0 Internationa
 
 
 
-# BFCours
+# BFCours et applications
 
 On trouvera dans le répertoire "documentations" toutes les documentations pour les packages bfcours et rdprof
 
@@ -17,3 +17,10 @@ Les codes sources des packages bfcours et rdprof sont disponibles dans le réper
 
 Une interface de saisie de résultats associée à la production de rapports détaillés d'une évaluation est présentée dans le répertoire "Assistant_saisie_resultats" ( documentations dans les documentations )
 
+# Outils Numériques de pré-formattage
+
+Des scripts permettent un formattage automatique de document de sorte à faciliter leur implémentation. 
+
+Un script de gestion des figures dans un document existant : Tikzfig. 
+
+Un script de pré-formattage de document MathAlea. Il permet de porter automatiquement vers la syntaxe utilisée dans bfcours. 
