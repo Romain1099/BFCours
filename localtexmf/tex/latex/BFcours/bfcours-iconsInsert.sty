@@ -1,9 +1,10 @@
 % Nom du fichier : bfcours-environments.sty
 \ProvidesPackage{bfcours-iconsInsert}[2024/06/29 v1.0 Insertion d'icones pour bfcours]
 
-\newcommand{\dbiconpath}{C:/Users/Utilisateur/Documents/Professionnel/1. Reims 2023 - 2024/1. Cours/366_fonctionnement/365_Icones}
-\newcommand{\coverAnime}{C:/Users/Utilisateur/Documents/Professionnel/1. Reims 2023 - 2024/1. Cours/366_fonctionnement/365_Icones/Fun/covers_manga}
-
+\newcommand{\dbiconpath}{C:/Users/Utilisateur/Documents/Icones}
+\newcommand{\coverAnime}{C:/Users/Utilisateur/Documents/Icones/Fun/covers_manga}
+% Définition du chemin de base pour les images
+\newcommand{\imdbPath}{C:/Users/Utilisateur/Documents/Icones}
 % Fonction Lua pour sélectionner un icône aléatoire
 \begin{luacode*}
 function get_random_icon(path,subpath)
@@ -68,8 +69,7 @@ end
 }
 
 
-% Définition du chemin de base pour les images
-\newcommand{\imdbPath}{C:/Users/Utilisateur/Documents/Professionnel/1. Reims 2023 - 2024/1. Cours/366_fonctionnement/365_Icones}
+
 
 % Commande personnalisée pour insérer une image
 \NewDocumentCommand{\imdb}{ O{\imdbPath} m O{1cm} O{1cm} }{%
