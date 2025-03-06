@@ -1,0 +1,151 @@
+\subsection{Cartes de rôles}
+\newcommand{\rolecard}[2]{%
+  \begin{tcolorbox}[
+    enhanced,
+    width=7cm,
+    colback=blue!10!white,
+    colframe=blue!50!black,
+    boxrule=1mm,
+    arc=5mm,
+    drop shadow={xshift=2mm,yshift=-2mm,opacity=0.5},
+    fontupper=\small,
+    fonttitle=\bfseries\Large,
+    coltitle=white,
+    colbacktitle=blue!50!black,
+    title={#1},
+    attach boxed title to top center={yshift=-3mm},
+    boxed title style={
+      sharp corners,
+      boxrule=0mm,
+      interior style={left color=blue!50!black, right color=blue!30!white}
+    },
+    overlay={%
+      % Petit cercle en haut à gauche
+      \draw[fill=yellow!80!orange, draw=yellow!50!red, line width=0.5mm] 
+        ([xshift=-2mm,yshift=-2mm]frame.north west) circle (3mm);
+      % Petit cercle en haut à droite
+      \draw[fill=yellow!80!orange, draw=yellow!50!red, line width=0.5mm] 
+        ([xshift=2mm,yshift=-2mm]frame.north east) circle (3mm);
+      % Une étoile décorative centrée en haut
+      \node[rotate=15, scale=1.2] at ([yshift=-1cm]frame.north) {\faStar};
+    }
+  ]
+    #2
+  \end{tcolorbox}
+}
+
+
+
+\begin{multicols}{2}
+    \rolecard{Joueur 1}{
+        \begin{center}\acc{Responsable des dés}\end{center}
+        \begin{itemize}[label=\faPen]
+            \item Lance trois dés à 10 faces au début de chaque tour.
+            \item S'il les lance plusieurs fois d'affilée, le tour de l'équipe est annulé.
+            \item Participe aux calculs en collaboration avec l'équipe.
+            \item Participe à la résolution de problèmes.
+        \end{itemize}
+    }
+
+    \rolecard{Joueur 2}{
+        \begin{center}\acc{Responsable de la fiche}\end{center}
+        \begin{itemize}[label=\faPen]
+            \item Note le nombre formé en utilisant les valeurs obtenues avec les dés.
+            \item Ajoute ce nombre au résultat précédent.
+            \item Participe aux calculs en collaboration avec l'équipe.
+            \item Participe à la résolution de problèmes.        
+        \end{itemize}
+    }
+\end{multicols}
+
+\vspace{3cm}
+
+\begin{multicols}{2}
+
+    \rolecard{Joueur 3}{
+        \begin{center}\acc{Responsable du curseur}\end{center}
+        \begin{itemize}[label=\faPen]
+            \item Déplace le curseur sur la frise graduée en fonction du résultat.
+            \item Vérifie si l'équipe atterrit sur un événement particulier.
+            \item Participe aux calculs en collaboration avec l'équipe.
+            \item Participe à la résolution de problèmes.
+        \end{itemize}
+    }
+
+    \rolecard{Joueur 4}{
+        \begin{center}\acc{Responsable de la communication}\end{center}
+        \begin{itemize}[label=\faPen]
+            \item Informe l'équipe des règles et des événements déclenchés.
+            \item Vérifie et annonce les actions à réaliser en fonction des cases atteintes.
+            \item Participe aux calculs en collaboration avec l'équipe.
+            \item Participe à la résolution de problèmes.
+        \end{itemize}
+    }
+\end{multicols}
+
+\newpage
+
+\begin{multicols}{2}
+    \rolecard{Arbitre}{
+        \begin{center}\phantom{a}\end{center}
+        \begin{itemize}[label=\faPen]
+            \item Valide les calculs des équipes en utilisant la calculatrice.
+            \item Chronomètre les défis ( 30 secondes à 1 minute ).
+            \item Peut \acc{mettre en pause} la partie à tout moment.
+            \item Peut \acc{annuler une action} s'il estime que l'équipe n'est pas correcte. \\ ( triche, antijeu, moqueries...)
+            \item Demande l'intervention du professeur en cas de problème.
+        \end{itemize}
+    }
+
+    \columnbreak
+
+    \rolecard{Arbitre}{
+        \begin{center}\phantom{a}\end{center}
+        \begin{itemize}[label=\faPen]
+            \item Valide les calculs des équipes en utilisant la calculatrice.
+            \item Chronomètre les défis ( 30 secondes à 1 minute ).
+            \item Peut \acc{mettre en pause} la partie à tout moment.
+            \item Peut \acc{annuler une action} s'il estime que l'équipe n'est pas correcte. \\ ( triche, antijeu, moqueries...)
+            \item Demande l'intervention du professeur en cas de problème.
+        \end{itemize}
+    }
+\end{multicols}
+
+% Commande pour dessiner une case à cocher vide.
+\newcommand{\hereismycheckbox}{%
+  \tikz[scale=0.8] \draw[thick] (0,0) rectangle (0.4,0.4);%
+}
+
+\begin{center}
+    % Le tableau comporte une première colonne pour le libellé puis 6 colonnes (3 pour chaque équipe)
+    \begin{tcbtab}{p{5cm} |*{3}{>{\centering\arraybackslash}p{1.5cm}} |*{3}{>{\centering\arraybackslash}p{1.5cm}}}
+      \hline
+      \multirow{2}{*}{\centering\textbf{Infractions}} & \multicolumn{3}{c|}{\textbf{Équipe \no\repsim[1cm]{}}} & \multicolumn{3}{c|}{\textbf{Équipe \no\repsim[1cm]{}}} \\
+      \cline{2-7}
+      & \textbf{Niv. 1} & \textbf{Niv. 2} & \textbf{Niv. 3} & \textbf{Niv. 1} & \textbf{Niv. 2} & \textbf{Niv. 3} \\
+      \hline
+      % Exemple de ligne d'infraction avec 3 cases par équipe
+      Triche aux dés & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox \\
+      \hline
+      % Ajoutez ici d'autres infractions
+      Retarder l'activité & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox \\
+      \hline
+      Bavardages excessifs & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox \\
+      \hline
+      Non-respect des consignes & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox \\
+      \hline
+      Dégrade le matériel & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox \\
+      \hline
+      Ne respecte pas l'arbitre & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox & \hereismycheckbox \\
+      \hline
+    \end{tcbtab}
+  \end{center}
+
+  Observations : 
+
+  \begin{crep}[extra lines=5]
+    \phantom{a}
+
+  \end{crep}
+
+   \vspace{3cm}

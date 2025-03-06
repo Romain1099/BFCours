@@ -1,0 +1,162 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+\usepackage{bfcours-fonts}
+%\usepackage{bfcours-fonts-dys}
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+
+\input{liste_defis_TOOLS_figures.tex}
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+% Activer ou désactiver l'affichage des boîtes
+\displayitempointsfalse % Ne pas afficher les boîtes
+%\displayitempointstrue % Afficher les boîtes
+\newcounter{tourcounter}
+\newcommand{\mescartes}[5]{%
+    \begin{minipage}{0.237\linewidth}
+        \begin{tcolorbox}[
+            width=0.85\linewidth, 
+            height=4.5cm, 
+            colframe=#1, 
+            colback=#1!5, 
+            colbacktitle=#1!20, 
+            title={\textbf{#2}}, 
+            sharp corners=all
+        ]
+            #3
+        \end{tcolorbox}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.237\linewidth}
+        \begin{tcolorbox}[
+            width=0.85\linewidth, 
+            height=4.5cm, 
+            colframe=#1, 
+            colback=#1!5, 
+            colbacktitle=#1!20, 
+            title={\textbf{#4}}, 
+            sharp corners=all
+        ]
+            #5
+        \end{tcolorbox}
+    \end{minipage}
+}
+\newcommand{\mesTutocartes}[5]{%
+    \begin{minipage}{0.485\linewidth}
+        \begin{tcolorbox}[
+            width=\linewidth, 
+            height=2.5cm, 
+            left=0.1pt,
+            right=0.1pt,
+            colframe=#1, 
+            colback=#1!5, 
+            colbacktitle=#1!20, 
+            title={\color{black}\textbf{#2}}, 
+            sharp corners=all
+        ]
+            #3
+        \end{tcolorbox}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.485\linewidth}
+        \begin{tcolorbox}[
+            width=\linewidth, 
+            height=2.5cm,  
+            left=0.1pt,
+            right=0.1pt,
+            colframe=#1, 
+            colback=#1!5, 
+            colbacktitle=#1!20, 
+            title={\color{black}\textbf{#4}}, 
+            sharp corners=all
+        ]
+            #5
+        \end{tcolorbox}
+    \end{minipage}
+}
+\newcommand{\curseur}[2]{% 1: Couleur, 2: Numéro de l'équipe
+    \begin{tikzpicture}[scale=1]
+        % Curseur flèche vers la gauche
+        \fill[#1] (-2,0) -- (0,1) -- (-0.5,0) -- (0,-1) -- cycle;
+        \draw[thick, black] (-2,0) -- (0,1) -- (-0.5,0) -- (0,-1) -- cycle;
+        
+        % Bulle
+        \fill[#1!50] (0.5,0) circle (1);
+        \draw[thick, black] (0.5,0) circle (1);
+        
+        % Queue de la bulle
+        \fill[#1!50] (0,0) -- (0.2,-0.2) -- (0.4,0.1) -- cycle;
+        %\draw[thick, black] (0,0) -- (0.2,-0.2) -- (0.4,0.1) -- cycle;
+        
+        % Texte du numéro d'équipe
+        \node at (0.5,0) {\textbf{\Huge #2}};
+    \end{tikzpicture}
+}
+\usepackage{tikz}
+\usetikzlibrary{shadings,calc} % 'pgfmath' est généralement chargé par défaut
+\usepackage{pgfmath}
+\tcbuselibrary{skins}
+
+\begin{document}
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{0}
+
+\def\points{1}
+\def\difficulty{1}
+\chapitre[
+    $\mathbf{6^{\text{ème}}}$% : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
+    ]{
+    Liaison CM2-6ème% : ,Equations
+    }{
+    Collège% : Collège,Lycée
+    }{
+    %Amadis Jamyn% : Amadis Jamyn,Eugène Belgrand
+    }{
+    % : ,\tableauPresenteEvalSixieme{}{10},\tableofcontents
+    }{
+    Activité : % : Exercices
+    }
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+\tableofcontents
+
+\newpage
+
+\input{enonce}% : \input{enonce},
+
+
+
+\end{document}

@@ -1,0 +1,77 @@
+\subsection{Informations sur la frise}% Définition des constantes
+
+\boite{Matériel :}{
+    \vspace{-0.2cm}\begin{multicols}{2}
+        \begin{itemize}[label=\bcoutil]
+        \item Trois dés à $10$ faces ou un \href{https://www.ma-calculatrice.fr/des-virtuels-simulateur?nbre_des=3&de_couleurs_1=005BD4&de_min_1=0&de_max_1=9&de_couleurs_2=2CD400&de_min_2=0&de_max_2=9&de_couleurs_3=D46000&de_min_3=0&de_max_3=9&de_couleurs_4=000000&de_min_4=1&de_max_4=6&de_couleurs_5=000000&de_min_5=1&de_max_5=6&de_couleurs_6=000000&de_min_6=1&de_max_6=6&de_couleurs_7=000000&de_min_7=1&de_max_7=6&de_couleurs_8=000000&de_min_8=1&de_max_8=6&de_couleurs_9=000000&de_min_9=1&de_max_9=6&de_couleurs_10=000000&de_min_10=1&de_max_10=6&de_couleurs_11=000000&de_min_11=1&de_max_11=6&de_couleurs_12=000000&de_min_12=1&de_max_12=6}{simulateur}.
+        \item Des \acc{curseurs} représentant chaque équipe.
+        \item Des cartes \acc{défis}.
+        \item Des cartes \acc{rôle}.
+        
+        \columnbreak
+
+        \item Une calculatrice pour l'équipe d'arbitrage.
+        \item Une \acc{frise graduée}.
+        \item Une \acc{fiche équipe}.
+        \item Un chronomètre : \phantom{a}\hfill \overlaychrono{15} \hfill \phantom{a}
+        \end{itemize}
+    \end{multicols}
+}
+\def\bandwidth{4.5} % Largeur d'une bande en cm
+\def\bandheight{25} % Hauteur d'une bande en cm
+\def\languette{0.8}
+\def\echellegraphique{10}
+\def\nombremax{50}
+\edef\nombrepage{\fpeval{round(\nombremax/(3*2.5),0)}}
+\def\reste{1}
+\begin{multicols}{2}
+\begin{itemize}[label=$\bullet$]
+    \item La frise suivante est à découper. 
+    \item Il suffit ensuite de coller les languettes, pour assembler la frise.
+    \item La frise est composée de $\num{\fpeval{(\nombrepage-\reste)*3+2}}$ morceaux répartis sur $\num{\nombrepage}$ pages.
+    \item Longueur totale : $\num{\fpeval{(\bandheight * (\nombrepage - \reste) * 3 +\bandheight * 2 )  / 100}}$ m.
+\end{itemize}
+
+\columnbreak
+
+La répartition des \acc{événements} est générée comme suit : 
+\begin{center}
+    \begin{tcbtab}{c|c|c|c|c}
+        Type & R & C & M & D \\
+        \hline
+        Probabilité & $\frac{1}{6}$ & $\frac{1}{6}$ & $\frac{1}{6}$ & $\frac{1}{2}$\\
+    \end{tcbtab}
+\end{center}
+\end{multicols}
+
+\begin{Exemple}[Fonctionnement d'un tour de jeu]
+    \vspace{-0.3cm}\begin{multicols}{2}
+        \begin{enumerate}[itemsep=0em]
+            \item L'équipe commence son tour à l'\acc{abscisse} $\num{7.45}$.
+            \item Les élèves obtiennent, \acc{dans l'ordre} $4$, $1$ et $6$. 
+            \item Le responsable complète la \acc{fiche d'avancement} avec le nombre $\num{4.16}$.
+            \item L'équipe complète le résultat par $\num{7.45} + \num{4.16} = \num{\fpeval{7.45+4.16}}$.
+            \item Le résultat est validé par l'équipe arbitre qui a le droit d'utiliser la calculatrice. 
+            \item L'équipe tombe sur une case notée \frquote{Défi}. \\
+            L'équipe pioche une carte \frquote{défi} de difficulté $2$ et répond à la question correctement.
+            \item Les arbitres valident la solution. L'équipe avance de $2$ unités supplémentaires et note cette étape dans la \acc{fiche d'avancement}.
+        \end{enumerate}
+
+    \end{multicols}
+
+    \begin{tcbtab}[Extrait de la fiche d'avancement]{c|c|c|c|c|c}
+        %$\phantom{\dfrac{\dfrac{1}{10}}{\dfrac{1}{10}}}$ Tour $\phantom{\dfrac{\dfrac{1}{10}}{\dfrac{1}{10}}}$ & $1$ & $\dfrac{1}{10}$ & $\dfrac{1}{100}$ & Nombre formé & Résultat \\
+        Action \no & Dé \no 1 & Dé \no 2 & Dé \no 3 & Nombre formé & Résultat \\
+        \hline
+        \repsim[1cm]{}  & \repsim{X} & \repsim{X} & \repsim{X} & \repsim[3cm]{X} & \repsim[6cm]{$\num{7.45}$}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{$4$} & \repsim{$1$} & \repsim{$6$} & \repsim[3cm]{$\num{4.16}$} & \repsim[6cm]{$\num{7.45} + \num{4.16} = \num{\fpeval{7.45+4.16}}$}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{X} & \repsim{X} & \repsim{X} & \repsim[3cm]{2} & \repsim[6cm]{$\num{\fpeval{7.45+4.16}} + 2 = \num{\fpeval{7.45+4.16+2}}$}\\
+        \hline
+        
+    \end{tcbtab}
+
+\end{Exemple}
+
+\newpage

@@ -1,0 +1,358 @@
+\subsection{Fiche d'avancement}
+
+\newpage
+
+\chapitre[
+    $\mathbf{6^{\text{ème}}}$% : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
+    ]{
+    % : ,Equations
+    }{
+    Collège% : Collège,Lycée
+    }{
+    Amadis Jamyn% : Amadis Jamyn,Eugène Belgrand
+    }{
+    % : ,\tableauPresenteEvalSixieme{}{10},\tableofcontents
+    }{
+        Fiche d'avancement% : Exercices
+    }
+\setcounter{tourcounter}{0}
+\vspace{-0.8cm}\begin{center}
+    \begin{tcbtab}{c|c|c|c|c}
+        \'Equipe \no\repsim[1cm]{}& Joueur 1 & Joueur 2 & Joueur 3 & Joueur 4\\
+        \hline
+        Nom & \repsim[3.3cm]{} & \repsim[3.3cm]{} & \repsim[3.3cm]{} & \repsim[3.3cm]{}\\
+        \hline
+        Responsable de : & Dés & Fiche d'avancement & Curseur & Communication \\
+    \end{tcbtab}
+\end{center}
+\vspace{-0.8cm}\begin{center}
+    \begin{tcbtab}{c|c|c|c|c|c}
+        %$\phantom{\dfrac{\dfrac{1}{10}}{\dfrac{1}{10}}}$ Tour $\phantom{\dfrac{\dfrac{1}{10}}{\dfrac{1}{10}}}$ & $1$ & $\dfrac{1}{10}$ & $\dfrac{1}{100}$ & Nombre formé & Résultat \\
+        Action \no & Dé \no 1 & Dé \no 2 & Dé \no 3 & Nombre formé & Résultat \\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}\\
+        \hline
+        \repsim[1cm]{}  & \repsim{} & \repsim{} & \repsim{} & \repsim[3cm]{} & \repsim[6cm]{}
+    \end{tcbtab}        
+\end{center}
+
+\newcommand{\drawGraduations}[3]{%
+    % #1: Start value
+    % #2: End value
+    % #3: Offset value (for continuity)
+
+    % Centièmes graduations (réduction du nombre de graduations)
+    \def\scalefactor{1}
+
+    \foreach \x in {#1,0.1,...,#2} {
+        \draw[very thick] (0,\x*\scalefactor) -- (0.6, \x*\scalefactor);
+    }
+
+    % Dixièmes graduations
+    \foreach \x in {#1,1,...,#2} {
+        \draw[very thick] (0,\x*\scalefactor) -- (1.5, \x*\scalefactor);
+    }
+
+    % Unités graduations et affichage en grand et gras pour les entiers
+    \foreach \x in {#1,1,...,\fpeval{#2+0.1}} {
+        \draw[very thick] (0,\x*\scalefactor) -- (1.5, \x*\scalefactor);
+        \pgfmathsetmacro{\value}{(\x + #3) / 10}
+        \pgfmathsetmacro{\semivalue}{(\x + #3 + 5) / 10}
+        \pgfmathsetmacro{\semiremainder}{mod(\semivalue,1)}
+        \pgfmathsetmacro{\remainder}{mod(\value,1)}
+        \ifdim \remainder pt = 0pt
+            \node[left, font=\bfseries\LARGE] at (0, \x*\scalefactor) {\fpeval{\value}};
+        \fi
+        \ifdim \semiremainder pt = 0pt
+            \node[left, font=\bfseries\large] at (0, \x*\scalefactor) {\num{\fpeval{\value}}};
+        \fi
+    }
+
+        % Gamification : ajouter des événements aléatoires
+        \pgfmathsetmacro{\randomShift}{rnd*4 - 2} % Générer une variation entre -2 et +2
+        \pgfmathsetmacro{\eventCount}{int(12)} % faire  + \randomShift pour aléatoire % Base 5 événements avec une variation de -2 à +2
+        \foreach \i in {1,...,\eventCount} {
+        \pgfmathsetmacro{\randY}{random(\fpeval{#1},\fpeval{#2 - 3})}
+        \pgfmathrandominteger{\randheight}{1}{2}
+        \pgfmathsetmacro{\randX}{0.5*\bandwidth}
+        \pgfmathrandominteger{\eventType}{1}{6}
+        \def\eventcolor{yellow}
+        \def\eventTextColor{black}
+        % Définition des labels selon l'événement
+        \ifnum\eventType=1
+            \def\eventText{R}%Relancer les dés
+            \def\eventcolor{green!85!black}
+        \fi
+        \ifnum\eventType=2
+            \def\eventText{D}%Défi}
+            \def\eventcolor{blue!35!white}
+        \fi
+        \ifnum\eventType=3
+            \def\eventText{C}%Événement chanceux}
+            \def\eventcolor{green!75!white}
+        \fi
+        \ifnum\eventType=4
+            \def\eventText{D}%Défi}
+            \def\eventcolor{blue!35!white}
+        \fi
+        \ifnum\eventType=5
+            \def\eventText{M}%Événement malchanceux}
+            \def\eventcolor{red!85!black}
+            \def\eventTextColor{white}
+        \fi
+        \ifnum\eventType=6
+            \def\eventText{D}%Défi}
+            \def\eventcolor{blue!35!white}%green!75!white}
+        \fi
+        % Dessiner l'événement à une position aléatoire
+        \draw[fill=\eventcolor, rounded corners] (\randX, \randY) rectangle ++(2, \randheight+1);
+
+        % Calcul de l'intervalle et placement des labels
+        \pgfmathsetmacro{\startY}{\randY}
+        \pgfmathsetmacro{\endY}{\randY + \randheight}
+        \foreach \y in {\startY, \fpeval{\startY + 1}, ..., \endY} {
+            \node at (\randX + 1, \y + 0.5) {\LARGE{\textbf{\color{\eventTextColor}\eventText}}};
+        }
+    }
+    
+    % Languette de collage pour lier à la frise suivante
+    \draw[thick, fill=gray!30] (0, \bandheight) rectangle (\bandwidth, \bandheight + \languette);
+    \node[above, font=\small] at (\bandwidth/2, \bandheight + \languette / 10) {Languette de collage};
+}
+
+
+
+
+
+\subsection{Les curseurs}
+
+
+\vspace{1.5cm}\begin{center}
+    \curseur{blue}{1} \hspace{1cm} \curseur{red}{2} \hspace{1cm} \curseur{green}{3}
+\end{center}
+
+\vspace{1.5cm}\begin{center}
+    \curseur{yellow}{4} \hspace{1cm} \curseur{purple}{5}
+\end{center}
+
+\subsection{Tutoriel}
+
+\newpage
+
+\input{tuto_frise.tex}
+
+\newpage
+
+\subsection{La frise}
+
+\newpage
+
+\begin{tikzpicture}[x=1cm, y=1cm,xshift=-1cm]
+
+% Dessin de la première bande
+\begin{scope}[shift={(-1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{0}
+\end{scope}
+
+% Dessin de la deuxième bande (avec continuité des nombres)
+\begin{scope}[shift={(1*\bandwidth + 1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{25}
+\end{scope}
+
+% Dessin de la troisième bande (avec continuité des nombres)
+\begin{scope}[shift={(2*\bandwidth + 3,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{50}
+\end{scope}
+
+\end{tikzpicture}
+
+\newpage
+
+\begin{tikzpicture}[x=1cm, y=1cm,xshift=-1cm]
+% Dessin de la première bande
+\begin{scope}[shift={(-1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{75}
+\end{scope}
+
+% Dessin de la deuxième bande (avec continuité des nombres)
+\begin{scope}[shift={(1*\bandwidth + 1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{100}
+\end{scope}
+
+% Dessin de la troisième bande (avec continuité des nombres)
+\begin{scope}[shift={(2*\bandwidth + 3,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{125}
+\end{scope}
+
+\end{tikzpicture}
+
+\newpage
+
+\begin{tikzpicture}[x=1cm, y=1cm,xshift=-1cm]
+% Dessin de la première bande
+\begin{scope}[shift={(-1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{150}
+\end{scope}
+
+% Dessin de la deuxième bande (avec continuité des nombres)
+\begin{scope}[shift={(1*\bandwidth + 1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{175}
+\end{scope}
+
+% Dessin de la troisième bande (avec continuité des nombres)
+\begin{scope}[shift={(2*\bandwidth + 3,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{200}
+\end{scope}
+
+\end{tikzpicture}
+
+\newpage
+
+\begin{tikzpicture}[x=1cm, y=1cm,xshift=-1cm]
+% Dessin de la première bande
+\begin{scope}[shift={(-1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{225}
+\end{scope}
+
+% Dessin de la deuxième bande (avec continuité des nombres)
+\begin{scope}[shift={(1*\bandwidth + 1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{250}
+\end{scope}
+
+% Dessin de la troisième bande (avec continuité des nombres)
+\begin{scope}[shift={(2*\bandwidth + 3,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{275}
+\end{scope}
+
+\end{tikzpicture}
+
+\newpage
+
+\begin{tikzpicture}[x=1cm, y=1cm,xshift=-1cm]
+% Dessin de la première bande
+\begin{scope}[shift={(-1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{300}
+\end{scope}
+
+% Dessin de la deuxième bande (avec continuité des nombres)
+\begin{scope}[shift={(1*\bandwidth + 1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{325}
+\end{scope}
+
+% Dessin de la troisième bande (avec continuité des nombres)
+\begin{scope}[shift={(2*\bandwidth + 3,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{350}
+\end{scope}
+
+\end{tikzpicture}
+
+\newpage
+
+\begin{tikzpicture}[x=1cm, y=1cm,xshift=-1cm]
+% Dessin de la première bande
+\begin{scope}[shift={(-1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{375}
+\end{scope}
+
+% Dessin de la deuxième bande (avec continuité des nombres)
+\begin{scope}[shift={(1*\bandwidth + 1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{400}
+\end{scope}
+
+% Dessin de la troisième bande (avec continuité des nombres)
+\begin{scope}[shift={(2*\bandwidth + 3,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{425}
+\end{scope}
+
+\end{tikzpicture}
+
+\newpage
+
+\begin{tikzpicture}[x=1cm, y=1cm,xshift=-1cm]
+% Dessin de la première bande
+\begin{scope}[shift={(-1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{450}
+\end{scope}
+
+% Dessin de la deuxième bande (avec continuité des nombres)
+\begin{scope}[shift={(1*\bandwidth + 1,0)}]
+    \draw[thick] (0,0) rectangle (\bandwidth, \bandheight);
+    \clip (-1.2,-0.5) rectangle (\bandwidth, \bandheight+\languette+1);
+    \drawGraduations{0}{25}{475}
+\end{scope}
+
+\end{tikzpicture}

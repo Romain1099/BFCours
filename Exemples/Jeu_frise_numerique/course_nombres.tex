@@ -1,0 +1,89 @@
+\section{La course aux nombres}
+
+%\vspace{-0.2cm}
+
+\begin{Activite}[La course aux nombres]
+
+    La \acc{course aux nombres} désigne un jeu qui se joue en \acc{tour par tour} et \acc{par équipe} permettant de réaliser des \acc{opérations de nombres décimaux} à l'aide une \acc{frise graduée}.
+
+
+    %\vspace{-0.3cm}
+    \begin{multicols}{2}
+
+        \boite{Fonctionnement d'un tour :}{
+            \vspace{-0.2cm}\begin{enumerate}%[label=\faPen]
+                \item Un joueur lance trois dés à $10$ faces.
+                \item Un deuxième joueur complète la fiche d'avancement avec le \acc{nombre formé}.
+                \item L'équipe \acc{ajoute} ce nombre à son résultat précédent sur la fiche d'avancement.
+                \item L'équipe avance son curseur sur la frise pour correspondre à ce résultat. 
+                \item S'il y a un \acc{événement} sur la case d'arrivée, l'équipe effectue l'action\\ \acc{1 événement maximum par tour}. 
+            \end{enumerate}
+        }
+
+        \columnbreak
+        \begin{center}
+            \begin{tikzpicture}
+                % Inclusion de l'image des dés
+                \node (image) at (0,0) {\includegraphics[width=5cm]{images/image_des.png}};
+                
+                % Positions des nombres formés
+                %\node (n1) at (-1.6,-1.3) {\Huge \textbf{1}};
+                \node (n12) at (0,-1.5) {\Huge $\mathbf{1,85}$};
+                \node (n22) at (2.5,-1.5) {( nombre formé )};
+                
+                %\node (n23) at (1.2,-1.3) {\Huge \textbf{2 3}};
+                
+                % Flèches reliant les dés aux chiffres correspondants
+                \draw[->, thick] (-1.5,-0.55) -- (n12.north west);
+                \draw[->, thick] (0.15,-0.55) -- (0.15,-1);
+                \draw[->, thick] (1.8,-0.55) -- (n12.north east);
+            \end{tikzpicture}
+        \end{center}
+        \boite{Les événements possibles :}{ 
+            % Définition de la commande pour afficher un rectangle coloré à hauteur de texte
+            \newcommand{\rectangle}[1]{%
+                \tikz[baseline=-0.5ex] \node[draw, fill=#1, minimum width=1em, minimum height=1em, inner sep=0pt] {};%
+            }
+            \vspace{-0.2cm}\begin{itemize}[label=\textbf{Type}]
+                \item \textbf{R}\  \rectangle{green!85!black} : \acc{Jouer immédiatement un nouveau tour}.
+                \item \textbf{C}\   \rectangle{green!85!white} : \acc{Avancer d'une unité}.
+                \item \textbf{M}\   \rectangle{red!85!black} : \acc{Reculer d'une unité}.
+                \item \textbf{D}\   \rectangle{blue!50} : \acc{Résoudre un défi en 30 secondes}.
+                \item \textbf{E}\ Toute erreur de calcul est pénalisée par un événement : \acc{Reculer d'une unité}.
+            \end{itemize}
+        }
+    \end{multicols}%
+    \vspace{-0.35cm}\boite{Fin de partie si :}{
+        \begin{multicols}{2}
+            \begin{itemize}[itemsep=0em,label=$\bullet$]
+                \item Une équipe arrive au bout de la frise.
+                \item Le temps est écoulé. 
+            \end{itemize}
+
+                \columnbreak
+
+            \begin{itemize}[itemsep=0em,label=$\bullet$]
+                \item Une équipe complète sa fiche.
+            \end{itemize}
+            \vspace{-0.25cm}L'équipe qui arrive le plus loin \acc{gagne}.
+        \end{multicols}
+    }
+\end{Activite}%
+
+\newpage
+
+
+\input{infos_frise.tex}
+
+
+\section{Le matériel de la course aux nombres}
+
+\input{rolecards.tex}
+
+\input{frise.tex}
+
+%\newpage
+
+%\section{La grande frise}
+
+%\input{frise_grand.tex}
