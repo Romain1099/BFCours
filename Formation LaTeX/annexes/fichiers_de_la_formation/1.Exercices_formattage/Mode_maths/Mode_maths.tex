@@ -1,0 +1,118 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+\usepackage{bfcours-fonts}
+%\usepackage{bfcours-fonts-dys}
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+\input{enonce_figures}
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+% Activer ou désactiver l'affichage des boîtes
+\displayitempointsfalse % Ne pas afficher les boîtes
+%\displayitempointstrue % Afficher les boîtes
+
+\NewTotalTCBox{\cmbox}{ O{blue} m !O{} }{ fontupper=\ttfamily,nobeforeafter,tcbox raise base,arc=0pt,outer arc=0pt,
+top=0pt,bottom=0pt,left=0mm,right=0mm,
+leftrule=0pt,rightrule=0pt,toprule=0.3mm,bottomrule=0.3mm,boxsep=0.5mm,
+colback=#1!10!white,colframe=#1!50!black,#3}{#2}
+
+ \newcommand{\bs}{$\backslash$}
+
+\NewDocumentCommand{\showcmd}{O{blue} m O{}}{%
+  \cmbox[#1]{\bs #2#3}
+}
+
+\NewDocumentCommand{\showcmdpar}{O{purple} m O{}}{%
+  \cmbox[#1]{$\backslash$#2}\{
+	\hspace{0.5cm}\begin{minipage}{\textwidth-0.5cm}#3\end{minipage}%
+   \}
+}
+% Définition de la boîte colorée pour l'affichage de code
+\NewTotalTCBox{\envbox}{ O{red} m !O{} }{ 
+  fontupper=\ttfamily,
+  nobeforeafter,
+  tcbox raise base,
+  arc=0pt,
+  outer arc=0pt,
+  top=0pt,
+  bottom=0pt,
+  left=0mm,
+  right=0mm,
+  leftrule=0pt,
+  rightrule=0pt,
+  toprule=0.3mm,
+  bottomrule=0.3mm,
+  boxsep=0.5mm,
+  colback=#1!10!white,
+  colframe=#1!50!black,
+  #3
+}{#2}
+
+% Commande améliorée pour afficher la syntaxe d'un environnement
+\NewDocumentCommand{\showenv}{O{red} m O{} O{Contenu}}{%
+  \showcmd[#1]{begin\{#2\}#3}
+	
+	\hspace{0.5cm}\begin{minipage}{0.9\textwidth}#4\end{minipage}
+
+  \showcmd[#1]{end\{#2\}}
+}
+
+
+\begin{document}
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{0}
+
+\def\points{1}
+\def\difficulty{1}
+\chapitre[
+    Prof% : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
+    ]{
+    Mode mathématique% : ,Equations
+    }{
+    Boum% : Collège,Lycée
+    }{
+    Factory% : Amadis Jamyn,Eugène Belgrand
+    }{
+    % : ,\tableauPresenteEvalSixieme{}{10},\tableofcontents
+    }{
+    Formation :% : Exercices
+    }
+\setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
+
+\input{enonce}% : \input{enonce},
+
+
+\end{document}

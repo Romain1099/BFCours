@@ -1,0 +1,31 @@
+% Test minimal pour vérifier la compilation
+\documentclass{article}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+
+% Définir les couleurs si nécessaire
+\definecolor{myblue}{RGB}{0,120,200}
+\definecolor{myred}{RGB}{180,0,0}
+
+% Commandes XML de base
+\newcommand{\safett}[1]{{\ttfamily\detokenize{#1}}}
+\newcommand{\xmltag}[1]{\texttt{<}\safett{#1}\texttt{>}}
+\newcommand{\xmlctag}[1]{\texttt{</}\safett{#1}\texttt{>}}
+
+\begin{document}
+
+\section{Test des commandes XML}
+
+Test simple : \xmltag{test} et \xmlctag{test}
+
+Test avec underscore : \xmltag{system_role}
+
+Test dans une boîte :
+\begin{tcolorbox}
+\ttfamily
+\xmltag{prompt}\\
+\hspace{1em}\xmltag{role}Expert\xmlctag{role}\\
+\xmlctag{prompt}
+\end{tcolorbox}
+
+\end{document}

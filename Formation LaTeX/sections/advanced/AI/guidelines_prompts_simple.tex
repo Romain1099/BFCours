@@ -1,0 +1,50 @@
+% Version simplifiée pour éviter les problèmes de compilation
+
+% Commandes basiques pour XML
+\newcommand{\xmlopen}[1]{\texttt{\textcolor{myblue}{<#1>}}}
+\newcommand{\xmlclose}[1]{\texttt{\textcolor{myblue}{</#1>}}}
+\newcommand{\xmltagsimple}[1]{\texttt{<#1>}}
+
+% Pour éviter les problèmes de mode math avec les underscores
+\newcommand{\xmltagname}[1]{\texttt{\detokenize{#1}}}
+
+\subsection{Guidelines pour prompts structurés (2025)}
+
+\begin{Definition}[Prompts structurés modernes]
+    Les \voc{prompts structurés} représentent l'évolution des techniques de prompt engineering en 2025, combinant la précision du \acc{XML} pour la structure logique avec la lisibilité du \acc{Markdown} pour le contenu.
+\end{Definition}
+
+\begin{Methode}[Structure XML + Markdown]
+    \begin{tcbraster}[raster columns=2]
+        \begin{tcolorbox}[title=Principe fondamental]
+            \begin{itemize}[label=$\bullet$]
+                \item \acc{XML} pour la structure
+                \item \acc{Markdown} pour le contenu
+                \item Balises \voc{sémantiques}
+            \end{itemize}
+        \end{tcolorbox}
+        \begin{tcolorbox}[title=Exemple, colback=gray!5]
+            \ttfamily\small
+            \xmlopen{instructions}\\
+            \hspace{1em}\#\# Tâche principale\\
+            \hspace{1em}- Analyser le document\\
+            \hspace{1em}- Extraire les points\\
+            \xmlclose{instructions}
+        \end{tcolorbox}
+    \end{tcbraster}
+\end{Methode}
+
+\begin{Propriete}[Ordre des sections]
+    Structure recommandée du général au spécifique :
+    
+    \begin{tcbenumerate}[raster columns=2]
+        \tcbitem \xmltagsimple{system\_role}
+        \tcbitem \xmltagsimple{context}  
+        \tcbitem \xmltagsimple{data}
+        \tcbitem \xmltagsimple{rules}
+        \tcbitem \xmltagsimple{examples}
+        \tcbitem \xmltagsimple{instructions}
+        \tcbitem \xmltagsimple{output\_format}
+        \tcbitem \xmltagsimple{reminders}
+    \end{tcbenumerate}
+\end{Propriete}

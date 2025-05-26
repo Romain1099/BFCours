@@ -10,9 +10,9 @@ def get_db_config():
     # Configuration de la connexion à la base de données
     return {
         'host': 'localhost',
-        'user': 'votreUserName',
-        'password': 'VotreMotDePasse',  # Remplacez par votre mot de passe
-        'database': 'nomdeladb'
+        'user': 'admin',
+        'password': 'aqwZSXedc1994!',  # Remplacez par votre mot de passe
+        'database': 'coursdb'
     }
 def intitule_seance():
     return datetime.today().strftime("Séance du %d/%m/%Y à %Hh%M")

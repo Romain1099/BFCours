@@ -1,0 +1,71 @@
+\subsection{Commandes personnelles}
+
+\begin{Methode}[Définir une commande]
+    Pour définir une macro on peut utiliser la syntaxe ci-dessous.
+    \begin{tcbenumerate}[2]
+        \tcbitem  \showcmd[purple]{newcommand\{<N>\}[<Nb>][<V>]\{<C>\}}
+
+        Où : 
+        \begin{itemize}[label=$\bullet$]
+            \item \acc{<N>} est le \acc{nom} de la commande précédé d'un \frquote{backslash}.
+            \item \acc{<Nb>} est le nombre de paramètres
+            \item \acc{<V>} est la \acc{valeur par défaut} du premier paramètre.
+            \item \acc{<C>} est le contenu de la commande.
+        \end{itemize}
+        Dans ce cas le premier paramètre peut être optionnel et assigné à une valeur par défaut. 
+
+        Utiliser pour les commandes simples.
+
+        \tcbitem  \showcmd[purple]{NewDocumentCommand\{<N>\}\{<P>\}\{<C>\}}
+
+        Où : 
+        \begin{itemize}[label=$\bullet$]
+            \item \acc{<N>} est le \acc{nom} de la commande précédé d'un \frquote{backslash}.
+            \item \acc{<P>} sont les paramètres définis par O\{valeurParDéfaut\} pour les paramètres optionnels, et \acc{m} pour les paramètres obligatoires.
+            \item \acc{<C>} est le contenu de la commande.
+        \end{itemize}
+        Utiliser pour les commandes complexes.
+    \end{tcbenumerate}
+\end{Methode}
+\newpage
+
+\begin{EXO}{Définir une commande}{FT-2}
+    \begin{tcbenumerate}[2]
+        \tcbitem \tcbitempoint{1} \acc{Définir} une commande sans paramètre permettant de : 
+        \begin{itemize}[label=$\bullet$]
+            \item Afficher le texte \frquote{Unité non présente}.
+            \item Le texte doit être en \acc{gras}. 
+            \item Le texte doit être coloré en \acc{rouge}.
+        \end{itemize}
+        \tcbitem \tcbitempoint{1} \acc{Définir} une commande a un paramètre permettant de 
+        \begin{itemize}[label=$\bullet$]
+            \item Afficher le texte \frquote{Bonjour <p>} dans lequel <p> est le paramètre de la commande.
+            \item Le texte doit être en \acc{gras}. 
+            \item Le texte doit être coloré en \acc{vert}.
+        \end{itemize}
+    \end{tcbenumerate}
+
+    \exocorrection
+
+    \begin{tcbenumerate}
+        \tcbitem Pour définir une commande sans paramètre qui affiche le texte \frquote{Unité non présente} en gras et en rouge :
+        
+        \showcmd[orange]{newcommand}\{\showcmd[orange]{uniteAbsente}\}\{\}
+        
+        \showcmd[red]{textcolor\{red\}\{\}}
+        
+        \showcmd[blue]{textbf\{Unité non présente\}}
+        
+        \showcmd[orange]{newcommand}\{\showcmd[orange]{uniteAbsente}\}\{\showcmd[orange]{textcolor\{red\}}\{\showcmd{textbf\{Unité non présente\}}\}\}
+        
+        \tcbitem Pour définir une commande à un paramètre qui affiche \frquote{Bonjour <p>} en gras et en vert :
+        
+        \showcmd[blue]{newcommand}\{\showcmd{bonjour}\}[1]\{\}
+        
+        \showcmd[green]{textcolor\{green\}\{\}}
+        
+        \showcmd[teal]{textbf\{Bonjour \#1\}}
+        
+        \showcmd[purple]{newcommand}\{\showcmd{bonjour}\}[1]\{\showcmd[purple]{textcolor\{green\}}\{\showcmd[purple]{textbf\{Bonjour \#1\}}\}\}
+    \end{tcbenumerate}
+\end{EXO}

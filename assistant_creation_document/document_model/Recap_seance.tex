@@ -1,6 +1,6 @@
 \documentclass[a4paper,11pt,fleqn]{article}
 
-\usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
+\usepackage[left=1cm,right=1cm,top=0.5cm,bottom=2cm]{geometry}
 
 \usepackage{bfcours}
 \usepackage{bfcours-fonts}
@@ -68,51 +68,49 @@ at (frame.south west) {\thetags[0]} ;}
     % type_document : commande(intitule_seance())
     }
 
-\begin{minipage}[t]{0.3\textwidth}
-    \boite{Lieu et date :}{
-        \textbf{Lieu :} % Lieu : salle A1,cours de récréation,couloirs,réfectoire,dans les rangs,pendant la montée,
-    
-    
-        \textbf{Créneau :} % creneau : M1,M2,M3,M4,S1,S2,S3,S4
-    }
-\end{minipage}%
-\hfill
-\begin{minipage}[t]{0.65\textwidth}
-    \boite{Informations sur la séance :}{
-        \textbf{Titre :} % Titre_seance : ,
+\begin{tcolorbox}[blank]
+	\begin{Colonnes}{3}
+		\begin{bfbox}{Lieu et date :}
+			\textbf{Lieu :} % Lieu : Salle 203,Salle A1,Cours de récréation,couloirs,réfectoire,dans les rangs,pendant la montée,
+		    
+		    
+			\textbf{Créneau :} % creneau : M1,M2,M3,M4,S1,S2,S3,S4
+		\end{bfbox}
+		\begin{bfbox}{Informations sur la séance :}[raster multicolumn=2]
+			\textbf{Titre :} % Titre_seance : ,
+		
+		
+		
+			\textbf{Thème :} % Theme_seance : ,
+		
+		
+		
+			\textbf{Type de séance :} % type_seance : Cours, Exercices, Evaluation, Activité
+		\end{bfbox}
+	\end{Colonnes}
+\end{tcolorbox}
+\begin{bfbox}{Description de la séance :}
 
+	\textbf{Automatismes :} % Automatismes : ,
 	
+	\textbf{Travail à faire pour la séance :} 
+	\begin{itemize}[label=$\bullet$]
+	    % travail_a_faire : ,
+	\end{itemize}
+	
+	\textbf{Contenu :} 
+	\begin{itemize}[label=$\bullet$]
+	    % contenu_seance_principal : ,
 
-        \textbf{Thème :} % Theme_seance : ,
+	\end{itemize}
+	\textbf{Travail à faire à l'issue de la séance :} 
+	\begin{itemize}[label=$\bullet$]
+	    % devoirs_prochaine : ,
+	\end{itemize}
+	\vspace{2cm}
+\end{bfbox}
 
-
-
-        \textbf{Type de séance :} % type_seance : Cours, Exercices, Evaluation, Activité
-    }
-\end{minipage}%
-
-
-\boite{Description de la séance :}{
-
-\textbf{Automatismes :} % Automatismes : ,
-
-\textbf{Travail à faire pour la séance :} 
-\begin{itemize}[label=$\bullet$]
-    % travail_a_faire : ,
-\end{itemize}
-
-\textbf{Contenu :} 
-\begin{itemize}[label=$\bullet$]
-    % contenu_seance_resume : ,
-\end{itemize}
-\textbf{Travail à faire à l'issue de la séance :} 
-\begin{itemize}[label=$\bullet$]
-    % devoirs_prochaine : ,
-\end{itemize}
-\vspace{2cm}
-}
-
-\boite{Remarques sur la séance :}{
+\begin{bfbox}{Remarques sur la séance :}
 
 \textbf{Remarques générales :} 
 
@@ -132,5 +130,6 @@ at (frame.south west) {\thetags[0]} ;}
 
 
 
-}
+\end{bfbox}
+
 \end{document}

@@ -1,0 +1,57 @@
+\subsection{Commandes usuelles}
+
+\begin{Methode}[Formattage du texte]
+    Les commandes suivantes permettent d'effectuer la plupart des opérations sur le texte. 
+    \begin{tcbenumerate}[2]
+        \tcbitem  \showcmd[red]{underline\{texte\}}\ Souligner.
+        \tcbitem  \showcmd[green]{hl\{texte\}}\ Surligner.
+        \tcbitem  \showcmd[blue]{textbf\{texte\}}\ Mettre en gras.
+        \tcbitem  \{\showcmd[purple]{color\{couleur\}texte}\}\ Mettre en couleur.
+        \tcbitem  \showcmd[orange]{acc[couleur]\{texte\}}\ Accentuer (bf).
+        \tcbitem  \showcmd[brown]{voc[couleur]\{texte\}}\ Vocabulaire (bf).
+        \tcbitem  \showcmd[cyan]{textsc\{texte\}}\ Vocabulaire.
+        \tcbitem  \showcmd[magenta]{fbox\{texte\}}\ Encadrer.
+        \tcbitem  \showcmd[olive]{emph\{texte\}}\ Mettre en italique.
+        \tcbitem  \showcmd[teal]{frquote\{texte\}}\ Citer.
+        \tcbitem  \showcmd[violet]{surligner[couleur]\{texte\}}\ Surligner (bf).
+        \tcbitem  \showcmd[pink]{encadrer[couleur]\{texte\}}\ Encadrer (bf).
+    \end{tcbenumerate}
+\end{Methode}
+
+
+\begin{EXO}{Formattage du texte}{FT-1}
+    \begin{tcbenumerate}
+        \tcbitem Ouvrir le fichier 
+        
+        \displayFilePath{fichiers\_de\_la\_formation/1.Exercices\_formattage/premier\_document/premier\_document.tex}.
+        \tcbitem \tcbitempoint{2}Reproduire la phrase suivante dans laquelle \acc{chaque commande} est utilisée \encadrer[green]{une seule fois} : 
+
+        \begin{center}
+            En mathématiques, on peut \underline{souligner} les éléments importants, 
+            \textbf{mettre en gras} ou \acc[red]{accentuer} des mots-clés, 
+            \emph{mettre en italique} les théorèmes, 
+            \hl{surligner} - ou bien \surligner[purple]{surligner} - des résultats, 
+            utiliser les \textsc{petites capitales} ou la {\color{green!75!black}commande} \frquote{voc} pour le\voc{vocabulaire}, 
+            et \fbox{encadrer}, ou encore \encadrer[red]{encadrer} les formules essentielles.
+        \end{center}
+
+    \end{tcbenumerate}
+    
+\exocorrection
+
+%le meme texte mais avec des showcmd de différentes couleurs ( correspondant aux couleurs de la méthode )
+En mathématiques, on peut \showcmd[red]{underline\{souligner\}} les éléments importants, 
+\showcmd[blue]{textbf\{mettre en gras\}} ou \showcmd[orange]{acc[red]\{accentuer\}} des mots-clés, 
+\showcmd[olive]{emph\{mettre en italique\}} les théorèmes, 
+\showcmd[green]{hl\{surligner\}} - ou bien \showcmd[violet]{surligner[purple]\{surligner\}} - des résultats, 
+utiliser les \showcmd[cyan]{textsc\{petites capitales\}} ou la \{\showcmd[green]{color\{green!75!black\}commande}\} \showcmd[teal]{frquote\{voc\}} pour le\showcmd[brown]{voc\{vocabulaire\}}, 
+et \showcmd[magenta]{fbox\{encadrer\}}, ou encore \showcmd[pink]{encadrer[red]\{encadrer\}} les formules essentielles.
+
+\begin{Remarque}
+\begin{tcbenumerate}
+    \tcbitem  Les commandes \frquote{acc}, \frquote{encadrer}, \frquote{surligner} sont relatives au package \bfcours.
+    \tcbitem  La commande color doit être entourée par des crochets. Dans le cas contraire, la commande agit sur tout le paragraphe. 
+\end{tcbenumerate}
+\end{Remarque}
+\end{EXO}
+

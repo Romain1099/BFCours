@@ -1,0 +1,34 @@
+% Test simple des commandes XML
+
+Les balises XML peuvent être affichées avec : \xmltag{example} et \xmlctag{example}
+
+Un attribut : \xmlattr{name}{value}
+
+Une ligne complète : \xmlbox{agent\_prompt type="expert"}
+
+% Si l'environnement xmlcode pose problème, voici une alternative plus simple :
+\newtcolorbox{xmlsimple}[1][]{
+  colback=gray!5,
+  colframe=gray!50,
+  fontupper=\ttfamily,
+  breakable,
+  #1
+}
+
+% Ou encore plus simple, utiliser lstlisting avec le package listings si disponible
+% \usepackage{listings}
+% \lstset{
+%   language=XML,
+%   basicstyle=\ttfamily\small,
+%   frame=single,
+%   backgroundcolor=\color{gray!5}
+% }
+
+% Alternative avec une simple tcolorbox et formatage manuel :
+\begin{tcolorbox}[colback=gray!5, colframe=gray!50]
+\ttfamily
+\xmltag{prompt}\\
+\hspace{1em}\xmltag{role}Expert\xmlctag{role}\\
+\hspace{1em}\xmltag{task}Analyser\xmlctag{task}\\
+\xmlctag{prompt}
+\end{tcolorbox}

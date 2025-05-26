@@ -36,37 +36,81 @@
     }%
     %\textbf{\color{\currentAccentColor}#1}%% Affichage du mot en gras dans le texte
 }
-
-% Fermeture du fichier .voc à la fin du document
+% Définition de la commande \comp
+\newcommand{\ntcomp}[1]{%
+\stepcounter{compprintcounter}
+  % Écrire dans le fichier seulement si le mot capitalisé n'est pas déjà dans la liste
+  \ifinlist{#1}{\compwordlist}{}{%
+        \immediate\write\compfile{\string\compentry{#1}}%{\thecompprintcounter}%{\thenumexo}}%
+        %\listadd{\compwordlist}{\MakeLowercase{#1}}%
+        \listadd{\compwordlist}{#1}%
+        %\listadd{\compwordlist}{\MakeUppercase{#1}}%
+        \hypertarget{comp:#1}{}
+    }%
+    %\textbf{\color{\currentAccentColor}#1}%% Affichage du mot en gras dans le texte
+}
 \AtEndDocument{%
-  \immediate\closeout\compfile
+  % Fermer le fichier sans ajouter de ligne supplémentaire
+  \immediate\closeout\compfile%
 }
 
-
 % Commande pour afficher l'index des mots de vocabulaire
-\newcommand{\printcompindex}{%
-\setcounter{compprintcounter}{0}
+\newcommand{\printlittlecompindex}{%
+\setcounter{compprintcounter}{0}%
   % Afficher l'index s'il n'est pas vide
-  \ifx\complist\empty
-\else
-	\renewcommand{\mycompetenceDict}{}
-	 \forlistloop{\makecomptexts}{\complist}
+  \ifx\complist\empty%
+\else%
+	\renewcommand{\mycompetenceDict}{}%
+	 \forlistloop{\makecomptexts}{\complist}%
     \foreach \compitinence in \mycompetenceDict {%
          \edef\exercicesintitule{\csname comp@\detokenize{\compitinence}\endcsname}%
-         
 	 \listadd{\newcomplist}{\compitinence \hfill \exercicesintitule}
-       }
-    \tableaucompetenceEval{
-          \forlistloop{\printonecomp}{\mycompetenceDict}
+       }%
+    \tableaucompetenceEval{%
+          \forlistloop{\printlittleonecomp}{\mycompetenceDict}%
      }
   \fi
 \setcounter{compprintcounter}{0}
 }
-
+% Commande pour afficher l'index des mots de vocabulaire
+\newcommand{\printcompindex}{%
+\setcounter{compprintcounter}{0}%
+  % Afficher l'index s'il n'est pas vide
+  \ifx\complist\empty%
+\else%
+	\renewcommand{\mycompetenceDict}{}%
+	 \forlistloop{\makecomptexts}{\complist}%
+    \foreach \compitinence in \mycompetenceDict {%
+         \edef\exercicesintitule{\csname comp@\detokenize{\compitinence}\endcsname}%
+	 \listadd{\newcomplist}{\compitinence \hfill \exercicesintitule}
+       }%
+    \tableaucompetenceEval{%
+          \forlistloop{\printonecomp}{\mycompetenceDict}%
+     }
+  \fi
+\setcounter{compprintcounter}{0}
+}
+\newcommand{\printcompindexlight}{%
+\setcounter{compprintcounter}{0}%
+  % Afficher l'index s'il n'est pas vide
+  \ifx\complist\empty%
+\else%
+	\renewcommand{\mycompetenceDict}{}%
+	 \forlistloop{\makecomptexts}{\complist}%
+    \foreach \compitinence in \mycompetenceDict {%
+         \edef\exercicesintitule{\csname comp@\detokenize{\compitinence}\endcsname}%
+	 \listadd{\newcomplist}{\compitinence \hfill \exercicesintitule}%
+       }%
+    %\tableaucompetenceEval{
+\forlistloop{\printonecomp}{\mycompetenceDict}%
+% }
+  \fi%
+\setcounter{compprintcounter}{0}%
+}
 \newcommand{\mycompetenceDict}{}
 
-\newcommand{\makecomptexts}[1]{
-	\stepcounter{compprintcounter}
+\newcommand{\makecomptexts}[1]{%
+	\stepcounter{compprintcounter}%
 	%\renewcommand{\mycompetenceDict}{} % Liste des compétences rencontrées
 	\ifcsundef{comp@\detokenize{#1}}{% Si la compétence n'existe pas encore
     \expandafter\xdef\csname comp@\detokenize{#1}\endcsname{Ex.\thecompprintcounter}%
@@ -79,7 +123,11 @@
 % Commande pour afficher chaque compétence avec ses exercices
 \newcommand{\printonecomp}[1]{%
   \edef\exercices{\csname comp@\detokenize{#1}\endcsname}%
-  \competence{#1 \hfill \exercices}
+  \competence{#1}% \hfill \exercices}%
+}
+\newcommand{\printlittleonecomp}[1]{%
+  \edef\exercices{\csname comp@\detokenize{#1}\endcsname}%
+  \competence{\scriptsize{#1}}% \hfill \exercices}%
 }
 % Commande pour afficher chaque élément de l'index
 \newcommand{\printcompitem}[1]{%

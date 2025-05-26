@@ -1,0 +1,24 @@
+On peut utiliser le mode maths de plusieurs manières : 
+\begin{tcolorbox}[blank]
+\begin{tcbenumerate}[2]
+    \tcbitem Inline via \textcolor{red}{\$ contenu maths \$} : $\left(\text{\Large{E}}\right)~~5x + 3 = 2^\frac{3}{x}$
+    \tcbitem Inline via le mode \acc{display} \textcolor{red}{$\backslash$( contenu maths $\backslash$)} : \(\left(\text{\Large{E}}\right)~~5x + 3 = 2^\frac{3}{x}\)
+    \tcbitem En valeur via le mode \acc{centré} \textcolor{red}{$\backslash$[ contenu maths $\backslash$]} : \[\left(\text{\Large{E}}\right)~~5x + 3 = 2^\frac{3}{x}\]
+    \tcbitem En mode \acc{align} ( énuméré ) ou \acc{align*} ( non énuméré ) :  
+    
+    \showenv{align}[][contenu maths]
+    \begin{align}
+        \left(\text{\Large{E}}\right)~~5x + 3 &= 2^\frac{3}{x}\\
+        &= e^{\frac{3}{x}\ln(2)}
+    \end{align}
+\end{tcbenumerate}
+
+Dans le mode mathématiques, si l'on veut écrire du texte, il faut l'appeler \acc{dans la commande text} : 
+
+\showcmd{text}[\{Texte à écrire\}].
+
+
+Le mode mathématique peut donc aussi être utilisé pour formatter du texte : 
+
+$6^{\text{ème}}$
+\end{tcolorbox}

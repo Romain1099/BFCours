@@ -1,0 +1,352 @@
+\def\rdifficulty{1}
+
+\begin{EXO}{Somme de cellules}{5I10}
+%\begin{MultiColonnes}{2}
+%\tcbitem[raster multicolumn=2]
+    \begin{tcbenumerate}[2]
+        \tcbitem \infotcbitempoint{2}[-0.75]\acc{Ouvre} une feuille de calcul et reproduis ce tableau. 
+        
+        \begin{center}
+        \begin{Tableur}[Colonnes=3,Largeur=50pt]%[Bandeau,Largeur=50pt,LargeurUn=25pt,Ligne=4]
+        1&4&\\
+        2&5&\\
+        3&6&\\
+        \end{Tableur}
+        \end{center}
+        
+        \tcbitem \infotcbitempoint{1} Dans la cellule \encadrer[red]{C1}, saisis 
+        
+        la formule \formuleTable{=A1+B1}.
+
+        \tcbitempoint{1}Quel résultat obtiens-tu ?
+        \begin{crep}[extra lines=1]
+        J'obtiens le résultat 5, car la cellule C1 calcule la somme des valeurs des cellules A1 (qui contient 1) et B1 (qui contient 4), soit 1 + 4 = 5.
+        \end{crep}
+        
+        \tcbitem \infotcbitempoint{1} Dans la cellule \encadrer[red]{A4}, saisis 
+        
+        la formule \formuleTable{=SOMME(A1;A3)}. 
+        
+        \tcbitempoint{2}[0][-2]\acc{\'Ecris} le calcul alors effectué. 
+        \begin{crep}[extra lines=2]
+        La cellule A4 affiche la somme des valeurs des cellules A1 et A3, soit 1 + 3 = 4.
+        \end{crep}
+
+        \tcbitem \infotcbitempoint{1} Dans la cellule \encadrer[red]{A5}, saisis 
+        
+        la formule : \formuleTable{=SOMME(A1:A3)}.
+
+        \tcbitempoint{1}[0][-1]\acc{Quel résultat obtiens-tu ?}
+        \begin{crep}[extra lines=1]
+        La formule calcule la somme des valeurs des cellules A1, A2 et A3, soit $1+2+3=6$
+        \end{crep}
+\end{tcbenumerate}
+
+\begin{tcbenumerate}[1][5]
+        \tcbitem[colframe=black,boxrule=0.4pt] \infotcbitempoint{2}Copie la formule de la cellule \encadrer[red]{A4} dans la cellule \encadrer[red]{B4}. Pour cela : 
+        \begin{tcbenumerate}[2][1][alph]
+            \tcbitem Clique sur la cellule \encadrer[red]{A4} et utilise les touches \formuleTable{Ctrl+C} pour copier.
+            \tcbitem Clique sur la cellule \encadrer[red]{B4} et utilise les touches \formuleTable{Ctrl+V} pour coller. 
+        \end{tcbenumerate}
+
+        \tcbitem \infotcbitempoint{1}De même, recopie la formule de la cellule A5 dans la cellule B5. 
+        
+        \tcbitem[colframe=black,boxrule=0.4pt] \tcbitempoint{2}Quelles sont alors les valeurs numériques obtenues dans les cellules \encadrer[red]{B4} et \encadrer[red]{B5} ?
+        \begin{tcbenumerate}[2][1][alph]
+            \tcbitem En \encadrer[red]{B4} : \tcfillcrep{B1+B3=4+5+6=10}
+            \tcbitem En \encadrer[red]{B5} : \tcfillcrep{B1+B2+B3=4+5+6=15}
+        \end{tcbenumerate}
+        
+        \tcbitem \tcbitempoint{2}[-0.65]\acc{Explique} ce que tu as appris sur les symboles \encadrer[purple]{point-virgule (;)} et \encadrer[purple]{deux points (:)} dans une formule.
+
+        \begin{crep}[extra lines=1]
+        Dans une formule de tableur :
+        
+        - Le point-virgule (;) sépare des cellules individuelles.
+
+        
+        - Les deux points (:) indiquent une plage de cellules.
+        \end{crep}
+    \end{tcbenumerate}
+
+\exocorrection
+
+\begin{tcbenumerate}[1]
+    \tcbitem Ouvrir une feuille de calcul et reproduire le tableau selon l'image.
+    
+    \tcbitem Dans la cellule C1, en saisissant la formule =A1+B1, on obtient 5, car :
+    - A1 contient la valeur 1
+    - B1 contient la valeur 4
+    - La formule calcule 1 + 4 = 5
+    
+    \tcbitem Dans la cellule A4, avec la formule =SOMME(A1;A3), on obtient 6.
+    Cette fonction SOMME calcule la somme des valeurs contenues dans la plage de cellules indiquée.
+    Ici : 1 + 2 + 3 = 6.
+    
+    \tcbitem Dans la cellule A5, avec la même formule =SOMME(A1:A3), on obtient également 6.
+    
+    \tcbitem En copiant la formule de A4 vers B4, et celle de A5 vers B5, on obtient :
+    - En B4 : 15 (somme des valeurs dans B1, B2 et B3 : 4 + 5 + 6 = 15)
+    - En B5 : 15 (somme des valeurs dans B1, B2 et B3 : 4 + 5 + 6 = 15)
+    
+    \tcbitem On peut en déduire que :
+    - Le point-virgule (;) est utilisé pour séparer des arguments ou des cellules individuelles dans une formule.
+    - Les deux points (:) indiquent une plage continue de cellules, du début à la fin de l'intervalle spécifié.
+    
+    Quand on copie une formule d'une cellule à une autre, les références de cellules s'adaptent automatiquement à la nouvelle position, ce qui explique pourquoi la formule en B4 et B5 calcule la somme des cellules B1, B2 et B3 au lieu de A1, A2 et A3.
+\end{tcbenumerate}
+
+\end{EXO}
+
+\begin{Methode}[Etendre une formule]
+    \encadrer[purple]{Etendre une formule} signifie recopier la formule dans les cellules qui suivent \acc{sans avoir à la ressaisir} ou à la \acc{coller}. 
+        
+    \begin{MultiColonnes}{5}
+        \tcbitem[raster multicolumn=3] Pour cela, clique sur la cellule \formuleTable{C1} pour qu'elle soit \acc{active}. 
+        
+            \acc{Clique} sur le \formuleTable{petit carré en bas à droite de la cellule} et, \acc{en maintenant le clic} enfoncé, \acc{descends} ta souris vers le bas de l'écran jusqu'à la cellule \formuleTable{C2}. 
+
+            Lâche enfin ton clic pour obtenir le résultat.
+        \tcbitem[raster multicolumn=2,halign=center] \includegraphics[width=0.85\textwidth]{images/etendre.png}
+    \end{MultiColonnes}
+\end{Methode} 
+\def\rdifficulty{2}
+\begin{EXO}{\'Etendre les formules}{5I11-A}
+\begin{MultiColonnes}{2}
+\tcbitem[valign=center] Dans une feuille de calcul, Keira a reproduit le tableau suivant.
+    
+    \begin{center}
+    \begin{Tableur}[Colonnes=3,Largeur=50pt]%[Bandeau,Largeur=60pt,LargeurUn=25pt,Ligne=1,Couleur=blue!80!white,Formule==A1+B1,Cellule=C1]
+    5&6&$=A1+B1$\\
+    7&12&\\
+    8&7&\\
+    78&$\num{5.2}$&\\
+    &&\\
+    &&\\
+    \end{Tableur}
+    \end{center}
+    \hfill
+\begin{tcbenumerate}[1]
+    \tcbitem \tcbitempoint{1}[-0.65]Quel nombre s'affiche dans la cellule \formuleTable{C1} ? Pourquoi ?
+        \begin{crep}
+        Dans la cellule \formuleTable{C1}, on voit s'afficher le nombre 11.
+        
+        C'est parce que la formule \formuleTable{=A1+B1} additionne les valeurs des cellules A1 (qui contient 5) et B1 (qui contient 6), donc 5 + 6 = 11.
+        \end{crep}    
+\end{tcbenumerate}
+\tcbitem \begin{tcbenumerate}[1][2]
+        \tcbitem \infotcbitempoint{2}\acc{Ouvre} une feuille de calcul. 
+        
+        \acc{Recopie} le tableau de Keira, en saisissant les nombres de la plage de cellules \formuleTable{A1:B4} et la formule \formuleTable{=A1+B1} dans la cellule \formuleTable{C1}.
+        \begin{crep}
+        J'ai reproduit le tableau avec les nombres dans les cellules \formuleTable{A1} à \formuleTable{B4} et saisi la formule \formuleTable{=A1+B1} dans la cellule \formuleTable{C1}, qui affiche bien le résultat 11.
+        \end{crep}
+        \tcbitem \infotcbitempoint{2}\acc{Suit la méthode} ci-dessus pour 
+        
+        \acc{étendre} la formule de la cellule \formuleTable{C1} jusqu'à la cellule \formuleTable{C2}.
+    
+    \tcbitempoint{2}[-0.65]\acc{Quel est le résultat} qui s'affiche dans la cellule \formuleTable{C2} ?
+    \begin{crep}
+        Dans la cellule C2 s'affiche le nombre 19.
+        
+        Ce résultat provient de la formule qui a été adaptée automatiquement : la cellule C2 contient maintenant la formule =A2+B2, qui calcule 7 + 12 = 19.
+        \end{crep}
+    \end{tcbenumerate}
+\end{MultiColonnes}
+    \begin{tcbenumerate}[1][4]    
+        \tcbitem \tcbitempoint{1}Clique sur la cellule \formuleTable{C2}, puis sur la barre de saisie. 
+
+
+        \acc{Quelle} est la formule contenue dans la cellule \formuleTable{C2} ?
+        \begin{crep}
+        La formule contenue dans la cellule C2 est =A2+B2.
+        
+        Lorsqu'on a étendu la formule de C1 vers C2, les références des cellules ont été automatiquement adaptées en fonction de la nouvelle position.
+        \end{crep}
+    \end{tcbenumerate}
+    \newpage
+%\begin{MultiColonnes}{2}
+%\tcbitem[raster multicolumn=2]
+    \begin{tcbenumerate}[1][5]
+        \tcbitem \tcbitempoint{1}Que s'est-il passé ?
+        \begin{crep}%[extra lines=1]
+        Lors de l'extension de la formule, le tableur a automatiquement adapté les références de cellules.
+        
+        La formule de la cellule C1 (=A1+B1) a été copiée dans la cellule C2, mais les références ont été ajustées en fonction de la position : la formule est devenue =A2+B2.
+        \end{crep}
+        
+        \tcbitem \infotcbitempoint{1}\acc{\'Etends} la formule jusqu'à la cellule \formuleTable{C4}
+        
+        \tcbitempoint{1}[-0.15][-1cm]\acc{Quel} résultat obtiens-tu dans cette cellule ?
+        \begin{crep}%[extra lines=1]
+        Dans la cellule C4, j'obtiens le résultat 83,2.
+        
+        La formule dans C4 devient =A4+B4, qui calcule 78 + 5,2 = 83,2.
+        \end{crep}
+    \end{tcbenumerate}
+
+%\tcbitem[raster multicolumn=2]
+    \begin{tcbenumerate}[1][7]
+        \tcbitem \tcbitempoint{2}[-0.65]Quelles sont les adresses des cellules dont les nombres ont été utilisés dans la formule qui est maintenant en \formuleTable{C4} ?
+        \begin{crep}%[extra lines=1]
+        Dans la formule qui est maintenant en C4, les adresses des cellules utilisées sont A4 et B4.
+        
+        La formule =A4+B4 additionne les valeurs contenues dans ces deux cellules : 78 (dans A4) et 5,2 (dans B4).
+        \end{crep}
+        
+        \tcbitem \infotcbitempoint{1} Dans la cellule D1, Keira a saisi la formule : \formuleTable{= A1*B1}. \acc{Effectue aussi cette manipulation}.
+        
+        \tcbitem \infotcbitempoint{1}Utilise à nouveau la méthode pour étendre la formule de D1 jusqu'à D4. 
+        
+        \tcbitempoint{1}[-0.15][-1cm]\acc{Indique} quelle est la formule obtenue dans la cellule D4 et le résultat de ce calcul.
+        \begin{crep}%[extra lines=2]
+        La formule obtenue dans la cellule D4 est =A4*B4.
+        
+        Cette formule calcule le produit des valeurs contenues dans les cellules A4 et B4 :
+        $78 \times 5,2 = 405,6$
+        
+        Le résultat affiché dans la cellule D4 est donc 405,6.
+        \end{crep}
+    \end{tcbenumerate}
+%\end{MultiColonnes}
+
+%\begin{MultiColonnes}{2}
+%\tcbitem[raster multicolumn=2]
+    \begin{tcbenumerate}[1][10]
+        \tcbitem \tcbitempoint{2} Quelle est la signification mathématique de \frquote{ =A1*B1 } ?
+        \begin{crep}%[extra lines=1]
+        La formule =A1*B1 correspond à la multiplication des valeurs contenues dans les cellules A1 et B1.
+        
+        En mathématiques, le symbole * représente l'opération de multiplication. Cette formule calcule donc le produit des deux nombres.
+        
+        Dans le tableau, cela donnerait $5 \times 6 = 30$.
+        \end{crep}
+    \end{tcbenumerate}
+%\end{MultiColonnes}
+
+\exocorrection
+
+\begin{tcbenumerate}[1]
+    \tcbitem Dans la cellule C1, on voit s'afficher le nombre 11 car la formule =A1+B1 additionne les valeurs des cellules A1 (qui contient 5) et B1 (qui contient 6), donc 5 + 6 = 11.
+    
+    \tcbitem Lors de la reproduction du tableau de Keira, on doit saisir les nombres dans les cellules A1 à B4 et la formule =A1+B1 dans la cellule C1, qui affiche bien le résultat 11.
+    
+    \tcbitem Lorsqu'on étend la formule de C1 vers C2 en utilisant la poignée de recopie (petit carré en bas à droite de la cellule sélectionnée), on obtient le nombre 19 dans la cellule C2.
+    
+    \tcbitem En cliquant sur la cellule C2 puis sur la barre de saisie, on constate que la formule contenue dans cette cellule est =A2+B2. Le tableur a automatiquement adapté les références en fonction de la position de la cellule, passant de =A1+B1 à =A2+B2. Cette adaptation explique le résultat obtenu : 7 + 12 = 19.
+\end{tcbenumerate}
+
+
+\begin{tcbenumerate}[1]
+    \tcbitem Lorsqu'on étend une formule dans un tableur, celui-ci adapte automatiquement les références des cellules en fonction de la position. Ainsi, la formule initiale =A1+B1 de la cellule C1 devient =A2+B2 dans la cellule C2.
+    
+    \tcbitem En étendant la formule jusqu'à la cellule C4, on obtient le résultat 83,2. La formule dans C4 est devenue =A4+B4, calculant ainsi $78 + 5,2 = 83,2$.
+    
+    \tcbitem Les cellules utilisées dans la formule de C4 sont A4 et B4. La formule =A4+B4 additionne les valeurs contenues dans ces deux cellules.
+    
+    \tcbitem En étendant la formule =A1*B1 de la cellule D1 jusqu'à D4, on obtient dans D4 la formule =A4*B4.
+    Cette formule calcule le produit $78 \times 5,2 = 405,6$.
+    
+    \tcbitem La signification mathématique de =A1*B1 est la multiplication des valeurs contenues dans les cellules A1 et B1. Dans le tableur, l'opérateur * représente l'opération de multiplication, comme en mathématiques.
+\end{tcbenumerate}
+
+\end{EXO}
+
+\def\points{4}
+\def\rdifficulty{2}
+\newpage
+\begin{EXO}{Utiliser le symbole dollar}{5I12}
+\begin{MultiColonnes}{2}
+\tcbitem[raster multicolumn=2]
+    \begin{tcbenumerate}[1]
+        \tcbitem \infotcbitempoint{5}Ouvre une feuille de calcul. 
+        
+        Dans les cellules A1 à A5, saisis dans l'ordre les nombres 1, 2, 3, 4 et 5.
+       
+        \tcbitem \tcbitempoint{1}[-0.65]Dans la cellule B1, quelle formule, utilisant uniquement des opérateurs et des adresses de cellules, dois-tu saisir pour calculer le quotient de 1 par 5 ?
+        \begin{crep}[extra lines=1]
+        Je dois saisir la formule =A1/A5 dans la cellule B1.
+        
+        Cette formule calcule le quotient de la valeur dans A1 (1) par la valeur dans A5 (5), soit $1 \div 5 = 0{,}2$.
+        \end{crep}
+    \end{tcbenumerate}
+
+\tcbitem[raster multicolumn=2]
+    \begin{tcbenumerate}[1][3]
+        \tcbitem \infotcbitempoint{5}\acc{Saisis} cette formule et \acc{étends} la \acc{vers le bas} jusqu'à la cellule \encadrer{B5}. 
+        
+        \tcbitempoint{2}[-0.15][-1cm] Que lis-tu dans les cellules B2 à B5 ?
+        \begin{crep}[extra lines=2]
+        Dans les cellules B2 à B5, je lis :
+        
+        - B2 : 0,4 (résultat de $2 \div 6$, mais comme A6 est vide, le tableur utilise une valeur de 0)
+        - B3 : 0,6 (résultat de $3 \div 7$, mais A7 est vide donc 0)
+        - B4 : 0,8 (résultat de $4 \div 8$, mais A8 est vide donc 0)
+        - B5 : 1 (résultat de $5 \div 9$, mais A9 est vide donc 0)
+        
+        En réalité, je vois probablement des messages d'erreur comme \#DIV/0! car les cellules A6 à A9 sont vides.
+        \end{crep}
+        
+        \tcbitem \tcbitempoint{2}[-0.65]Sélectionne la cellule B2, puis clique sur la barre de formule et regarde les cellules utilisées. 
+        
+        Que remarques-tu sur les cellules dont les \acc{bordures deviennent colorées} ?
+        \begin{crep}[extra lines=1]
+        Je constate que les cellules référencées dans la formule (A2 et A6) sont automatiquement mises en surbrillance avec des couleurs distinctes lorsque je clique sur la barre de formule.
+        
+        La formule s'est adaptée en =A2/A6, où A2 et A6 sont colorées différemment pour faciliter la visualisation des références.
+        \end{crep}
+    \end{tcbenumerate}
+\end{MultiColonnes}
+
+\begin{MultiColonnes}{2}
+\tcbitem[raster multicolumn=2]
+    \begin{tcbenumerate}[1][6]
+        \tcbitem \infotcbitempoint{2}[-0.65]Dans la cellule B1, remplace la formule que tu avais saisie par \formuleTable{=A1/A\$5}, puis étends cette formule vers le bas jusqu'à la cellule B5. 
+        
+        \tcbitempoint{1}[-0.25][-1] Quelle formule apparaît dans la cellule B3 ?
+        \begin{crep}[extra lines=1]
+        Dans la cellule B3 apparaît la formule =A3/A\$5.
+        
+        Le symbole \$ a figé la référence à la ligne 5, donc lorsque la formule est copiée vers le bas, seule la référence à la première cellule change (de A1 à A3), tandis que la seconde reste fixée sur A5.
+        \end{crep}
+        
+        \tcbitem \tcbitempoint{1}Quel résultat s'affiche dans la cellule B3 ?
+        \begin{crep}[extra lines=1]
+        Dans la cellule B3 s'affiche le résultat 0,6.
+        
+        Ce résultat provient du calcul $3 \div 5$ = 0,6 car la formule =A3/A\$5 divise la valeur de A3 (3) par la valeur de A5 (5).
+        \end{crep}
+    \end{tcbenumerate}
+
+\tcbitem[raster multicolumn=2]
+    \begin{tcbenumerate}[1][8]
+        \tcbitem \tcbitempoint{2}D'après toi, quelle est la fonction du symbole \$ ?
+        \begin{crep}[extra lines=2]
+        Le symbole \$ dans une référence de cellule sert à créer une référence absolue (ou mixte).
+        
+        Quand il est placé devant le numéro de ligne (comme dans A\$5), il \frquote{ fige } cette partie de la référence lors de la copie ou l'extension de la formule. Ainsi, même si la formule est copiée vers d'autres lignes, la référence à la ligne 5 reste inchangée.
+        
+        De même, on peut l'utiliser devant la lettre de colonne (comme dans \$A5) pour figer la colonne, ou aux deux endroits (comme dans \$A\$5) pour figer complètement la référence.
+        \end{crep}
+    \end{tcbenumerate}
+\end{MultiColonnes}
+
+\exocorrection
+
+\begin{tcbenumerate}[1]
+    \tcbitem Dans les cellules A1 à A5, on saisit les nombres 1, 2, 3, 4 et 5 dans l'ordre.
+    
+    \tcbitem Pour calculer le quotient de 1 par 5 dans la cellule B1, on utilise la formule =A1/A5, qui divise la valeur dans A1 (1) par la valeur dans A5 (5), donnant le résultat 0,2.
+    
+    \tcbitem En étendant cette formule jusqu'à B5, on obtient probablement des erreurs (\#DIV/0!) car les formules font référence à des cellules inexistantes (A6, A7, A8, A9). Si ces cellules contiennent des valeurs nulles, on verrait plutôt les résultats 0,4 (B2), 0,6 (B3), 0,8 (B4) et 1 (B5).
+    
+    \tcbitem En sélectionnant la cellule B2 et en cliquant sur la barre de formule, on voit que les cellules référencées (A2 et A6) sont mises en surbrillance avec des couleurs distinctes pour une meilleure visualisation.
+    
+    \tcbitem En remplaçant la formule dans B1 par =A1/A\$5 et en l'étendant jusqu'à B5, la formule dans B3 devient =A3/A\$5. Le symbole \$ a figé la référence à la ligne 5.
+    
+    \tcbitem Le résultat dans B3 est 0,6, car la formule calcule $3 \div 5$ = 0,6.
+    
+    \tcbitem Le symbole \$ sert à créer une référence absolue dans une formule. Lorsqu'il est placé devant le numéro de ligne (A\$5) ou la lettre de colonne (\$A5), cette partie de la référence reste fixe lors de la copie ou l'extension de la formule, tandis que l'autre partie peut s'adapter. On peut aussi figer complètement une référence avec \$A\$5.
+\end{tcbenumerate}
+
+\end{EXO}

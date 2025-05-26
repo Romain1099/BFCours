@@ -1,0 +1,200 @@
+
+\subsection{Guidelines pour prompts structurés (2025)}
+
+\begin{Definition}[Prompts structurés modernes]
+    Les \voc{prompts structurés} représentent l'évolution des techniques de prompt engineering en 2025, combinant la précision du \acc{XML} pour la structure logique avec la lisibilité du \acc{Markdown} pour le contenu.
+    
+    Cette approche permet d'obtenir des réponses plus fiables et cohérentes des modèles de langage comme Claude d'Anthropic.
+\end{Definition}
+
+\begin{Methode}[Structure XML + Markdown]
+    \begin{tcbraster}[raster columns=2,raster equal height=rows]
+        \begin{tcolorbox}[title=Principe fondamental]
+            \begin{itemize}[label=$\bullet$,itemsep=1.3em,leftmargin=*]
+                \item \acc{XML} pour la \voc{structure logique}
+                \item \acc{Markdown} pour le \voc{formatage du contenu}
+                \item \voc{Balises sémantiques} descriptives
+            \end{itemize}
+        \end{tcolorbox}
+        \begin{tcolorbox}[title=Exemple de base, colback=gray!5, colframe=gray!50]
+            \ttfamily\small
+            \xmltag{instructions}\\
+            \hspace{1em}\#\# Tâche principale\\
+            \hspace{1em}- Analyser le document\\
+            \hspace{1em}- Extraire les points clés\\
+            \hspace{1em}- **Formater** la sortie\\
+            \xmlctag{instructions}
+        \end{tcolorbox}
+    \end{tcbraster}
+\end{Methode}
+\begin{Methode}[Ordre optimal des sections]
+    L'ordre des sections dans un prompt structuré suit une progression logique du général au spécifique :
+    
+    \begin{tcbenumerate}[2]
+        \tcbitem \xmltag{system_role} -- Qui est l'agent
+        \tcbitem \xmltag{context} -- Situation et environnement  
+        \tcbitem \xmltag{data} -- Données de référence
+        \tcbitem \xmltag{rules} -- Règles et contraintes
+        \tcbitem \xmltag{examples} -- Exemples few-shot
+        \tcbitem \xmltag{instructions} -- Actions à effectuer
+        \tcbitem \xmltag{output_format} -- Format de sortie
+        \tcbitem \xmltag{critical_reminders} -- Points essentiels
+    \end{tcbenumerate}
+\end{Methode}
+
+\begin{Exemple}[Prompt complet structuré]
+    Voici un exemple de prompt utilisant toutes les bonnes pratiques :
+
+    \begin{MultiColonnes}{2}
+        \tcbitem \ttfamily\small
+        \xmlbox{?xml version="1.0" encoding="UTF-8"?}\\[0.5em]
+        \xmltag{agent_prompt}\\
+        \hspace{1em}\xmltag{system_role}\\
+        \hspace{2em}Expert en analyse de données financières\\
+        \hspace{1em}\xmlctag{system_role}\\[0.5em]
+        \hspace{1em}\xmltag{context}\\
+        \hspace{2em}\xmltag{company}Startup technologique\xmlctag{company}\\
+        \hspace{2em}\xmltag{period}Q1 2025\xmlctag{period}\\
+        \hspace{2em}\xmltag{objective}Analyse de performance\xmlctag{objective}\\
+        \hspace{1em}\xmlctag{context}\\[0.5em]
+        
+        \tcbitem \ttfamily\small \hspace{1em}\xmltag{instructions}\\
+        \hspace{2em}\#\# Analyser les métriques suivantes\\
+        \hspace{2em}1. Croissance du chiffre d'affaires\\
+        \hspace{2em}2. Taux de rétention clients\\
+        \hspace{2em}3. Coûts d'acquisition\\[0.5em]
+        \hspace{2em}**Produire** un rapport structuré\\
+        \hspace{1em}\xmlctag{instructions}\\[0.5em]
+        \hspace{1em}\xmltag{output_format}\\
+        \hspace{2em}- Executive summary\\
+        \hspace{2em}- Analyse détaillée par métrique\\
+        \hspace{2em}- Recommandations priorisées\\
+        \hspace{1em}\xmlctag{output_format}\\
+        \xmlctag{agent_prompt}
+    \end{MultiColonnes}
+    
+\end{Exemple}
+\vspace{-0.5cm}\begin{Remarque}[Anti-patterns à éviter]
+    \vspace{-0.5cm}\begin{Colonnes}[2]%[raster columns=2, raster equal height]
+        \begin{tcolorbox}[title={\textcolor{red!75!white}{\textcolor{red}{\faTimes} À éviter}}, colback=red!5]
+            \begin{itemize}[label=$\times$]
+                \item Instructions négatives excessives (\frquote{Ne fais pas...})
+                \item Balises XML invalides ou mal fermées
+                \item Mélange contexte/instructions
+                \item Exemples incohérents en format
+                \item Instructions incohérentes
+            \end{itemize}
+        \end{tcolorbox}
+        \begin{tcolorbox}[title={\textcolor{green!70!black}{$\checkmark$ Bonnes pratiques}}, colback=green!5]
+            \begin{itemize}[label=$\checkmark$]
+                \item Instructions positives claires
+                \item Structure XML valide et cohérente
+                \item Séparation nette des sections
+                \item Exemples uniformes
+                \item Concision, précision et cohérence
+            \end{itemize}
+        \end{tcolorbox}
+    \end{Colonnes}
+\end{Remarque}
+\begin{Methode}[Techniques avancées]
+    \begin{MultiColonnes}{2}
+        \tcbitem \textbf{Chain of Thought} 
+
+        Technique permettant de décomposer le raisonnement :
+        
+        \begin{tcolorbox}[colback=gray!5, colframe=gray!50]
+            \ttfamily\small
+            \xmltag{thinking_process}\\
+            \hspace{1em}1. D'abord, analyser...\\
+            \hspace{1em}2. Ensuite, vérifier...\\
+            \hspace{1em}3. Finalement, produire...\\
+            \xmlctag{thinking_process}
+        \end{tcolorbox}
+        \tcbitem \textbf{Scratchpad} 
+
+        Pour les documents longs, utiliser un bloc-notes :
+
+        \vfill
+        \begin{tcolorbox}[colback=gray!5, colframe=gray!50]
+            \ttfamily\small
+            \xmltag{scratchpad}\\
+            \hspace{1em}Points clés à retenir :\\
+            \hspace{1em}- Information critique 1\\
+            \hspace{1em}- Donnée importante 2\\
+            \xmlctag{scratchpad}
+        \end{tcolorbox}
+    \end{MultiColonnes}
+    \begin{tcolorbox}[title=Scratchpad permanent :,colback=gray!5, colframe=gray!50]
+        \ttfamily\small
+        \xmltag{scratchpad}\\
+        \hspace{1em}Utilise le fichier \displayFilePath{mon\_repertoire\_IA/AI\_NOTES.xml} pour :\\
+        \hspace{1em}- Noter ton plan d'action\\
+        \hspace{1em}- Tenir à jour les étapes effectuées au fur et à mesure.\\
+        \xmlctag{scratchpad}
+    \end{tcolorbox}
+    \encadrer[purple]{Cette dernière méthode est extrêmement efficace et permet aux agents de se succéder de façon fluide.}
+\end{Methode}
+
+\begin{Methode}[Prompt optimisé]
+    Adapter la structure selon le type de tâche :
+    
+    \begin{MultiColonnes}{3}[colframe=\itemBaseColor,boxrule=0.4pt]
+        \tcbitem[title=Pour du code,halign=left] 
+        \begin{itemize}[label=$\bullet$,leftmargin=*]
+            \item Structure de fichiers attendue
+            \item Conventions de nommage
+            \item Exemples d'entrée/sortie
+        \end{itemize}
+        \tcbitem[title=Pour des documents] 
+        \begin{itemize}[label=$\bullet$]
+            \item Templates de structure
+            \item Styles d'écriture
+            \item Ton et registre
+        \end{itemize}
+        \tcbitem[title=Pour des analyses] 
+        \begin{itemize}[label=$\bullet$]
+            \item Critères d'évaluation
+            \item Métriques à calculer
+            \item Format de rapport
+        \end{itemize}
+    \end{MultiColonnes}
+
+    Pour un agent spécialisé en \LaTeX\ avec \acc{bfcours}, voici la structure optimale :
+        \dirtree{%
+            .1 \xmltag{latex_agent_prompt}.
+            .2 \xmltag{system_role} \DTcomment{\color{green!75!black}Expert LaTeX/bfcours}.
+            .2 \xmltag{context} \DTcomment{\color{green!75!black}Environnement pédagogique}.
+            .2 \xmltag{bfcours_conventions}.
+            .3 \xmltag{environments} \DTcomment{\color{green!75!black}Definition, Exemple, etc.}.
+            .3 \xmltag{commands} \DTcomment{\color{green!75!black}\textbackslash voc, \textbackslash acc, etc.}.
+            .3 \xmltag{layout} \DTcomment{\color{green!75!black}MultiColonnes, tcbraster}.
+            .2 \xmltag{quality_requirements}.
+            .3 \xmltag{imperative_rules} \DTcomment{\color{green!75!black}Règles strictes}.
+            .3 \xmltag{design_principles} \DTcomment{\color{green!75!black}Principes de design}.
+            .2 \xmltag{workflow_instructions}.\DTcomment{\color{green!75!black}Patterns de travail / chaîne de pensée}.
+            .2 \xmltag{critical_reminders}.\DTcomment{\color{green!75!black}Points clés à respecter ( synthétique )}.
+        }
+\end{Methode}
+\begin{bfbox}{Processus d'itération}
+    \begin{tcbenumerate}[2]
+        \tcbitem \textbf{Tester} avec des cas limites variés
+        \tcbitem \textbf{Analyser} les échecs et réussites
+        \tcbitem \textbf{Enrichir progressivement} la structure et les instructions
+        \tcbitem \textbf{Affiner} le prompt
+        \tcbitem \textbf{Conserver} une bibliothèque de prompts testés
+        \tcbitem \textbf{Partager} les agents efficaces découverts
+    \end{tcbenumerate}
+    %\vspace{-0.6cm}
+    \begin{center}
+        \acc{Règle d'or :}
+    \encadrer[\itemBaseColor]{Un prompt bien structuré}
+            {\huge =}
+            \encadrer[\itemBaseColor]{Moins de corrections} 
+            {\huge +} 
+            \encadrer[\itemBaseColor]{Meilleure productivité}\\
+
+        \encadrer[cyan]{\frquote{La structure parfaite émerge de l'expérimentation continue.}}
+    \end{center}
+
+    
+\end{bfbox}

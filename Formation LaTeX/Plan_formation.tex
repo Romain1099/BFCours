@@ -1,0 +1,100 @@
+\begin{tikzpicture}[]
+    \SequenceItem[3cm]{}{Introduction \\
+    
+    \vspace{0.2cm}\hspace{-0.7cm}\overlaychrono{30}}{%Rappels de calculs littéral :
+        \begin{itemize}[label=$\bullet$]
+            \item Plan.
+            \item Comment fonctionne \LaTeX.
+            \item Téléchargement des logiciels\voc{MikTeX} et\voc{VSCode}.
+        \end{itemize}
+    }{\`A faire : \begin{itemize}[label=$\bullet$]
+        \item Se connecter à un point d'accès mobile. 
+        \item Télécharger les ressources de la formation.
+    \end{itemize}
+    }
+    \SequenceItem[6cm]{below = 1.7cm of desc1.south west}{Activité\\
+    
+    \vspace{0.2cm}\hspace{-0.7cm}\overlaychrono{60}}{
+        \begin{itemize}[label=$\bullet$,itemsep=0em]
+            \item Setup des logiciels.
+            \item Point théorique sur la structure d'un document \LaTeX.
+            \item Le fameux \frquote{Hello World !}
+        \end{itemize}
+    }{
+        \`A faire : 
+        \begin{itemize}[label=$\bullet$]
+            \item Télécharger l'extension\voc{LaTeX Workshop} et\voc{PDF Viewer} sur VSCode.
+            \item[\bcattention] Télécharger le fichier \\\frquote{setup\_vscode.json} pour configurer LaTeX Workshop.
+            \item Construire son premier document \LaTeX.
+        \end{itemize}
+    }
+    \SequenceItem[4cm]{below = 1.7cm of desc2.south west}{Point théorique\\
+    
+    \vspace{0.2cm}\hspace{-0.7cm}\overlaychrono{30}}{%Les bouteilles :\\
+    \begin{itemize}[itemsep=1.5em]%[label=$\bullet$,itemsep=0em]
+        \item[$\bullet$]\voc{Commandes} et\voc{Environnements}
+        \item[\bclampe] \underline{Formattage} 
+        $\overbrace{\text{du}}^\text{ou des\tikzmark{depart}}$
+            \pcadre[blue]{\textbf{\color{red}te}{\Huge x}{\scriptsize te\tikzmark{ici}}}%
+        %
+        .\relierhautdepart{ici}
+        \item[$\bullet$]\voc{CTAN} et\voc{LaTeX Stack Exchange}
+    \end{itemize}
+    }{
+        \`A faire :
+        \begin{itemize}[label=\bcoutil,itemsep=0em]
+            \item Se familiariser avec les commandes basiques.
+            \item Savoir où\voc{se documenter}.
+        \end{itemize}
+    }
+        \SequenceItem[4cm]{below = 1.7cm of desc3.south west}{BFcours\\
+    
+        \vspace{0.2cm}\hspace{-0.7cm}\overlaychrono{60}}{%Nature d'une égalité
+        \begin{itemize}[label=$\bullet$,itemsep=0em]
+            \item Une pause s'impose ! 
+            \item Point théorique sur le package\voc{BFcours}.
+            \item Premier document avec \acc{BFcours}.
+        \end{itemize}
+    }{
+        \`A faire : 
+        \begin{itemize}[label=$\bullet$]
+            \item Téléchargement du package \acc{BFcours}.
+            \item Compiler un premier document avec le package \bfcours.
+        \end{itemize}
+    }
+    \SequenceItem[4cm]{below = 1.7cm of desc4.south west}{Ateliers\\
+    
+    \vspace{0.2cm}\hspace{-0.7cm}\overlaychrono{90}}{%Distributivité
+    \begin{itemize}[label=$\bullet$,itemsep=0em]
+        \item Utiliser\voc{MathAléa}.
+        \item Utiliser les outils \bfcours.
+        \item Construire une séance avec \bfcours.
+        \item Construire une évaluation avec \bfcours.
+    \end{itemize}
+    }{
+        \`A faire : 
+        \begin{itemize}[label=$\bullet$]
+            \item Construire une fiche d'exercices.
+            \item Construire une séance de cours.
+            \item Utiliser les outils \bfcours.
+        \end{itemize}
+    }
+\end{tikzpicture}
+
+\begin{tikzpicture}[]
+
+    \SequenceItem[4cm]{below = 1.7cm of desc5.south west}{Ateliers avancés\\
+    
+    \vspace{0.2cm}\hspace{-0.7cm}\overlaychrono{90}}{%Réduire et factoriser
+    \begin{itemize}[label=$\bullet$,itemsep=0em]
+        \item Adapter \bfcours\ ( et \LaTeX en général ) à ses besoins.
+        \item Utiliser le générateur de questions Flash de \bfcours.
+        \item Utiliser Python pour générer des questions aléatoires.
+    \end{itemize}
+    }{
+        \`A faire : \begin{itemize}[label=$\bullet$]
+            \item Utiliser les fonctionnalités avancées de \LaTeX.
+            \item Explorer le potentiel des combinaisons de\voc{Python} et de \LaTeX.
+        \end{itemize}
+    }
+\end{tikzpicture}

@@ -1,0 +1,38 @@
+% Document de diagnostic pour identifier les problèmes
+
+% Solution 1 : Utiliser \texttt avec \detokenize pour les underscores
+Les underscores posent problème : \texttt{\detokenize{system_role}}
+
+% Solution 2 : Remplacer les underscores par des tirets
+Alternative sans underscore : \texttt{<system-role>}
+
+% Solution 3 : Protéger les caractères spéciaux
+\catcode`\_=12 % Rendre underscore normal
+Maintenant ça marche : \texttt{system_role}
+\catcode`\_=8  % Remettre underscore en mode math
+
+% Solution 4 : Créer une commande robuste
+\newcommand{\safett}[1]{{\ttfamily\detokenize{#1}}}
+Test : \safett{system_role}
+
+% Solution 5 : Pour le XML, éviter complètement les problèmes
+\newcommand{\xmltag}[1]{\texttt{<}\safett{#1}\texttt{>}}
+\newcommand{\xmlctag}[1]{\texttt{</}\safett{#1}\texttt{>}}
+
+Test complet : \xmltag{system_role} et \xmlctag{system_role}
+
+% Pour les caractères spéciaux dans le contenu
+\begin{tcolorbox}[colback=gray!5]
+\ttfamily
+<agent\_prompt>\\
+\hspace{1em}<role>Expert</role>\\
+</agent\_prompt>
+\end{tcolorbox}
+
+% Recommandations finales :
+\begin{itemize}
+\item Utiliser \textbackslash detokenize pour les noms avec underscores
+\item Éviter verbatim qui pose des problèmes dans les environnements
+\item Préférer les tcolorbox avec \textbackslash ttfamily
+\item Pour le XML, créer des commandes dédiées qui gèrent les caractères
+\end{itemize}

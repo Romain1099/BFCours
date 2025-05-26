@@ -1,0 +1,103 @@
+\subsection{Intégration de l'IA multi niveaux}
+
+L'intelligence artificielle actuellement utilisée repose sur les\voc{LLM}. 
+
+Ces modèles produisent du texte. Cela tombe parfaitement bien puisque le langage LaTeX fonctionne exclusivement grâce à du texte. 
+
+Il y a donc plusieurs niveaux sur lesquels l'IA peut agir : 
+
+\begin{MultiColonnes}{2}[colframe=black,boxrule=0.4pt,fonttitle=\bfseries]%
+    \tcbitem[title=Debuguer] Sur copie d'un contenu \LaTeX\ la plupart des outils IA actuels peuvent : 
+    \begin{itemize}[label=$\bullet$]
+        \item Le corriger
+        \item Déterminer l'en-tete correspondante
+        \item Le modifier en suivant des instructions basiques
+    \end{itemize}
+    \tcbitem[title=Produire du contenu] Sur base d'un modèle \LaTeX\ et d'une série d'instructions précises, certains modèles peuvent produire du contenu \LaTeX\ de qualité. 
+    \tcbitem[title=Recopier du contenu] Sur base d'un modèle \LaTeX\ et d'une série d'instructions précises, certains modèles peuvent reprendre un document pdf ou image pour produire du contenu \LaTeX. 
+    \tcbitem[title=Créer des packages] L'IA peut fabriquer des commandes ou environnements qui répondent à vos besoins spécifiques et les intégrer dans vos \acc{documents} ou dans vos \acc{packages}
+    \tcbitem[title=Agent formateur] Sur base d'un extrait de documentation, l'IA peut résumer les principales fonctionnalités disponibles et vous fournir celles dont vous avez besoin en lien avec vos demandes. 
+
+    On peut faire produire des rapports ( markdown ou \LaTeX\ ) pour que l'IA nous \acc{forme} à utiliser certaines technologies. 
+
+    C'est de cette manière dont j'ai appris \LaTeX. 
+    \tcbitem[title=Agent modérateur] Certains modèles de langage avancés sont capable de jouer le rôle d'agent principal en actionnant divers outils. 
+    
+    Cela dépasse largement le cadre de cette formation, mais on peut envisager un agent IA qui irait se documenter sur internet, produire quelques diapos avec canvas, produire un genially d'une activité et produire une fiche d'activité \LaTeX\ pour donner les consignes aux élèves dans laquelle figureraient les qrcode. 
+\end{MultiColonnes}
+
+
+
+\bcattention Les solutions pour intégrer l'IA dans sa démarche de travail nécessitent un abonnement dont les prix vont - actuellement - de $10$\euro{} par mois ( Github Copilot ) à $200$\euro{} par mois ( ChatGPT max ).
+
+La plupart des abonnements \frquote{pro} coûtent environ $20$\euro{} par mois et correspondent aux besoins d'un enseignant qui se forme au \LaTeX. 
+Il suffit de choisir un modèle et de l'utiliser avec cette formule. 
+\begin{Methode}[Les grands principes]
+    L'intégration de l'IA repose sur les principes suivants : 
+
+
+    \begin{MultiColonnes}{2}[colframe=black,boxrule=0.4pt,fonttitle=\bfseries]%
+
+        \tcbitem[title=Un modèle] Parfois on préfère un \encadrer{modèle rapide}, parfois un \encadrer{modèle de réflexion}, parfois un \encadrer{modèle d'action} et parfois un \encadrer{modèle multimodal} ( images, voix... )
+
+        \tcbitem[title=Un système d'intégration] On peut \encadrer{copier/coller} le code produit par le modèle. On peut également permettre à l'IA de produire son code sur votre ordinateur via un \encadrer{logiciel}.
+
+        \tcbitem[raster multicolumn=2, title=Des prompts] C'est le plus important. Ce prompt doit être : 
+        \begin{itemize}[label=$\bullet$]
+            \item \encadrer{Cohérent} \hfill Permet une réponse sans bugs et sans oubli.
+            \item \encadrer{Fourni en exemples de qualité} \hfill Votre style sera copié.
+            \item \encadrer{Structuré - XML / markdown} \hfill L'IA intègrera mieux les informations et en plus grande quantité.
+        \end{itemize}
+    \end{MultiColonnes}
+\end{Methode}
+%\newpage%
+\begin{Aide}[Mettre en place Claude]
+
+    \begin{MultiColonnes}{5}
+        \tcbitem[raster multicolumn=2] L'entreprise Anthropic et son modèle \acc{Claude 4-opus} sont à l'origine du \acc{protocole MCP} : \acc{Model Context Protocol}.
+        
+        Cela permet aux agents d'utiliser \acc{n'importe quel outil numérique}. 
+    
+        \tcbitem[raster multicolumn=3] Entre autres : 
+    \begin{itemize}[label=$\bullet$]
+        \item Votre système de fichiers
+        \item Aller sur internet
+        \item Utiliser n'importe quel outil externe qui propose des fonctionnalités publiques destinées aux agents IA ( canvas par exemple... )
+    \end{itemize}
+    \end{MultiColonnes}
+    
+
+    \begin{MultiColonnes}{5}
+        \tcbitem[raster multicolumn=3] J'utilise au quotidien ce modèle d'IA via\vocnoindexref{https://claude.ai/download}{l'application locale}. \\
+    
+    Je propose mes \acc{prompts} comme base officielle pour utiliser \acc{bfcours} avec Claude.
+
+    Cela lui permet de préparer les documents avec mes exigences de qualité.
+    \tcbitem[raster multicolumn=2,colframe=\itemBaseColor,title=Prompts de bfcours, boxrule=0.4pt,fonttitle=\bfseries,halign=left] \dirtree{%
+        .1 \bfseries fichiers\_de\_la\_formation/.
+        .2 ressources/.
+        .3 \textcolor{red!75!white}{prompts\_claude\_ai/}.
+        .3 \textcolor{blue!75!white}{fichiers\_exemples\_a\_donner/}.
+        .3 \textcolor{purple!75!white}{claude\_config\_mcp.json}.
+    }
+    \end{MultiColonnes}
+    L'intervention humaine de modification est bien sûr toujours possible. 
+    
+    L'agent codeur est également à même de modifier par la suite le code qu'il a créé.
+\end{Aide}
+
+\begin{Aide}[Utiliser Windsurf ou Cursor]
+    Ce sont des IDE comme VScode qui intègrent naturellement l'IA dans leur fonctionnement. Soutenus par de grandes entreprises une grande communauté de développeurs.
+
+    On peut utiliser le même \acc{prompt system} que celui donné dans l'aide précédente. 
+\end{Aide}
+
+\begin{Aide}[Github Copilot]
+    Ce modèle s'intègre bien dans VSCode et permet de la génération de code \LaTeX\ avec des suggestions. 
+
+    Je ne l'utilise pas, mais c'est une solution plus discrète adaptée à ceux qui souhaitent rester maître du code écrit. 
+    
+    L'IA intervient pour \acc{suggérer} des modifications \acc{en contexte}. Il s'agit d'une alternative \acc{peu coûteuse}.
+\end{Aide}
+
+\input{sections/advanced/AI/guidelines_prompts.tex}

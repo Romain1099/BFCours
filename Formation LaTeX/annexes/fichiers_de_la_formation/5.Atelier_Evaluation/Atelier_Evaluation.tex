@@ -1,0 +1,134 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=1cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+\usepackage{bfcours-fonts}
+%\usepackage{bfcours-fonts-dys}
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+\input{enonce_figures}
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+% Activer ou désactiver l'affichage des boîtes pour les points
+%\displayitempointsfalse % Ne pas afficher les boîtes
+\displayitempointstrue % Afficher les boîtes
+\renewcommand{\boldsymbol}[1]{#1}
+
+\begin{document}
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{0}
+
+\def\points{\phantom{AAA}}
+\def\difficulty{\phantom{AAA}}
+\chapEval[
+    $\mathbf{6^{\text{ème}}}$% : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
+    ]{
+    Thème Choisi% : ,Equations
+    }{
+    Collège% : Collège,Lycée
+    }{
+    Votre Collège% : Othe et Vanne,Amadis Jamyn,Eugène Belgrand
+    }{
+    \tableauEval{10}% : 10},15},30},55}%}
+    }{
+    Devoir :
+    }
+
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+
+\begin{None}
+    \begin{tcbraster}[
+        raster columns     = 3,
+        raster width       = \textwidth,
+        %size               = fbox,
+        raster equal height,
+        raster column skip = 5pt,
+        raster row skip    = 2pt
+      ]%
+        \begin{tcolorbox}[blankest,raster multicolumn=2]
+                \printcompindex%
+        \end{tcolorbox}
+        \begin{tcolorbox}[blankest, width=\textwidth]
+            %\begin{minipage}[t]{0.85\textwidth}
+                \begin{tcolorbox}[colback=white, colframe=black, width=\textwidth, top=1pt, bottom=1pt, left=1pt, right=1pt, boxrule=1pt, arc=2pt, auto outer arc, boxsep=0pt, nobeforeafter]%0.280
+                    \textbf{Bilan : \tccrep[seyes=false]{1.5cm}{}/\getsavedtotalpoints\phantom{A}\tccrep[seyes=false]{2cm}{}} 
+                  \end{tcolorbox}
+            %\end{minipage}\\
+            \begin{minipage}[t]{\textwidth}
+                \textbf{Modalités} :
+                \begin{itemize}[label=$\bullet$,leftmargin=10pt]
+                    \item Calculatrice \acc{autorisée}% : \item Calculatrice interdite, \item Calculatrice autorisée,\item 
+                    \item Pas de prêt de matériel
+                    \item Les réponses doivent être \acc{justifiées} ( calcul et raisonnement )
+                \end{itemize}
+            \end{minipage}
+        \end{tcolorbox}
+    \end{tcbraster}
+    \end{None}
+
+\input{enonce}% : \input{enonce},
+
+\newpage
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{1}
+
+\chapitre[
+    $\mathbf{6^{\text{ème}}}$%
+    ]{
+    Thème Choisi%
+    }{
+    Collège%
+    }{
+    Votre Collège%
+    }{
+    % supplement
+    }{
+    Solutions :
+    }
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+\tcbset{
+    rdexo/default/.cd,correction style/.style={
+        before upper=%
+        \textbf{\thelabel~
+        \thecorrectionnum~:~}
+    }
+}
+
+\rdexocorrection{0}
+
+
+
+\end{document}

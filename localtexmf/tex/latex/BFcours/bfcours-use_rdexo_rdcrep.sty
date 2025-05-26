@@ -74,7 +74,7 @@
 	\tcbox[rdexo/bouyachakka/header label,%
 		%halign title = left,
 	 	colback=\pgfkeysvalueof{/tcb/rdexo/griba/lower bg color}, boxsep=2pt]%	
-	 	{\large{Solution de l'exercice}~\tcbox[rdexo/griba/numexo style,
+	 	{\large{Solution de l'\thelabel}~\tcbox[rdexo/griba/numexo style,
 	 	coltext=\pgfkeysvalueof{/tcb/rdexo/griba/lower bg color},boxsep = 2pt]%
 	 	{\large{\bfseries\thecorrectionnum}}}%
     	},
@@ -237,5 +237,8 @@ at (frame.south west) {\thetags[0]} ;}
 }
 \setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
 
-
+\providecommand{\dotfills}[1][]{
+\tcfillcrep{}
+}
+\renewcommand{\boldsymbol}[1]{#1}
 \endinput

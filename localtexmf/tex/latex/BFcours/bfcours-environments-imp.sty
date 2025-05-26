@@ -1,0 +1,1305 @@
+% Nom du fichier : bfcours-environments-imp.sty
+\ProvidesPackage{bfcours-environments-imp}[2024/06/29 v1.0 Environnements pour bfcours]
+
+\RequirePackage{bfcours-competencies}
+% La gestion des couleurs se passe dans le fichier 'bfcours-colors.sty'
+
+
+\tcbset{enhanced,
+fonttitle=\bfseries\large,
+%fontupper=\normalsize\sffamily
+}
+\newcounter{contentcounter}
+\setcounter{contentcounter}{0}
+
+\newcommand{\liencontent}[2]{%
+  \stepcounter{contentcounter}
+  \hypertarget{subsec:\thecontentcounter}{}
+  \addcontentsline{toc}{subsection}{\protect\numberline{}\textbf{#1} - {\color{blue!90!black}#2}}
+  \label{subsec:#1\thecontentcounter}
+  \textbf{#1}
+}
+\newcommand{\liensecretcontent}[2]{%
+  \stepcounter{contentcounter}
+  \hypertarget{subsec:\thecontentcounter}{}
+  \addcontentsline{toc}{subsection}{\protect\numberline{}\textbf{#1} - {\color{blue!90!black}#2}}
+  \label{subsec:#1\thecontentcounter}
+}
+
+% Définition de l'environnement tcolorboxNone
+\newtcolorbox{None}{
+  frame hidden, % Cache le cadre
+  boxrule=0pt, % Pas de bordure
+  sharp corners, % Coins carrés
+  colback=white, % Couleur de fond (ajustez selon vos préférences)
+  left=0pt, % Pas de marge à gauche
+  right=0pt, % Pas de marge à droite
+  top=0pt, % Pas de marge en haut
+  bottom=0pt % Pas de marge en bas
+}
+
+
+\newcommand{\getsavedtotalpoints}{
+	\pgfmathparse{int(\savedtotalpoints)==\savedtotalpoints ? int(\savedtotalpoints) : \savedtotalpoints}%
+	\num{\pgfmathresult}\phantom{A}%
+}
+% Définition du compteur global de points et de la liste de points
+\newcounter{itempointcounter}
+\newcommand{\totalpoints}{0} % Total des points
+\newcommand{\exopoints}{0} % Total des points
+\newcommand{\exopointslist}{} % Liste des points pour chaque exercice
+
+
+\newif\ifdisplayitempoints % Déclaration du booléen
+
+% Définition de la commande \itempoint (tout-en-un avec compteur et booléen)
+\NewDocumentCommand{\itempoint}{m O{-0pt}}{%
+    \stepcounter{itempointcounter}% Incrémentation du compteur
+	%code d'indexation à mettre ici
+	%\addtocounter{totalpoints}{#1}% Ajout au total des points
+	\pgfmathparse{\totalpoints + #1}%
+    \xdef\totalpoints{\pgfmathresult} % Mise à jour de totalpoints
+	\pgfmathparse{\exopoints + #1}%
+    \xdef\exopoints{\pgfmathresult} % Mise à jour de totalpoints
+	%\addtocounter{exopoints}{#1}% Ajout au total des points
+    \tikzmark{mylabel\theitempointcounter}% Placement du marqueur avec identifiant unique
+	\ifdisplayitempoints% Condition sur l'affichage
+     \tikz[remember picture, overlay]{% Overlay pour superposer la boîte
+            \node[anchor=base, draw=black, fill=gray!10, rounded corners, inner sep=3pt, outer sep=0pt, minimum width=1.4cm, align=center] at ($(pic cs:mylabel\theitempointcounter) + (\linewidth - 0.7cm, #2)$) { % Placement de la boîte avec décalage en X
+                %$\ifdim #1pt = 1pt 1 \,\text{pt} \else \num{#1} \,\text{pts} \fi$%
+			%$\num{#1} \,\text{pts}$
+			\pgfmathparse{#1} % Parse la valeur pour la manipuler en décimal
+			    \let\value=\pgfmathresult
+			    % Condition pour afficher "pt" ou "pts" en fonction de la comparaison avec 1
+			    \ifdim \value pt < 1pt
+			        % Si \value est inférieur à 1, affiche en singulier avec décimales
+			        \num{\value} \,\text{pt}%
+			    \else
+			        \ifdim \value pt = 1pt
+			            % Si \value est exactement 1, affiche en singulier sans décimales
+			            1 \,\text{pt}%
+			        \else
+			            % Si \value est supérieur à 1, affiche en pluriel
+			            \pgfmathparse{int(\value)==\value ? int(\value) : \value}%
+			            \num{\pgfmathresult} \,\text{pts}%
+			        \fi
+			    \fi
+            };
+        }%
+    \fi
+}
+
+\newcounter{baremepointcounter}
+\setcounter{baremepointcounter}{0}
+
+% Déclaration du booléen pour activer ou non l'affichage des points
+\newif\ifdisplaybaremepoints
+\displaybaremepointsfalse % Active par défaut l'affichage des points
+%\displaybaremepointstrue % Active par défaut l'affichage des points
+
+% Définition de la commande \baremepoint
+\NewDocumentCommand{\baremepoint}{m m}{%
+    \stepcounter{baremepointcounter}% Incrémentation du compteur
+    
+    % Calcul et définition du titre en fonction des points
+    \pgfmathparse{#2} % Parse la valeur
+	\let\value=\pgfmathresult
+	\ifdim \value pt < 1pt
+        % Si \value est inférieur à 1, affiche en singulier avec décimales
+        \xdef\bpointtitle{$\num{\value} \,\text{pt}$}%
+    \else
+        \ifdim \value pt = 1pt
+            % Si \value est exactement 1, affiche en singulier sans décimales
+            \xdef\bpointtitle{$1 \,\text{pt}$}%
+        \else
+            % Si \value est supérieur à 1, affiche en pluriel
+            \pgfmathparse{int(\value)==\value ? int(\value) : \value}%
+            \xdef\bpointtitle{$\num{\pgfmathresult} \,\text{pts}$}%
+        \fi
+    \fi
+    % Création de la boîte en overlay avec le titre des points
+    \ifdisplaybaremepoints
+	\tikz[remember picture] \node[inner sep=0pt, outer sep=0pt, anchor=base] (baremecontent\thebaremepointcounter) {%
+	        #1% Légèrement coloré en fond rouge clair
+	    };
+        \tikz[remember picture, overlay]{%
+            \node[draw=red, rounded corners, inner sep=3pt, outer sep=0pt, anchor=south, 
+                  fill=red!2!white, text=red] 
+            at ($(baremecontent\thebaremepointcounter.north) + (0,0.2cm)$) % Position de la boîte de points au-dessus
+            {\bpointtitle}; % Affiche le titre avec points
+        }
+\else
+\tikz[remember picture] \node[inner sep=0pt, outer sep=0pt, anchor=base] (baremecontent\thebaremepointcounter) {%
+        #1% Légèrement coloré en fond rouge clair
+    };
+    \fi
+}
+
+% Définition de la commande \itempoint (tout-en-un avec compteur et booléen)
+\NewDocumentCommand{\myolditempoint}{m O{-0pt}}{%
+    \stepcounter{itempointcounter}% Incrémentation du compteur
+    \tikzmark{mylabel\theitempointcounter}% Placement du marqueur avec identifiant unique
+	\ifdisplayitempoints% Condition sur l'affichage
+     \tikz[remember picture, overlay]{% Overlay pour superposer la boîte
+            \node[anchor=base, draw=black, fill=gray!10, rounded corners, inner sep=3pt, outer sep=0pt, minimum width=1.4cm, align=center] at ($(pic cs:mylabel\theitempointcounter) + (\linewidth - 0.7cm, #2)$) { % Placement de la boîte avec décalage en X
+                %$\ifdim #1pt = 1pt 1 \,\text{pt} \else \num{#1} \,\text{pts} \fi$%
+			$\num{#1} \,\text{pts}$
+            };
+        }%
+    \fi
+}
+
+
+%\newcommand{\exopointslist}{} % Liste des points pour chaque exercice
+\newcommand{\printexopoint}[1]{%
+#1
+}
+
+
+% Initialisation du drapeau \isfirst
+\newif\ifisfirst
+\isfirsttrue % Initialise à true pour le premier élément
+
+\newcounter{persoexocounter}
+\setcounter{persoexocounter}{0}
+% Fonction pour accéder au i-ème élément de exopointslist
+
+\NewDocumentCommand{\getexopoint}{m}{%
+   \xdef\points{1}%
+    \foreach \val [count=\i] in \savedexopointslist {%
+        \ifnum\i=#1 
+		\xdef\points{\val}
+		% Parse le nombre avec pgfmath pour arrondir
+            \pgfmathparse{ifthenelse(int(\val)==\val, int(\val), \val)}%
+            \xdef\points{\pgfmathresult}%
+	   \fi
+    }%
+}
+
+\def\savedexopointslist{}
+\def\savedtotalpoints{0}
+% Lecture du fichier bfpoints.tex au début du document, s'il existe
+\IfFileExists{bfpoints_\jobname.tex}{\input{bfpoints_\jobname.tex}}{}
+
+% Écriture dans bfpoints.tex à la fin du document
+\AtEndDocument{%
+    \newwrite\pointsfile
+    \immediate\openout\pointsfile=bfpoints_\jobname.tex
+    \immediate\write\pointsfile{\noexpand\renewcommand{\noexpand\savedtotalpoints}{\totalpoints}}%
+    \immediate\write\pointsfile{\noexpand\renewcommand{\noexpand\savedexopointslist}{\exopointslist}}%
+    \immediate\closeout\pointsfile
+}
+
+\NewDocumentEnvironment{EXO}{m m +b}{
+\stepcounter{persoexocounter}
+\getexopoint{\thepersoexocounter}
+\begin{exo}[exotitle=\begin{minipage}[t]{0.5\textwidth}#1\end{minipage}, tags={#2}]
+{\ncomp{#2}}%
+\renewcommand{\exopoints}{0}% Ajout au total des points
+#3
+\end{exo}
+  \ifisfirst
+        % Premier élément, pas de virgule
+        \xdef\exopointslist{\exopoints}%
+       \global\isfirstfalse % Passe \isfirst à false pour les éléments suivants
+    \else
+        \edef\oldpointslist{\exopointslist}
+	   \xdef\exopointslist{\oldpointslist , \exopoints} % Ajout avec virgule
+    \fi
+}
+
+
+% Environnement EXOEVAL avec LaTeX pour le calcul des points
+\NewDocumentEnvironment{EXOEVAL}{m m +b}{
+\stepcounter{persoexocounter}
+\getexopoint{\thepersoexocounter}
+\begin{exo}[exotitle=\begin{minipage}{0.4\textwidth}\liensecretcontent{\thelabel}{#1}#1\end{minipage}\hfill\begin{minipage}{0.18\textwidth}\vfill\renewcommand{\arraystretch}{0.75} % 0.6 est un exemple, à ajuster selon la hauteur souhaitée
+\begin{tcbtabcomp}{|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.9cm}}
+    \hline
+    \rule[0pt]{0pt}{8pt}\cellcolor{red!10!white}\mi &\cellcolor{orange!10!white} \mf &\cellcolor{yellow!10!white} \ms &\cellcolor{green!10!white} \tbm \\
+    \hline
+   \renewcommand{\arraystretch}{1.2}\rule[0pt]{0pt}{11pt}  & & & \\
+\end{tcbtabcomp}\vfill\end{minipage}\hfill, tags={#2}]%
+{\ncomp{#2}}%
+\renewcommand{\exopoints}{0}% Ajout au total des points
+#3
+
+\end{exo}
+%
+%Points : \theexopoints. \\
+ % Premier élément sans virgule
+  \ifisfirst
+        % Premier élément, pas de virgule
+        \xdef\exopointslist{\exopoints}%
+       \global\isfirstfalse % Passe \isfirst à false pour les éléments suivants
+    \else
+        \edef\oldpointslist{\exopointslist}
+	   \xdef\exopointslist{\oldpointslist , \exopoints} % Ajout avec virgule
+    \fi
+%\exopointslist
+}
+
+
+\NewDocumentEnvironment{OLDEXOEVAL}{m m +b}{
+\begin{exo}[exotitle=\begin{minipage}{0.4\textwidth}#1\end{minipage}\hfill\begin{minipage}{0.18\textwidth}\vfill\renewcommand{\arraystretch}{0.75} % 0.6 est un exemple, à ajuster selon la hauteur souhaitée
+\begin{tcbtabcomp}{|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.55cm}|>{\centering\arraybackslash}p{0.9cm}}
+    \hline
+    \rule[0pt]{0pt}{8pt}\cellcolor{red!30!white}\textbf{MI} &\cellcolor{orange!30!white} \textbf{MF} &\cellcolor{yellow!30!white} \textbf{MS} &\cellcolor{green!30!white} \textbf{TBM} \\
+    \hline
+   \renewcommand{\arraystretch}{1.2}\rule[0pt]{0pt}{11pt}  & & & \\
+\end{tcbtabcomp}\vfill\end{minipage}\hfill, tags={#2}]%
+\begingroup\ncomp{#2}\endgroup%
+#3
+\end{exo}
+}
+
+\newtcolorbox{Env}[2][]{enhanced,
+before skip=2mm,after skip=2mm,
+colback=#1!2!white,colframe=#1!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=tcbcolback!30!#1]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=tcbcolback!60!#1,right color=tcbcolback!60!#1,
+middle color=tcbcolback!80!#1]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{#2}},
+coltitle =#1!80!black!,
+drop shadow,
+borderline west={1mm}{0pt}{#1!50},
+borderline south={1mm}{0pt}{#1!50},
+overlay={
+  \draw[line width=1mm, #1!50] 
+    ([xshift=0.5mm]frame.south west)--([xshift=0.5mm]frame.north west); % Bordure gauche
+  \draw[line width=1mm, #1!50] 
+    ([yshift=0.5mm]frame.south west)--([yshift=0.5mm]frame.south east); % Bordure du bas
+}}
+%\tcbset{enhanced,fonttitle=\bfseries\large,fontupper=\normalsize\sffamily,
+%colback=yellow!10!white,colframe=red!50!black,colbacktitle=Salmon!30!white,
+%coltitle=black,center title}
+% Environnement Theo basé sur Env
+\NewEnviron{env}[1]{
+	\begin{#1}
+	
+	\colorlet{itemcolor}{nota}%
+	\BODY
+        \end{#1}
+}
+
+\NewDocumentEnvironment{Theoreme}{O{} +b}{
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=white,%thm!2!white,
+colframe=thm!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!red]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=red!100!black,right color=red!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{\liencontent{Théorème}{#1}}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{thm!80},
+borderline south={0.05mm}{0pt}{thm!80!black},
+overlay={
+  \draw[line width=0.5mm, thm!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, thm!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=thm!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
+    \fi%
+}
+]
+\CouleurTexteAccent{thm}
+\CouleursTabular{thm}{thm}{white}{thm!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{thm}{Salmon!30!white}{black}{yellow!10!white}{thm}
+\couleurItem{thm}
+#2
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+}
+
+\NewDocumentEnvironment{Theo}{O{} +b}{
+  \begin{Theoreme}[#1]
+    #2
+  \end{Theoreme}
+}
+
+\newtcolorbox{TheoA}[2][thm]{enhanced,
+before skip=2mm,after skip=2mm,
+colback=#1!2!white,colframe=#1!50,boxrule=0.2mm,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=tcbcolback!30!#1]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=tcbcolback!60!#1,right color=tcbcolback!60!#1,
+middle color=tcbcolback!80!#1]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\Large{#2}},
+coltitle =#1!80!black!}
+%\tcbset{enhanced,fonttitle=\bfseries\large,fontupper=\normalsize\sffamily,
+%colback=yellow!10!white,colframe=red!50!black,colbacktitle=Salmon!30!white,
+%coltitle=black,center title}
+
+
+%Définitions
+\NewDocumentEnvironment{Definition}{O{} +b}{
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=white,%defi!2!white,
+colframe=defi!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!defi]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=defi!100!black,right color=defi!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{\liencontent{Définition}{#1}}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{defi!80},
+borderline south={0.05mm}{0pt}{defi!80!black},
+overlay={
+  \draw[line width=0.5mm, defi!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, defi!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+    % Calcul dynamique de la largeur avec \dimexpr
+    \node[anchor=north east, fill=white, draw=defi!50, rounded corners] 
+    at ([xshift=-0.1\columnwidth]frame.north east) 
+    {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+      \centering \textbf{#1}
+    \end{minipage}}; % Correctement fermer la minipage ici
+  \fi%
+}
+]
+
+\CouleurTexteAccent{defi}
+\CouleursTabular{defi}{defi}{white}{defi!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{defi}{defi!30!white}{black}{defi!5}{defi}
+\couleurItem{defi}
+#2
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+}
+
+%\NewDocumentEnvironment{Defi}{o}{
+%  \begin{Definition}[#1]
+%}{
+%  \end{Definition}
+%}
+
+
+
+%Exemples
+\tcbset{
+    exempleboxstyle/.style={
+        colback=white,%gray!2!white, % Couleur de fond de la box (blanc pour ne pas cacher les traits)
+        colframe=black,  % Couleur de la bordure
+        fonttitle=\large\bfseries,
+        boxrule=0.5mm, % Épaisseur des bordures
+        coltitle=white,
+        sharp corners=south, % Coins droits en bas
+        rounded corners=northwest, % Coin en haut à gauche arrondi
+        attach boxed title to top left={yshift=-4mm, xshift=-2mm}, % Titre décalé vers la gauche
+        boxed title style={
+            colback=gray!80!black, % Fond du titre
+            colframe=gray!80!black, % Bordure autour du titre
+            sharp corners,
+            boxrule=0mm, % Pas de bordure pour le titre
+            rounded corners, % Coins arrondis pour le titre
+        },
+        before upper={}, % Ajouter un espacement avant le contenu
+        frame hidden, % On masque la bordure par défaut
+    }
+}
+
+\NewDocumentEnvironment{Exemple}{O{} +b}{
+\begin{tcolorbox}[title=\liencontent{Exemple(s)}{#1}, exempleboxstyle,overlay={ % Utilisation de TikZ pour ajouter les éléments de décoration
+            % Ligne verticale sous le titre
+            \draw[gray!80!black, line width = 1.5pt] (frame.north west)++(0.075,-0.2cm) -- ++(0,-2cm);
+            % Ligne horizontale à droite du titre
+            \draw[gray!80!black, line width = 1.5pt] (title.east) -- ++(3cm,0);
+            % Codage d'angle en bas à droite, corrigé pour être orienté vers le bas
+            \draw[gray!80!black, line width = 1.5pt] (frame.south east)++(-2cm,0.075cm) -- ++(1.925cm,0) -- ++(0,2cm);
+		\ifx#1\empty
+		    \else
+		      \node[anchor=west, fill=white, draw=gray!80!black, rounded corners] at ([xshift=3cm]title.east) {\begin{minipage}{0.5\columnwidth} \centering \textbf{#1} \end{minipage}};
+		    \fi%
+        },
+before upper={\vspace{0.5cm}}]
+\CouleurTexteAccent{nota!80!black}
+#2
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+\vspace{-0.2cm}
+}
+
+\NewDocumentEnvironment{OldExemple}{O{} +b}{
+\begin{tcolorbox}[enhanced,
+before skip=2mm,after skip=2mm,
+colback=ex!2!white,colframe=ex!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!ex]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=ex!100!black,right color=ex!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine={},
+},
+fonttitle=\bfseries,
+title={\large{Exemple}\scriptsize{(s)}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{ex!80},
+borderline south={0.05mm}{0pt}{ex!80!black},
+overlay={
+  \draw[line width=0.5mm, ex!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, ex!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=ex!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+    \fi%
+}
+]
+#2
+
+\end{tcolorbox}
+}
+
+%Notations
+
+\NewDocumentEnvironment{OldNotation}{O{} +b}{
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=nota!2!white,colframe=nota!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!nota]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=nota!100!black,right color=nota!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{Notation}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{nota!80},
+borderline south={0.05mm}{0pt}{nota!80!black},
+overlay={
+  \draw[line width=0.5mm, nota!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, nota!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=nota!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
+    \fi%
+}
+]
+
+\CouleurTexteAccent{nota!80!black}
+\CouleursTabular{nota}{nota}{white}{nota!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{nota}{nota!30!white}{black}{nota!5}{nota}
+#2
+
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+}
+
+
+\NewDocumentEnvironment{Notation}{O{} +b}{
+  \begin{cracked}[\liencontent{Notation}{#1}][#1][defi][defi][3.5cm]
+    #2
+  \end{cracked}
+}
+
+
+%Vocabulaire
+
+\NewDocumentEnvironment{Vocabulaire}{O{} +b}{
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=white,%nota!2!white,
+colframe=nota!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!nota]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=nota!100!black,right color=nota!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{\liencontent{Vocabulaire}{#1}}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{nota!80},
+borderline south={0.05mm}{0pt}{nota!80!black},
+overlay={
+  \draw[line width=0.5mm, nota!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, nota!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=nota!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
+    \fi%
+}
+]
+\CouleurTexteAccent{nota!80!black}
+\CouleursTabular{nota}{nota}{white}{nota!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{nota}{nota!30!white}{black}{nota!5}{nota}
+\couleurItem{nota}
+#2
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+}
+
+
+%Aides
+
+\NewDocumentEnvironment{OldAide}{O{} +b}{
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=nota!2!white,colframe=nota!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!nota]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=nota!100!black,right color=nota!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{Aide}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{nota!80},
+borderline south={0.05mm}{0pt}{nota!80!black},
+overlay={
+  \draw[line width=0.5mm, nota!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, nota!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=nota!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
+    \fi%
+}
+]
+
+\CouleurTexteAccent{nota!80!black}
+\CouleursTabular{nota}{nota}{white}{nota!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{nota}{nota!30!white}{black}{nota!5}{nota}
+#2
+
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+}
+
+\NewDocumentEnvironment{Aide}{O{} +b}{
+  \begin{cracked}[\liencontent{Aide}{#1}][#1][nota][nota][2.5cm]
+    #2
+  \end{cracked}
+}
+%Démonstrations
+
+\NewDocumentEnvironment{Demonstration}{O{} +b}{
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=white,%nota!2!white,
+colframe=demo!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!demo]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=demo!100!black,right color=demo!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{\liencontent{Démonstration}{#1}}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{demo!80},
+borderline south={0.05mm}{0pt}{demo!80!black},
+overlay={
+  \draw[line width=0.5mm, demo!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, demo!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=demo!50, rounded corners] at ([xshift=-0.01\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
+    \fi%
+}
+]
+
+\CouleurTexteAccent{demo!80!black}
+\CouleursTabular{demo}{demo}{white}{demo!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{demo}{demo!30!white}{black}{demo!5}{demo}
+\couleurItem{demo}
+#2
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+}
+%\NewDocumentEnvironment{Demo}{O{} +b}{
+%  \begin{Demonstration}[#1]
+%    #2
+%  \end{Demonstration}
+%}
+
+
+%Remarques 
+\NewDocumentEnvironment{RemarqueOld}{O{} +b}{
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=green!2!white,colframe=green!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=black!20!green]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=green!80!black,right color=green!80!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{Remarque}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{rem!80},
+borderline south={0.05mm}{0pt}{rem!80!black},
+overlay={
+  \draw[line width=0.5mm, rem!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, rem!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=rem!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth} \centering \textbf{#1} \end{minipage}};
+    \fi%
+}
+]
+
+#2
+
+\end{tcolorbox}
+}
+
+%\definecolor{headerrmq}{RGB}{0, 128, 0} % Couleur du fond de l'en-tête
+\NewDocumentEnvironment{Remarque}{O{} +b}{
+    \begin{bclogo}[noborder=true,logo={\bccrayon},arrondi=0.1,barre=snake]{Remarques :}
+      \CouleurTexteAccent{thm!80!black}
+      #2
+      \ResetCouleurTexteAccent
+    \end{bclogo}
+}
+
+%Solutions
+\newcounter{tempprofseyes}
+
+\NewDocumentEnvironment{Solution}{O{} +b}{
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=green!2!white,colframe=green!50,boxrule=0pt,
+  before upper={},%\setcounter{tempprofseyes}{\value{profseyescounter}}\setcounter{profseyescounter}{1}},
+  after upper={},%\setcounter{profseyescounter}{\value{tempprofseyes}}},
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=black!20!green]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=green!80!black,right color=green!80!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{\liencontent{Solution}{#1}}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{rem!80},
+borderline south={0.05mm}{0pt}{rem!80!black},
+overlay={
+  \draw[line width=0.5mm, rem!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, rem!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=rem!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
+    \fi%
+}
+]
+
+\CouleurTexteAccent{rem!80!black}
+\CouleursTabular{rem}{rem}{white}{rem!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{rem}{rem!30!white}{black}{rem!5}{rem}
+\couleurItem{rem}
+#2
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+}
+
+
+
+\newcommand{\lienhautpage}[1]{%
+  \centering \bfseries \color{nota!70!black}\hyperlink{hautpage}{#1}
+}
+%\newcommand{\liensubsection}[1]{%
+%  \subsection[#1]{Recette}\label{subsec:#1}
+%}
+%\newcommand{\liensubsection}[1]{%
+%  \addcontentsline{toc}{subsection}{#1}
+%  \textbf{Recette}\label{subsec:#1}
+%}
+\newcommand{\liensubsection}[1]{%
+  \hypertarget{subsec:#1}{}
+  \addcontentsline{toc}{subsection}{\protect\numberline{}#1}
+  \textbf{Recette}\label{subsec:#1}
+}
+
+
+\newtcolorbox{Recette}[2][]{enhanced,
+before skip=2mm,after skip=2mm,
+colback=green!2!white,colframe=green!50,boxrule=0pt,
+  before upper={},%\setcounter{tempprofseyes}{\value{profseyescounter}}\setcounter{profseyescounter}{1}},
+  after upper={},%\setcounter{profseyescounter}{\value{tempprofseyes}}},
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=black!20!green]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=green!80!black,right color=green!80!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\liensubsection{#1}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{rem!80},
+borderline south={0.05mm}{0pt}{rem!80!black},
+overlay={
+  \draw[line width=0.5mm, rem!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, rem!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=rem!50, rounded corners] at ([xshift=-4cm]frame.north east) {\begin{minipage}{0.5\textwidth}\liensubsection{#1}\vspace{-10pt}\end{minipage}};
+    \fi%
+}}
+\newtcolorbox{RecetteAcinq}[2][]{enhanced,
+before skip=2mm,after skip=2mm, breakable,
+colback=green!2!white,colframe=green!50,boxrule=0pt,
+  before upper={},%\setcounter{tempprofseyes}{\value{profseyescounter}}\setcounter{profseyescounter}{1}},
+  after upper={},%\setcounter{profseyescounter}{\value{tempprofseyes}}},
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=nota!70!black]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=nota!70!black,right color=nota!70!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\liensubsection{#1}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{rem!80},
+borderline south={0.05mm}{0pt}{rem!80!black},
+overlay={
+  \draw[line width=0.5mm, rem!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, rem!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=rem!50, rounded corners] at (frame.north east) {\begin{minipage}{0.5\textwidth}\lienhautpage{#1}\end{minipage}};
+    \fi%
+}}
+
+%Propriétés 
+
+\NewDocumentEnvironment{Propriete}{O{} +b}{
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=white,%prop!2!white,
+colframe=prop!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!prop]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=prop!100!black,right color=prop!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{\liencontent{Propriété}{#1}}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{prop!80},
+borderline south={0.05mm}{0pt}{prop!80!black},
+overlay={
+  \draw[line width=0.5mm, prop!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, prop!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=prop!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
+    \fi%
+}
+]
+
+\CouleurTexteAccent{prop!80!black}
+\CouleursTabular{prop}{prop}{white}{prop!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{prop}{prop!30!white}{black}{prop!5}{prop}
+\couleurItem{prop}
+#2
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+}
+
+
+
+
+%Activités
+\NewDocumentEnvironment{Activite}{O{} +b}{
+\begin{tcolorbox}[
+enhanced,
+breakable,
+before skip=2mm,after skip=2mm,
+colback=white,%act!2!white,
+colframe=act!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!act]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=act!100!black,right color=act!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{\liencontent{Activité}{#1}}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{act!80},
+borderline south={0.05mm}{0pt}{act!80!black},
+overlay={
+  \draw[line width=0.5mm, act!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, act!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=act!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
+    \fi%
+}
+]
+
+\CouleurTexteAccent{act!80!black}
+\CouleursTabular{act}{act}{white}{act!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{act}{act!30!white}{black}{act!5}{act}
+\couleurItem{act}
+#2
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+}
+
+
+
+
+%Méthodes
+\NewDocumentEnvironment{Methode}{O{} +b}{
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=white,%meth!2!white,
+colframe=meth!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!meth]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=meth!100!black,right color=meth!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{\liencontent{Méthode}{#1}}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{meth!80},
+borderline south={0.05mm}{0pt}{meth!80!black},
+overlay={
+  \draw[line width=0.5mm, meth!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, meth!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=meth!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
+    \fi%
+}
+]
+
+\CouleurTexteAccent{meth!80!black}
+\CouleursTabular{meth}{meth}{white}{meth!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{meth}{meth!30!white}{black}{meth!5}{meth}
+\couleurItem{meth}
+#2
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+}
+
+
+\newtcolorbox{pointerBox}[1][]{%
+  colback=red!2!white,
+  colframe=red!75!black,
+  fonttitle=\bfseries,
+  title=#1}
+
+%Punitions
+\newtcolorbox{PunitionBox}{enhanced,
+before skip=2mm,after skip=2mm,
+colback=defi!2!white,colframe=defi!50,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!defi]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=defi!100!black,right color=defi!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{Punition}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{defi!80},
+borderline south={0.05mm}{0pt}{defi!80!black},
+overlay={
+  \draw[line width=0.5mm, defi!50] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, defi!50] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+      \node[anchor=north east, fill=white, draw=defi!50, rounded corners] at (frame.north east) {\begin{minipage}{0.7\textwidth} \textbf{Prénom : }\masquer{Nom et prénom de l'élève puni \hfill \phantom{a}}\textbf{Classe : }\masquer{Classe \ldots\ldots} \end{minipage} };
+}}
+
+\newcommand\punition[1]{
+\begin{PunitionBox}
+
+\phantom{a}\\\phantom{a}\\
+\boite{Motif }{\vspace{1cm}}
+
+\tcblower
+
+\hfill \begin{minipage}{0.7\textwidth} \textbf{Prénom : }\masquer{Nom et prénom de l'élève puni \hfill \phantom{a}}\textbf{Classe : }\masquer{Classe \ldots}\hfill \end{minipage}\\
+
+\boite{Sujet}{\vspace{2cm}}
+
+\textbf{A rendre pour le : } \masquer{\today} \hfill \textbf{Rendu le : } \masquer{\today} \hfill \boiteT[6cm]{Signature des parents}{\phantom{a} \vspace{1cm}}\hfill
+
+
+
+
+\end{PunitionBox}
+}
+
+\NewDocumentEnvironment{cracked}{O{Propriété} O{} O{orange} O{orange} O{2.5cm} +b}
+{%
+\begin{tcolorbox}[
+    enhanced,
+    frame code = {},
+    interior code = {},
+    colback=white,
+    drop shadow,
+    overlay={
+        % On dessine l'overlay du cadre sauf sous le titre
+        \filldraw[
+            decoration={random steps, segment length=0.4cm},
+            decorate,
+            draw=#3, % Utiliser la couleur passée en argument
+            ultra thick,
+            fill=#3!5!white
+        ] (frame.south west) rectangle (frame.north east);
+        
+        % Le node qui contient le titre avec une police sans empattement et en gras large
+        \node[
+            rotate=10,
+            anchor=north west,
+            align=center,
+            draw=#4, % Utiliser la couleur passée en argument
+            fill=#4, % Utiliser la couleur passée en argument
+            decoration={random steps, segment length=0.2cm},
+            decorate,
+            text=white,
+            text width=#5, % Largeur du titre ajustée
+            inner ysep=3pt,
+            inner xsep=5pt,
+            ultra thick,
+            font={\bfseries\fontsize{16pt}{20pt}\selectfont}, % Police sans empattement, large et gras
+        ] at ([xshift=-3mm, yshift=-3mm]frame.north west) {\centering\textbf{#1}}; % Titre personnalisé passé en argument
+
+        \ifx#2\empty
+      \else
+        \node[anchor=north east, fill=white, draw=#3!50, rounded corners] at ([xshift=-0.1\columnwidth,yshift=-0.25cm]frame.north east) 
+        {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+          \centering \textbf{#2}
+        \end{minipage}}; % Correctement fermer la minipage ici
+      \fi%
+    },
+    title={},
+    attach boxed title to top left={yshift=-6mm, xshift=-1mm},
+    boxed title style = {
+        interior code = {}, 
+        frame code = {},
+        center title,
+    },
+    title style = {\color{white}},
+    colframe=#3, % Couleur du cadre passée en argument
+    colback=white,
+    fonttitle = {\large\textbf},
+    left=5mm,   % Ajuster la marge à gauche
+    right=5mm,  % Ajuster la marge à droite
+    top=10mm,   % Ajuster la marge en haut (ajouté plus de marge pour le titre)
+    bottom=5mm, % Ajuster la marge en bas
+    drop fuzzy shadow,
+]
+}
+{%
+\CouleurTexteAccent{#3!80!black}
+\CouleursTabular{#3}{#3}{white}{#3!5}{blue!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{#3}{#3!30!white}{black}{#3!5}{#3}
+\couleurItem{#3}
+#6
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+
+\end{tcolorbox}
+}
+%\begin{cracked}[Exemple][red][red] test \end{cracked}
+
+
+
+\endinput

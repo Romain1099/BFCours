@@ -99,7 +99,7 @@ Dans le tableau suivant, remplir les cases pour t'aider dans tes révisions.\\
     \end{minipage}%
   }%
   \renewcommand{\footrulewidth}{0.4pt}
-  %\renewcommand{\footrule}{\vskip-10pt \tikz \draw [decorate,decoration={snake,amplitude=0.5mm,segment length=2cm}] (0,0) -- (\textwidth,0); \vskip 10pt}   
+  %\renewcommand{\footrule}{\vskip-10pt \tikz \draw[decorate,decoration={snake,amplitude=0.5mm,segment length=2cm}] (0,0) -- (\textwidth,0); \vskip 10pt}   
 }
 
 
@@ -111,6 +111,8 @@ Dans le tableau suivant, remplir les cases pour t'aider dans tes révisions.\\
     colback=white,
     colframe=white,
     boxrule=0pt,
+    left=0pt,
+    right=0pt,
     sharp corners,
     interior style={
       left color=gray!60,
@@ -120,33 +122,114 @@ Dans le tableau suivant, remplir les cases pour t'aider dans tes révisions.\\
     borderline north={1pt}{0pt}{shading angle=90, left color=gray!80, right color=gray!10},
     borderline south={1pt}{0pt}{shading angle=90, left color=gray!80, right color=gray!10}
   ]
-   \begin{minipage}{1.5cm}
-    \begin{tcolorbox}[
-      width=1.5cm,
-      height=1.4cm,
-      colback=gray!60,
-      colframe=gray!60,%black,
-      valign=center,
-      halign=center,
-      boxrule=0pt,
-      sharp corners,
-      left=0pt,  % Ajouté ici
+  \begin{tcbraster}[
+    raster columns     = 9,
+    raster width       = \textwidth,
+    %size               = fbox,
+    raster equal height,
+    raster column skip = 5pt,
+    raster row skip    = 1pt
+  ]%
+      \begin{tcolorbox}[
+        width=1.5cm,
+        height=1.4cm,
+        colback=gray!60,
+        colframe=gray!60,%black,
+        valign=center,
+        halign=center,
+        boxrule=0pt,
+        sharp corners,
+        left=0pt,  % Ajouté ici
         right=0pt  % Ajouté ici
-    ]
-
-\contour{white}{\textcolor{black}{\Large #1}}
-%\textcolor{white}{\Large #1}
-      \end{tcolorbox}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{\dimexpr\textwidth-2.5cm}
-      %\hspace{2cm}\textbf{\Large #6 : #2}
-	\textbf{\Large{#6#2}}
-    \end{minipage}
+      ]
+        \contour{white}{\textcolor{black}{\Large #1}}
+      \end{tcolorbox}% Carré avec le label
+      \begin{tcolorbox}[raster multicolumn=6, valign=center, blankest, width=\textwidth, boxrule=2pt, arc=2pt,bottom=0pt, auto outer arc, boxsep=0pt, nobeforeafter]
+        \acc{\large{#6#2}}
+      \end{tcolorbox}%Titre du document
+      \begin{tcolorbox}[raster multicolumn=2, blankest, width=\textwidth, boxrule=2pt, arc=2pt,bottom=0pt, auto outer arc, boxsep=0pt, nobeforeafter]%0.280
+        #5
+      \end{tcolorbox}% Espace classe et date
+    \end{tcbraster}
   \end{tcolorbox}
-   %\tableofcontents % Génère le sommaire
-   %\section*{Index des Compétences}
-   #5
 }
 
+\NewDocumentCommand{\chapEval}{O{} m m m m m}{
+  \fancypagestyle{monStyleEval}{%
+  \fancyfoot[R]{%
+    \tikz[baseline]{
+	\addtocounter{pagecounter}{1}
+ \node [circle, fill=gray!80!black, scale=0.8, text=white] (leftnode) {\textbf{\arabic{pagecounter}}};
+    }%
+
+  }%
+  \fancyfoot[L]{%
+%	\hspace{1.5cm}
+    \begin{minipage}[t]{0.4\textwidth}
+      \scriptsize \textbf{#6\ #2} % Remplacer par le titre du chapitre
+    \end{minipage}%
+}
+   \fancyfoot[C]{
+    \begin{minipage}[t]{0.4\textwidth}
+
+	\hfill \scriptsize \textbf{#3\ #4} % Remplacer par le nom de l'établissement
+    \end{minipage}%
+  }%
+  \renewcommand{\footrulewidth}{0.4pt}
+  %\renewcommand{\footrule}{\vskip-10pt \tikz \draw[decorate,decoration={snake,amplitude=0.5mm,segment length=2cm}] (0,0) -- (\textwidth,0); \vskip 10pt}   
+}
+
+
+  \pagestyle{monStyleEval}
+  \begin{tcolorbox}[
+    enhanced,
+    width=\textwidth,
+    height=1.5cm,
+    colback=white,
+    colframe=white,
+    boxrule=0pt,
+    left=0pt,
+    right=0pt,
+    sharp corners,
+    interior style={
+      left color=gray!60,
+      right color=gray!10
+    },
+    valign=center,
+    borderline north={1pt}{0pt}{shading angle=90, left color=gray!80, right color=gray!10},
+    borderline south={1pt}{0pt}{shading angle=90, left color=gray!80, right color=gray!10}
+  ]
+  \begin{tcbraster}[
+    raster columns     = 9,
+    raster width       = \textwidth,
+    %size               = fbox,
+    raster equal height,
+    raster column skip = 5pt,
+    raster row skip    = 1pt
+  ]%
+      \begin{tcolorbox}[
+        width=1.5cm,
+        height=1.4cm,
+        colback=gray!60,
+        colframe=gray!60,%black,
+        valign=center,
+        halign=center,
+        boxrule=0pt,
+        sharp corners,
+        left=0pt,  % Ajouté ici
+        right=0pt  % Ajouté ici
+      ]
+        \contour{white}{\textcolor{black}{\Large #1}}
+      \end{tcolorbox}% Carré avec le label
+      \begin{tcolorbox}[raster multicolumn=4, valign=center, blankest, width=\textwidth, boxrule=2pt, arc=2pt,bottom=0pt, auto outer arc, boxsep=0pt, nobeforeafter]
+        \acc{\large{#6#2}}
+      \end{tcolorbox}%Titre du document
+      \begin{tcolorbox}[raster multicolumn=4, blankest, width=\textwidth, boxrule=2pt, arc=2pt,bottom=0pt, auto outer arc, boxsep=0pt, nobeforeafter]%0.280
+        \phantom{A}\acc{Classe :} \tccrep[seyes=false,colback=white]{1.5cm}{}
+        \phantom{A}\acc{Date :} \tccrep[seyes=false,colback=white]{3.5cm}{}
+      \end{tcolorbox}% Espace classe et date
+    \end{tcbraster}
+  \end{tcolorbox}
+   #5
+}
 \endinput

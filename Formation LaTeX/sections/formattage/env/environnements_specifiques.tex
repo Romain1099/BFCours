@@ -1,0 +1,187 @@
+\subsection{Mise en page avancée}
+
+\begin{Methode}[Grilles et structures]
+    Pour créer des structures complexes, utiliser :
+    \begin{tcbenumerate}[2]
+        \tcbitem La commande suivante est à la base des colonnes avec \frquote{tcolorbox} : 
+        
+        \showenv[red]{tcbraster}[[options]]
+
+        Options principales:
+        \begin{itemize}[label=$\bullet$]
+            \item \acc{raster columns=n} : Nombre de colonnes.
+            \item \acc{size=fbox} : Taille des cellules.
+            \item \acc{raster equal height} : Hauteur égale pour toutes les cellules.
+            \item \acc{raster column skip=1pt} : Espacement entre colonnes.
+            \item \acc{raster row skip=1pt} : Espacement entre lignes.
+        \end{itemize}
+        
+        Dans un \texttt{tcbraster}, chaque élément doit être une \texttt{tcolorbox} ou une commande qui génère une \texttt{tcolorbox}.
+        
+        \tcbitem  On utilisera une version pratique de \bfcours\ qui simplifie la structure en colonnes :
+
+        \showenv[green]{Multicolonnes}[\{NbColonnes\}[Options]][
+            \showcmd{tcbitem}[[options]] Contenu
+        ]\\
+
+        Commentaires : 
+        \begin{itemize}[label=$\bullet$]
+            \item Dispose le contenu en \acc{grille} en le stockant dans des \acc{tcolorbox}.
+            \item La commande \showcmd{tcbitem} permet de changer de boite - et donc de colonne. 
+            \item Les options de MultiColonnes modifient de façon globale le style des boites. 
+            \item Les options de tcbitem modifie de façon locale le style de la boite. 
+        \end{itemize}
+
+    \end{tcbenumerate}
+\end{Methode}
+
+\begin{Remarque}
+    Les options ci-dessus sont celles utilisables dans le package \vocref{https://ctan.org/pkg/tcolorbox}{tcolorbox}.    
+    
+    Puisque \acc{tout est boite}, la documentation de ce package est \acc{l'outil par exellence} pour produire du contenu de qualité et utiliser correctement les nombreuses options disponibles. 
+\end{Remarque}
+%\newpage
+\begin{EXO}{Structure en grille}{ENV-3}
+    \tcbitempoint{2}Créer une structure en grille avec 3 colonnes contenant différentes propriétés mathématiques :
+
+\begin{tcolorbox}[blankest]
+    \begin{tcbraster}[
+            raster columns=3, 
+            size=fbox,
+            raster width=0.99\textwidth, 
+            raster equal height, 
+            raster column skip=1pt, 
+            raster row skip=1pt
+        ]
+        \begin{tcolorbox}[title=Produit remarquable]
+            \begin{center}
+            $(a+b)^2 = a^2 + 2ab + b^2$
+            \end{center}
+        \end{tcolorbox}
+        \begin{tcolorbox}[title=Identité trigonométrique]
+            \begin{center}
+            $\sin^2(\alpha) + \cos^2(\alpha) = 1$
+            \end{center}
+        \end{tcolorbox}
+        \begin{tcolorbox}[title=Dérivée d'un produit]
+            \begin{center}
+            $(u \times v)' = u' \times v + u \times v'$
+            \end{center}
+        \end{tcolorbox}
+    \end{tcbraster}
+\end{tcolorbox}
+
+\exocorrection
+
+% Solution avec showcmd et showenv
+\showenv[orange]{tcolorbox}[[blankest]][
+    \showenv[red]{tcbraster}[][[\textcolor{green!75!black}{\% Options du raster}\\
+                    \phantom{AAA}raster columns=3,\textcolor{green!75!black}{\% Trois colonnes}\\
+                    \phantom{AAA}size=fbox,\textcolor{green!75!black}{\% Style compact pour les boites}\\
+                    \phantom{AAA}raster equal height=rows,\textcolor{green!75!black}{\% Même hauteur par ligne} \\
+                    \phantom{AAA}raster width=0.99\showcmd{textwidth}\textcolor{green!75!black}{\% Taille}, \\
+                    \phantom{AAA}raster column skip=1pt,\textcolor{green!75!black}{\% Marge entre chaque colonne} \\
+                    \phantom{AAA}raster row skip=1pt\textcolor{green!75!black}{\% Marge entre chaque ligne}\\
+                    ]\\
+        \showenv[blue]{bfbox}[[title=Produit remarquable]][
+            \showenv[blue]{center}[][
+                \$(a+b)\^\ 2 = a\^\ 2 + 2ab + b\^\ 2\$\\
+            ]
+        ]\\
+        \showenv[purple]{tcolorbox}[[title=Identité trigonométrique]][
+            \showenv[blue]{center}[][
+                \$\showcmd{sin}\^\ 2(\showcmd{alpha}) + \showcmd{cos}\^\ 2(\showcmd{alpha}) = 1\$
+            ]
+        ]\\
+        \showenv[green]{tcolorbox}[[title=dérivée d'un produit]][
+            \showenv[blue]{center}[][
+                \$(u \showcmd{times} v)' = u' \showcmd{times} v + u \showcmd{times} v'\$
+            ]
+        ]
+    ]
+]
+\end{EXO}
+
+\newpage
+
+\vspace{-0.7cm}\begin{Exemple}[Environnement MultiColonnes]
+    \vspace{-0.35cm}\showenv{MultiColonnes}[\{2\}[colframe=black,boxrule=0.4pt,halign=center]\textcolor{green!75!black}{\textit{\% Default [blank]}}][
+  \showcmd{tcbitem}[[valign=bottom]] Hauteur adaptée pour \acc{chaque ligne}.\\
+  \showcmd{tcbitem}[[title=La seule boite titrée,colframe=black,boxrule=0.4pt]] Bonjour !\\
+  \showcmd{tcbitem}[[raster multicolumn=2,halign=center]]Fusion facile..\\
+  \showcmd{tcbitem}[[colback=green!25!white]]Ligne 3 colonne 1\\
+  \showcmd{tcbitem}[] Utilisation basique.
+]
+
+\vspace{0.2cm}\hrule
+
+\vspace{0.2cm}
+
+\acc{Rendu du code : }
+
+\begin{MultiColonnes}{2}[colframe=black,boxrule=0.4pt,halign=center]%
+  \tcbitem[valign=bottom] Alignement disponible.
+  \tcbitem[title=La seule boite titrée,colframe=black,boxrule=0.4pt] Hauteur adaptée \acc{par ligne}.
+    \tcbitem[raster multicolumn=2,halign=center] Fusion facile..
+  \tcbitem[colback=green!25!white] Ligne 3 colonne 1
+  \tcbitem Utilisation basique.
+\end{MultiColonnes}
+
+\vspace{0.2cm}\hrule
+
+\vspace{0.2cm}
+
+\acc{Version utilisant les options par défaut : } ( enlever les \acc{options})
+
+\begin{MultiColonnes}{2}%
+    \tcbitem[valign=bottom] Alignement disponible.
+    \tcbitem[title=La seule boite titrée,colframe=black,boxrule=0.4pt] Hauteur adaptée \acc{par ligne}.
+    \tcbitem[raster multicolumn=2,halign=center] Fusion facile..
+  \tcbitem[colback=green!25!white] Ligne 3 colonne 1
+  \tcbitem Utilisation basique.
+\end{MultiColonnes}
+
+\vspace{0.2cm}\hrule
+
+\vspace{0.2cm}
+
+\acc{Style modifié : } en utilisant un \showcmd[orange]{tcbset} précis. 
+
+\begin{MultiColonnes}{4}%
+\tcbitem[raster multicolumn=2] \showcmd[orange]{tcbset}\{\\
+  \phantom{A}ColonnesBaseStyle/.style=\{\\
+    \phantom{AA}top=0pt,\\
+    \phantom{AA}bottom=0pt,\\
+    \phantom{AA}left=0pt,\\
+    \phantom{AA}right=0pt,\\
+    \phantom{AA}colback=blue!5!white,\\
+    \phantom{AA}colframe=blue!75!black,\\
+    \phantom{AA}before title={\showcmd{dimcoloredsquare}[\{white\}\{1.5\}]},\\
+    \phantom{AA}after title=\showcmd{hfill}\showcmd{today}\},\\
+    \phantom{AA}boxrule=0.4pt\\
+    \phantom{AA}\}\\
+\}
+\tcbitem[raster multicolumn=2] 
+    \tcbset{
+    ColonnesBaseStyle/.style={
+        top=0pt,
+        bottom=0pt,
+        left=0pt,
+        right=0pt,
+        colback=blue!5!white,
+        colframe=blue!75!black,
+        before title={\dimcoloredsquare{white}{1.5}\ },
+        after title={\ \today},
+        boxrule=0.4pt
+    }
+    }
+    \begin{MultiColonnes}{2}%
+        \tcbitem[valign=bottom] Alignement disponible.
+        \tcbitem[title=La seule boite titrée,colframe=black,boxrule=0.4pt] Hauteur adaptée \acc{par ligne}.
+        \tcbitem[raster multicolumn=2,halign=center] Fusion facile..
+        \tcbitem[colback=green!25!white] Ligne 3 colonne 1
+        \tcbitem Utilisation basique.
+    \end{MultiColonnes}
+\end{MultiColonnes}
+\end{Exemple}
+\vspace{-0.7cm}

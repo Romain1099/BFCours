@@ -1,0 +1,352 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=1cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+%\usepackage{bfcours-fonts}
+\usepackage{fourier}
+%\usepackage{bfcours-quatrieme}
+\usepackage{verbatim}
+
+\tcbuselibrary{documentation}
+
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]
+at (frame.south west) {\thetags[0]} ;}
+%]%obligatoire
+}
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+%\usepackage{bfcours-fonts-dys}
+\usepackage{listings} % Pour afficher le code
+\lstdefinestyle{tcblatex}{
+    language=[LaTeX]TeX,
+    basicstyle=\ttfamily\small,
+    numbers=none,
+    keywordstyle=\bfseries\color{blue!70!black},
+    morekeywords={begin,end,documentclass,usepackage,newcommand,renewcommand,section,subsection,item,maCommandeExemple,tcbitem,boite},
+    commentstyle=\itshape\color{green!60!black},
+    stringstyle=\color{purple!70!black},
+    texcsstyle=*\color{red!70!black},
+    emphstyle=\color{orange!90!black},
+    emph={figure,table,tabular,array,displaymath,equation,eqnarray,align,gather,verbatim,quote,enumerate,itemize,proof,theorem,Exercice,Methode,Definition,Theorem,EXOEVAL,Propriete,tcbenumerate,Colonnes,tcbraster,tcolorbox,None,tcbtab,tcbtabx,},
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=false,
+    keepspaces=true,
+    columns=flexible,
+    tabsize=2
+}
+
+%\tcbuselibrary{minted}
+\tcbuselibrary{listings}
+\tcbset{listing engine=listings}
+\usepackage{soul}
+\newcommand{\bfcours}{\acc{BFcours}}
+\newcommand{\mathalea}{\acc{MathAléa}}
+
+\newcommand{\maCommandeExemple}[1]{Bonjour #1 !}
+
+\NewTotalTCBox{\cmverb}{ O{blue} v !O{} }{ fontupper=\ttfamily,nobeforeafter,tcbox raise base,arc=0pt,outer arc=0pt,
+top=0pt,bottom=0pt,left=0mm,right=0mm,
+leftrule=0pt,rightrule=0pt,toprule=0.3mm,bottomrule=0.3mm,boxsep=0.5mm,
+colback=#1!10!white,colframe=#1!50!black,#3}{#2}
+\NewTotalTCBox{\cmbox}{ O{blue} m !O{} }{ fontupper=\ttfamily,nobeforeafter,tcbox raise base,arc=0pt,outer arc=0pt,
+top=0pt,bottom=0pt,left=0mm,right=0mm,
+leftrule=0pt,rightrule=0pt,toprule=0.3mm,bottomrule=0.3mm,boxsep=0.5mm,
+colback=#1!10!white,colframe=#1!50!black,#3}{#2}
+
+ \newcommand{\bs}{$\backslash$}
+
+\NewDocumentCommand{\showcmd}{O{blue} m O{}}{%
+  \cmbox[#1]{\bs #2#3}
+}
+
+\NewDocumentCommand{\showcmdpar}{O{purple} m O{}}{%
+  \cmbox[#1]{$\backslash$#2}\{
+	\hspace{0.5cm}\begin{minipage}{\textwidth-0.5cm}#3\end{minipage}%
+   \}
+}
+% Définition de la boîte colorée pour l'affichage de code
+\NewTotalTCBox{\envbox}{ O{red} m !O{} }{ 
+  fontupper=\ttfamily,
+  nobeforeafter,
+  tcbox raise base,
+  arc=0pt,
+  outer arc=0pt,
+  top=0pt,
+  bottom=0pt,
+  left=0mm,
+  right=0mm,
+  leftrule=0pt,
+  rightrule=0pt,
+  toprule=0.3mm,
+  bottomrule=0.3mm,
+  boxsep=0.5mm,
+  colback=#1!10!white,
+  colframe=#1!50!black,
+  #3
+}{#2}
+
+% Commande améliorée pour afficher la syntaxe d'un environnement
+\NewDocumentCommand{\showenv}{O{red} m O{} O{Contenu}}{%
+  \showcmd[#1]{begin\{#2\}#3}
+	
+	\hspace{0.5cm}\begin{minipage}{0.9\textwidth}#4\end{minipage}
+
+  \showcmd[#1]{end\{#2\}}
+}
+
+
+% Configuration pour JSON
+\definecolor{stringcolor}{RGB}{42,0,255}
+\definecolor{numbercolor}{RGB}{0,128,0}
+\definecolor{bracescolor}{RGB}{150,0,0}
+
+\lstdefinelanguage{json}{
+    basicstyle=\ttfamily\footnotesize,
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    stringstyle=\color{stringcolor},
+    keywordstyle=\color{bracescolor},
+    morekeywords={},
+    literate=
+     *{0}{{{\color{numbercolor}0}}}{1}
+      {1}{{{\color{numbercolor}1}}}{1}
+      {2}{{{\color{numbercolor}2}}}{1}
+      {3}{{{\color{numbercolor}3}}}{1}
+      {4}{{{\color{numbercolor}4}}}{1}
+      {5}{{{\color{numbercolor}5}}}{1}
+      {6}{{{\color{numbercolor}6}}}{1}
+      {7}{{{\color{numbercolor}7}}}{1}
+      {8}{{{\color{numbercolor}8}}}{1}
+      {9}{{{\color{numbercolor}9}}}{1}
+      {:}{{{\color{bracescolor}{:}}}}{1}
+      {,}{{{\color{bracescolor}{,}}}}{1}
+      {\{}{{{\color{bracescolor}{\{}}}}{1}
+      {\}}{{{\color{bracescolor}{\}}}}}{1}
+      {[}{{{\color{bracescolor}{[}}}}{1}
+      {]}{{{\color{bracescolor}{]}}}}{1},
+}
+
+\renewcommand\SequenceItem[5][]{
+\stepcounter{tmp}%
+%\xdef\mycommentary{#4}
+%\xdef\SequenceItemription{#3}
+\node[myshape,#2] (foo\thetmp) {};
+\node[font=\color{white}] at (foo\thetmp) {\begin{minipage}{2.5cm}\begin{center}#3\end{center}\end{minipage}};
+\node[mynewtext,anchor=north west] (desc\thetmp) at (foo\thetmp.north west) 
+  {%
+  \tcbsidebyside[
+    bicolor,
+    height=#1,
+    width=15cm,
+    nobeforeafter,
+    bottom=2pt,
+    colback=myblue!25!white,
+    colbacklower=myblue!10!white,
+    fonttitle=\bfseries,
+    center title,
+    drop lifted shadow,
+    colframe=myblue,
+    sharp corners=northwest,
+  ]{
+        #4
+   }{
+        #5
+    }
+  };
+}
+%\currentAccentColor
+\newcommand{\relierhautdepart}[2][depart]{
+  \begin{tikzpicture}[remember picture, overlay]
+    \draw[->, thick, dashed, color=monrose, line width=1.5pt, opacity=0.7] 
+        ($(pic cs:#1) + (0.03, 0.15)$) to[out=45, in=90, looseness=1.8] ($(pic cs:#2) + (0.1, 0.1)$);
+  \end{tikzpicture}
+}
+\newcommand{\relierbasdepart}[2][depart]{
+  \begin{tikzpicture}[remember picture, overlay]
+    \draw[->, thick, dashed, color=\currentAccentColor, line width=1.2pt, opacity=0.7] 
+          (pic cs:#1) to[out=-90, in=90, looseness=3] (pic cs:#2);
+  \end{tikzpicture}
+}
+
+% Pour l'activité bfcours-1 seulement 
+% Commandes pour les flèches de connexion
+\newcommand{\relierhaut}[3][monrose]{
+  \begin{tikzpicture}[remember picture, overlay]
+    \draw[->, thick, dashed, color=#1, line width=1.5pt, opacity=0.8] 
+        (#2) to[out=45, in=180, looseness=1.2] (#3);
+  \end{tikzpicture}
+}
+
+\newcommand{\relierbas}[3][monbleu]{
+  \begin{tikzpicture}[remember picture, overlay]
+    \draw[->, thick, dashed, color=#1, line width=1.5pt, opacity=0.8] 
+        (#2) to[out=-45, in=180, looseness=1.2] (#3);
+  \end{tikzpicture}
+}
+
+%
+
+\usepackage{dirtree}
+\newtcbox{\pcadre}[1][red]{on line,
+arc=7pt,colback=#1!10!white,colframe=#1!50!black,
+before upper={\rule[-3pt]{0pt}{10pt}},boxrule=1pt,
+boxsep=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt}
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+\input{enonce_figures}
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+
+\newtcbox{\displayFilePath}[1][]{%
+  enhanced,
+  nobeforeafter,
+  tcbox raise base,
+  fontupper=\ttfamily\footnotesize,
+  colback=black,
+  colframe=black,
+  coltext=white,
+  arc=1pt,
+  boxsep=2pt,
+  left=2pt,
+  right=2pt,
+  top=2pt,
+  bottom=2pt,
+  #1
+}
+
+
+% Définition de la commande \bouton
+\newcommand{\bouton}[1]{%
+  \tikz[baseline=(text.base)]{%
+    \node[
+      draw=gray!60,
+      fill=gray!10,
+      rounded corners=2pt,
+      inner sep=2pt,
+      inner ysep=1pt,
+      text height=1.5ex,
+      text depth=.25ex
+    ] (text) {#1};
+  }%
+}
+\displayitempointsfalse % Ne pas afficher les boîtes
+
+\newcommand{\mycomment}[1]{
+  \textcolor{green!75!black}{\% #1}
+}
+
+% Commandes robustes pour afficher du XML
+\newcommand{\safett}[1]{{\ttfamily\detokenize{#1}}}
+\newcommand{\xmltag}[1]{\texttt{<}\safett{#1}\texttt{>}}
+\newcommand{\xmlctag}[1]{\texttt{</}\safett{#1}\texttt{>}}
+\newcommand{\xmlattr}[2]{\safett{#1}\texttt{="}\safett{#2}\texttt{"}}
+
+% Boîte pour afficher du code XML
+\NewTotalTCBox{\xmlbox}{ O{blue} m !O{} }{ 
+  fontupper=\ttfamily,
+  nobeforeafter,
+  tcbox raise base,
+  arc=0pt,
+  outer arc=0pt,
+  top=0pt,
+  bottom=0pt,
+  left=0mm,
+  right=0mm,
+  leftrule=0pt,
+  rightrule=0pt,
+  toprule=0.3mm,
+  bottomrule=0.3mm,
+  boxsep=0.5mm,
+  colback=#1!5!white,
+  colframe=#1!30!black,
+  #3
+}{#2}
+
+
+
+\begin{document}
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{0}
+
+\def\points{1}
+\def\rdifficulty{1}
+\chapitre[
+    Prof% : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
+    ]{
+    \LaTeX% : ,Equations
+    }{
+    Boum% : Collège,Lycée
+    }{
+    Factory% : Amadis Jamyn,Eugène Belgrand
+    }{
+    % : ,\tableauPresenteEvalSixieme{}{10},\tableofcontents
+    }{
+    Formation % : Cours,Exercices
+    }
+
+    \tableofcontents
+    
+    \newpage 
+    \phantom{a}
+    \vfill
+    \tableaurecapsequence{
+        \centering\textbf{Nombre d'heures} & \multicolumn{4}{c}{$6$ \ heures}\\ 
+	\hline
+    
+        \enteteContenu%
+    
+        \competence{Se familiariser avec les environnements de travail \LaTeX}
+        \competence{Comprendre le fonctionnement général d'un document \LaTeX}
+        \competence{Utiliser l'environnement EXO}
+        \competence{Utiliser les exercices générés par la plateforme \mathalea}
+        \competence{Utiliser les environnements didactiques de \bfcours}
+        \competence{Utiliser des outils numériques pour faciliter l'utilisation de \LaTeX}
+        \competence{Mettre en place un agent IA dédié à \LaTeX}
+        \competence{Créer son propre prompt optimisé}
+        \competence{Créer son propre package}
+    }
+    
+    \vfill
+    \printvocindex
+    \vfill
+    \newpage
+    
+\section{Introduction}
+\input{Plan_formation.tex}
+\newpage
+\input{enonce}% : \input{enonce},
+
+\newpage
+
+\section{Correction des exercices}
+
+\rdexocorrection{0}
+
+\end{document}

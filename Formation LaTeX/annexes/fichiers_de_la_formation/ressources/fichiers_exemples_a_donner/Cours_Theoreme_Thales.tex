@@ -1,0 +1,121 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours-imp}
+\usepackage{bfcours-fonts}
+%\usepackage{bfcours-fonts-dys}
+\usepackage{rdcheckbox}
+\definecolor{myblue}{RGB}{0,120,200}
+\definecolor{myred}{RGB}{180,0,0}
+\definecolor{graybrick}{RGB}{200,200,200}
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=false, correction color=monrose, correction font = \large\bfseries}
+
+\newcommand{\tikzinclude}[1]{%
+    \stepcounter{tikzfigcounter}%
+    \csname tikzfig#1\endcsname
+}
+\input{enonce_figures}
+
+\hypersetup{
+    pdfauthor={R.Deschamps},
+    pdfsubject={},
+    pdfkeywords={},
+    pdfproducer={LuaLaTeX},
+    pdfcreator={Boum Factory}
+}
+\NewDocumentEnvironment{mytresponsebox}{ m +b}
+  {
+    % Ouverture du tcolorbox
+    \begin{tcolorbox}[
+      enhanced,
+      colback=white,
+      colframe=black,
+      boxrule=0.6pt,
+      sharp corners,
+      left=0pt, right=0pt, top=4pt, bottom=4pt,
+      before skip=6pt, after skip=6pt,
+      fontupper=\normalsize,
+      lower separated,
+      title={}
+    ]
+    % Partie haute : le contenu de l'environnement
+    #2
+  }
+  {
+    \tcblower
+    #1
+    \end{tcolorbox}
+  }
+
+  %\input{commands_def.tex} replacé dans le package bfcours-commands.sty
+  \newtcolorbox{mycadre}{
+  colback=white,
+  colframe=\currentAccentColor,
+  boxrule=0.5pt,
+  sharp corners,
+  boxsep=5pt,
+  left=2pt,
+  right=2pt,
+  top=2pt,
+  bottom=2pt,
+  nobeforeafter,
+  breakable
+}
+\begin{document}
+
+\setcounter{pagecounter}{0}
+\setcounter{ExoMA}{0}
+\setcounter{prof}{0}
+
+\def\points{1}
+\def\rdifficulty{1}
+\chapitre[
+    $\mathbf{4^{\text{ème}}}$% : $\mathbf{6^{\text{ème}}}$,$\mathbf{5^{\text{ème}}}$,$\mathbf{4^{\text{ème}}}$,$\mathbf{3^{\text{ème}}}$,$\mathbf{2^{\text{nde}}}$,$\mathbf{1^{\text{ère}}}$,$\mathbf{T^{\text{Le}}}$,
+    ]{
+    Théorème de Thalès% : ,Equations
+    }{
+    Collège% : Collège,Lycée
+    }{
+    % : Amadis Jamyn,Eugène Belgrand
+    }{
+    % : ,\tableauPresenteEvalSixieme{}{10},\tableofcontents
+    }{
+    Cours :% : Cours,Exercices
+    }
+
+    \tableofcontents
+    
+    \vfill
+    \tableaucompetence{
+        \competence{Connaître le vocabulaire lié au théorème de Thalès}
+        \competence{Reconnaître une configuration de Thalès}
+        \competence{Appliquer le théorème de Thalès pour calculer des longueurs}
+        \competence{Appliquer la réciproque du théorème de Thalès pour prouver que deux droites sont ou ne sont pas parallèles}
+        \competence{Rédiger une démonstration utilisant le théorème de Thalès}
+        \competence{Maîtriser l'égalité des produits en croix}
+        \competence{Connaître et utiliser la définition des triangles semblables}
+    }
+    \vfill
+    \printvocindex
+    \vfill
+\input{enonce}% : \input{enonce},
+
+\end{document}

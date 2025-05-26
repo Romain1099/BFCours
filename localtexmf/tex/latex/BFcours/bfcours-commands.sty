@@ -282,15 +282,14 @@ Je m'auto-évalue \textbf{avant} de commencer la fiche d'exercices, puis \textbf
     \hrule
 }
 \newcommand{\tableaucompetenceEval}[1]{
-        \begin{tcbtab}{|>{\raggedright\arraybackslash}p{0.62\textwidth}|>{\centering\arraybackslash}p{0.05\textwidth}|>{\centering\arraybackslash}p{0.06\textwidth}|>{\centering\arraybackslash}p{0.06\textwidth}|>{\centering\arraybackslash}p{0.09\textwidth}|}
-            \hline
-            \centering\textbf{Compétences évaluées} & \cellcolor{red!30!white}\textbf{MI} &\cellcolor{orange!30!white} \textbf{MF} &\cellcolor{yellow!30!white} \textbf{MS} &\cellcolor{green!30!white} \textbf{TBM} \\
+      \begin{tcbtab}{>{\raggedright\arraybackslash}p{0.56\textwidth}|>{\centering\arraybackslash}p{0.05\textwidth}|>{\centering\arraybackslash}p{0.06\textwidth}|>{\centering\arraybackslash}p{0.06\textwidth}|>{\centering\arraybackslash}p{0.09\textwidth}}
+        \centering \bfseries Compétences évaluées & \cellcolor{red!10!white}\mi &\cellcolor{orange!10!white} \mf &\cellcolor{yellow!10!white} \ms &\cellcolor{green!10!white} \tbm \\
             \hline
             #1
         \end{tcbtab}
 }
 \newcommand{\tableaucompetence}[1]{
-%textbf{avant} de commencer la fiche d'exercices, puis \textbf{à la fin} de la fiche d'exercices : 
+%textbf{avant} de commencer la fiche d'exercices, puis \textbf{à la fin} de la fiche d'exercices :
        \begin{tcbtab}{|>{\raggedright\arraybackslash}p{0.68\textwidth}|*{4}{>{\centering\arraybackslash}p{0.05\textwidth}|}} 
             \hline
             \centering\textbf{Compétences travaillées} & \cellcolor{red!30!white}\textbf{MI} &\cellcolor{orange!30!white} \textbf{MF} &\cellcolor{yellow!30!white} \textbf{MS} &\cellcolor{green!30!white} \textbf{TBM} \\
@@ -411,13 +410,103 @@ mynewtext/.style={
   \end{tcolorbox}
 	\end{minipage} \\%\vspace{-0.5cm}
 }
-
-
+\newcommand{\tableauEval}[1]{
+  \begin{None}
+    \begin{tcbraster}[
+      raster columns     = 4,
+      raster width       = \textwidth,
+      %size               = fbox,
+      raster equal height,
+      raster column skip = 5pt,
+      raster row skip    = 1pt
+    ]%
+      \begin{tcolorbox}[raster multicolumn=3, colback=white, colframe=black, width=\textwidth,raster column skip = 5pt, boxrule=1pt, arc=2pt,bottom=0pt, auto outer arc, boxsep=0pt, left=1pt,right=1pt,top=0pt, nobeforeafter]%0.700
+        %\begin{tabularx}{\textwidth}{XXX}
+        \begin{tcbraster}[raster columns=2, raster equal height, raster width=\textwidth, boxrule=1pt, arc=2pt,bottom=0pt, auto outer arc, boxsep=0pt, nobeforeafter]%0.700
+          \begin{tcolorbox}[blankest]
+            \textbf{Nom :} \tcfillcrep{}
+          \end{tcolorbox}
+          \begin{tcolorbox}[blankest]
+            \textbf{Prénom :} \tcfillcrep{} 
+          \end{tcolorbox}
+        \end{tcbraster}
+        %\end{tabularx}
+      \end{tcolorbox}
+      \begin{tcolorbox}[colback=white, colframe=black, width=\textwidth, valign=center, boxrule=1pt, arc=2pt,top=2pt,bottom=0pt, auto outer arc, boxsep=0pt, nobeforeafter]%0.280
+        \textbf{Durée :} \hfill \overlaychrono{#1} \hfill\phantom{AA}
+      \end{tcolorbox}
+    \end{tcbraster}  
+  \end{None}
+}
+\newcommand{\tableauProjetEval}[1]{
+  \begin{None}
+    \begin{tcbraster}[
+      raster columns     = 4,
+      raster width       = \textwidth,
+      %size               = fbox,
+      raster equal height,
+      raster column skip = 5pt,
+      raster row skip    = 1pt
+    ]%
+      \begin{tcolorbox}[raster multicolumn=3, colback=white, colframe=black, width=\textwidth,raster column skip = 5pt, boxrule=0.4pt, arc=2pt,bottom=0pt, auto outer arc, boxsep=0pt, left=1pt,right=1pt,top=0pt, nobeforeafter]%0.700
+        %\begin{tabularx}{\textwidth}{XXX}
+        \begin{tcbraster}[raster columns=2, raster equal height, raster width=\textwidth, boxrule=0.4pt, arc=2pt,bottom=0pt, auto outer arc, boxsep=0pt, nobeforeafter]%0.700
+          \begin{tcolorbox}[blankest]
+            \textbf{Nom :} \tcfillcrep{}
+          \end{tcolorbox}
+          \begin{tcolorbox}[blankest]
+            \textbf{Prénom :} \tcfillcrep{} 
+          \end{tcolorbox}
+        \end{tcbraster}
+        %\end{tabularx}
+      \end{tcolorbox}
+      \begin{tcolorbox}[colback=white, colframe=black, width=\textwidth, valign=center,halign=center, boxrule=0.4pt, arc=2pt,top=2pt,bottom=0pt, auto outer arc, boxsep=0pt,bottomtitle=1.5pt,toptitle=1pt, nobeforeafter,title=Date de rendu :,fonttitle=\bfseries]%0.280
+        #1
+      \end{tcolorbox}
+    \end{tcbraster}  
+  \end{None}
+}
 %Commandes d'accentuation du texte 
-\newcommand{\voc}[1]{\textbf{\color{\currentAccentColor}#1}\index{#1}}
-\newcommand{\acc}[1]{\textbf{\color{\currentAccentColor}#1}}
+%\newcommand{\voc}[2][\currentAccentColor]{\textbf{\color{#1}#2}\index{#2}}
+\newcommand{\acc}[2][\currentAccentColor]{\textbf{\color{#1}#2}}
 \newcommand{\red}[1]{{\color{red}#1}}
 \newcommand{\blue}[1]{{\color{blue}#1}}
+
+\NewDocumentCommand{\surligner}{ O{blue} m }{%
+  \tcbox[
+    on line,
+    colback=#1!10!white,
+    colframe=#1!10!white,
+    size=fbox,
+    boxsep=0pt,
+    left=3pt,
+    right=3pt,
+    top=2pt,
+    bottom=2pt,
+    fontupper=\normalfont,
+    colupper=#1!75!black,
+    arc=5pt,
+    valign=center
+  ]{#2}%
+}
+
+\NewDocumentCommand{\encadrer}{ O{blue} m }{%
+  \tcbox[
+    on line,
+    colback=#1!5!white,
+    colframe=#1!75!black,
+    size=fbox,
+    boxsep=1pt,
+    left=3pt,
+    right=3pt,
+    top=2pt,
+    bottom=2pt,
+    fontupper=\normalfont,
+    colupper=black,
+    arc=5pt,
+    valign=center
+  ]{#2}%
+}
 
 \newcommand{\lien}[2]{\hyperref[#1]{\bfseries\color{\lienInterneColor}#2}}
 \newcommand{\vocref}[2]{
@@ -530,5 +619,139 @@ mynewtext/.style={
 \end{center}
 }
 
+%EMOJIS
+% Déclaration des emojis et des textes par défaut
+    \newcommand{\mi}{\textbf{MI}}
+    \newcommand{\mf}{\textbf{MF}}
+    \newcommand{\ms}{\textbf{MS}}
+    \newcommand{\tbm}{\textbf{TBM}}
 
+% Définition de la commande \setemoji pour activer ou désactiver les emojis
+\newboolean{emojion} % Déclare un booléen emojion
+
+\newcommand{\setupemojit}{
+    \setboolean{emojion}{true}
+     \renewcommand{\mi}{\emoji{upside-down-face}} % Upside-down face
+    \renewcommand{\mf}{\emoji{face-with-raised-eyebrow}} % Face with raised eyebrow
+    \renewcommand{\ms}{\emoji{slightly-smiling-face}} % Slightly smiling face
+    \renewcommand{\tbm}{\emoji{star-struck}} % Star-struck
+}
+
+\newcommand{\setupemojif}{
+    \setboolean{emojion}{false}
+    \renewcommand{\mi}{\textbf{MI}}
+    \renewcommand{\mf}{\textbf{MF}}
+    \renewcommand{\ms}{\textbf{MS}}
+    \renewcommand{\tbm}{\textbf{TBM}}
+}
+
+% Commande principale \setemoji
+\newcommand{\setemoji}[1]{
+    \ifthenelse{\equal{#1}{true}}{\setupemojit}{\setupemojif}
+}
+\setemoji{true}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\affiche}{O{0}m} {
+  % Vérification et stockage du code numérique de l'option
+  \int_set:Nn \l_tmpa_int { #1 }
+  
+  % Stockage du nombre
+  \fp_set:Nn \l_tmpb_fp { #2 }
+
+  % Logique basée sur le code
+  \int_compare:nNnTF { \l_tmpa_int } = { 1 } {
+    % Forcer les parenthèses
+    (\num{#2})
+  } {
+    \int_compare:nNnTF { \l_tmpa_int } = { -1 } {
+      % Forcer l'absence de parenthèses
+      \num{#2}
+    } {
+      % Par défaut : selon le signe
+      \fp_compare:nTF { \l_tmpb_fp < 0 } {
+        (\num{#2})
+      } {
+        \num{#2}
+      }
+    }
+  }
+}
+\ExplSyntaxOff
+
+%Commandes logique
+% Définition des commandes \Si et \Alors pour les phrases logiques
+% Ces commandes créent des tcolorbox inline avec une couleur personnalisable
+
+\NewDocumentCommand{\Si}{ O{red} }{%
+  \tcbox[
+    on line,
+    colback=#1!10!white,
+    colframe=#1!10!white,
+    size=fbox,
+    boxsep=0pt,
+    left=3pt,
+    right=3pt,
+    top=2pt,
+    bottom=2pt,
+    fontupper=\large,
+    colupper=#1!75!black,
+    sharp corners,
+    valign=center
+  ]{Si}\ %
+}
+
+\NewDocumentCommand{\Alors}{ O{blue} }{%
+  \tcbox[
+    on line,
+    colback=#1!10!white,
+    colframe=#1!10!white,
+    size=fbox,
+    boxsep=0pt,
+    left=3pt,
+    right=3pt,
+    top=2pt,
+    bottom=2pt,
+    fontupper=\large,
+    colupper=#1!75!black,
+    sharp corners,
+    valign=center
+  ]{Alors}\ %
+}
+
+\NewDocumentCommand{\Mais}{ O{green} }{%
+  \tcbox[
+    on line,
+    colback=#1!10!white,
+    colframe=#1!10!white,
+    size=fbox,
+    boxsep=0pt,
+    left=3pt,
+    right=3pt,
+    top=2pt,
+    bottom=2pt,
+    fontupper=\large,
+    colupper=#1!75!black,
+    sharp corners,
+    valign=center
+  ]{Mais}\ %
+}
+
+\NewDocumentCommand{\Donc}{ O{purple} }{%
+  \tcbox[
+    on line,
+    colback=#1!10!white,
+    colframe=#1!10!white,
+    size=fbox,
+    boxsep=0pt,
+    left=3pt,
+    right=3pt,
+    top=2pt,
+    bottom=2pt,
+    fontupper=\large,
+    colupper=#1!75!black,
+    sharp corners,
+    valign=center
+  ]{Donc}\ %
+}
 \endinput

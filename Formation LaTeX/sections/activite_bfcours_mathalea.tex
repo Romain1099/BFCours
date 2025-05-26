@@ -1,0 +1,24 @@
+\def\rdifficulty{2}
+\begin{EXO}{Utiliser Mathalea}{A-1}
+    \itempoint{2}Construire une fiche d'exercice sur le thème des fractions pour le niveau $6^\text{ème}$.
+    
+    Pour cela : 
+    \begin{tcbenumerate}
+        \tcbitem Ouvrir le répertoire \displayFilePath{fichiers\_de\_la\_formation/Atelier\_exercices\_mathalea} dans VScode.
+        \tcbitem Aller sur \href{https://coopmaths.fr/alea/}{https://coopmaths.fr/alea/} et \acc{élaborer} une série d'exercices.
+        \tcbitem \acc{Copier} le \acc{contenu seul} généré dans le fichier
+        
+        \displayFilePath{fichiers\_de\_la\_formation/Atelier\_exercices\_mathalea/enonce.tex}
+        \tcbitem \bcattention Le document généré n'est pas adapté à la présentation de \bfcours. 
+
+        Il faut le formatter à l'aide du programme \displayFilePath{fichiers\_de\_la\_formation/programmes/mathalea\_adapter.exe} ( double cliquer )
+
+        Ensuite, il suffit de choisir le fichier \displayFilePath{fichiers\_de\_la\_formation/Atelier\_exercices\_mathalea/enonce.tex}  dans lequel vous aurez collé le contenu généré par MathAlea.
+        \tcbitem Le programme produit un fichier \displayFilePath{fichiers\_de\_la\_formation/Atelier\_exercices\_mathalea/enonce\_TOOLS.tex}. 
+
+        Il convient de \acc{modifier} la ligne : 
+        \showcmd[red]{input\{enonce\}} en \showcmd[green]{input\{enonce\_TOOLS\}} dans le fichier principal.
+
+        \tcbitem \acc{Explorer} les possibilités offertes par \LaTeX\ en modifiant certains exercices et / ou leurs corrections de sorte à \acc{utiliser} les \acc{environnements de réponse} de \bfcours.
+    \end{tcbenumerate}
+\end{EXO}

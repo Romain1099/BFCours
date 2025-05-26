@@ -1,0 +1,93 @@
+\subsection{Environnements usuels}
+
+\begin{Methode}[Formattage avec environnements]
+    Les environnements suivants permettent d'effectuer la plupart des opérations de mise en page.
+    \begin{tcbenumerate}[2]
+        \tcbitem  \showenv[red]{center}\ Centrer un texte/contenu.
+        \tcbitem  \showenv[green]{flushleft}\ Aligner à gauche.
+        \tcbitem  \showenv[blue]{flushright}\ Aligner à droite.
+        \tcbitem  \showenv[purple]{multicols}[\{n\}][
+            Contenu gauche\\
+            \showcmd{columnbreak}\\
+            Contenu droit
+        ]\ Affichage sur $n$ colonnes avec les packages standard.
+        \tcbitem  \showenv[brown]{tcolorbox}[[options]]\ une boite.
+        \tcbitem  \showenv[orange]{minipage}[\{0.475$\backslash$textwidth\}]\ une petite page dans la page.
+        \tcbitem  \showenv[cyan]{itemize}[[label=\$ $\backslash$bullet\$]]\ Listes à puces.
+        \tcbitem  \showenv[magenta]{enumerate}\ Listes numérotées.
+        \tcbitem  \showenv[purple]{tcbenumerate}[[n][i]]\ Listes numérotées sur $n$ colonnes à partir de l'indice $i$ de bfcours.
+        \tcbitem  \showenv[teal]{tabular}[[titre]\{structure\}]\ Tableaux.
+        \tcbitem  \showenv[teal]{align*}\ Mode maths aligné ( séparateur \& ).
+        \tcbitem  \showenv[teal]{tcbtab}[[titre]\{structure\}]\  Tableaux encadrés de bfcours.
+        \tcbitem  \showenv[violet]{crep}\ Cadre de réponse (bf).
+        \tcbitem  \showenv[pink]{MultiColonnes}[\{n\}[options]]\ Disposition en $n$ colonnes avec boites de style \frquote{options} (bf).
+    \end{tcbenumerate}
+\end{Methode}
+
+\newpage
+
+\begin{EXO}{Mise en page avec environnements}{ENV-1}
+    \tcbitempoint{2}Reproduire la mise en page suivante en utilisant les environnements adéquats :
+
+\begin{center}
+\fbox{\begin{minipage}{0.9\textwidth}
+\begin{center}
+\textbf{Les différents types d'alignements}
+\end{center}
+
+\vspace{-0.25cm}\begin{multicols}{2}
+\begin{flushleft}
+Ce texte est aligné à gauche grâce à l'environnement \texttt{flushleft}.
+\end{flushleft}
+
+\columnbreak
+
+\begin{flushright}
+Ce texte est aligné à droite grâce à l'environnement \texttt{flushright}.
+\end{flushright}
+\end{multicols}
+
+\vspace{-1cm}\begin{center}
+Ce texte est centré grâce à l'environnement \texttt{center}.
+\end{center}
+
+\begin{tcbtab}[Résumé des environnements d'alignement]{|l|c|r|}
+\hline
+\textbf{Environnement} & \textbf{Description} & \textbf{Utilisation} \\
+\hline
+flushleft & Aligne à gauche & Texte courant \\
+center & Centre le texte & Titres, équations \\
+flushright & Aligne à droite & Signature, date \\
+\hline
+\end{tcbtab}
+\end{minipage}}
+\end{center}
+
+\exocorrection
+
+\showenv{center}[][
+	 \showenv{minipage}[\{0.9$\backslash$textwidth\}][
+		 \showenv{center}[][
+		 	\showcmd{textbf}[Les différents types d'alignements]
+		]\\
+		\showenv{multicols}[\{2\}][
+			\showenv{flushleft}[][
+				Ce texte est aligné à gauche grâce à l'environnement \encadrer{flushleft}.
+			]\\
+			\showcmd{columnbreak}[]\\
+			\showenv{flushright}[][
+		 		Ce texte est aligné à droite grâce à l'environnement \encadrer{flushright}.
+			]
+		]\\
+        \showenv{center}[][
+            \showenv{tcbtab}[[Résumé des environnements d'alignement]\{|l|c|r|\}][
+                \showcmd{hline}\\
+                flushleft \& Aligne à gauche \& Texte courant $\backslash$$\backslash$\\
+                center \& Centre le texte \& Titres, équations $\backslash$$\backslash$\\
+                flushright \& Aligne à droite \& Signature, date $\backslash$$\backslash$\\
+                \showcmd{hline}
+            ]
+        ]
+	]
+]
+\end{EXO}

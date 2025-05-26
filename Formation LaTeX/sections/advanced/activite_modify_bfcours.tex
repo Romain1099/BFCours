@@ -1,0 +1,30 @@
+\subsection{Adapter bfcours à ses besoins}
+
+\begin{Methode}[Créer votre propre package]
+Il convient de créer votre propre package pour apporter vos modifications de façon globale. ( voir la section \acc{Ajouter un localtexmf})
+
+Il suffira alors de l'utiliser dans vos documents : 
+
+\showcmd{usepackage}[\{bfcours\}]
+
+\showcmd{usepackage}[\{adapt-bfcours\}]\mycomment{Votre package qui modifiera bfcours}
+\end{Methode}
+\begin{Methode}[Personnaliser un package]
+Puisque \LaTeX\ est orienté vers la personnalisation, il est possible d'adapter n'importe quel package à vos besoins. 
+Il y a plusieurs façons de procéder : 
+\begin{tcbenumerate}[2]
+    \tcbitem Créer vos propres commandes qui simplifient l'utilisation de celles données dans les packages utilisés. 
+
+    \showcmd{newcommand}[\{$\backslash$bonjour\}\{bonjour\}] \mycomment{définition d'origine}
+
+    \showcmd{newcommand}[\{$\backslash$mybonjour\}\{Bonjour !\}] \mycomment{définition que vous utiliserez}
+
+    \tcbitem Réécrire certaines commandes pour qu'elles agissent différemment. 
+
+    C'est un peu plus compliqué, il faut retrouver le code d'origine de la commande, recopier son contenu et modifier la copie. 
+
+    \showcmd{newcommand}[\{$\backslash$bonjour\}\{bonjour\}] \mycomment{définition d'origine}
+
+    \showcmd{renewcommand}[\{$\backslash$bonjour\}\{Bonjour !\}] \mycomment{réécrit la définition de la commande}
+\end{tcbenumerate}
+\end{Methode}

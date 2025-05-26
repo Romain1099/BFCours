@@ -1,0 +1,37 @@
+\begin{Definition}[Fonction dérivable]
+    Une fonction $f$ est \voc{dérivable} en un point $a$ si la limite suivante existe :
+    \begin{center}
+    $f'(a) = \lim\limits_{h \to 0} \frac{f(a+h) - f(a)}{h}$
+    \end{center}
+    \end{Definition}
+    
+    \begin{Exemple}[Calcul de dérivées]
+    \begin{multicols}{2}
+    Pour $f(x) = x^2$, calculons $f'(x)$ :
+    \begin{align*}
+    f'(x) &= \lim\limits_{h \to 0} \frac{(x+h)^2 - x^2}{h}\\
+    &= \lim\limits_{h \to 0} \frac{x^2 + 2xh + h^2 - x^2}{h}\\
+    &= \lim\limits_{h \to 0} \frac{2xh + h^2}{h}\\
+    &= \lim\limits_{h \to 0} (2x + h)\\
+    &= 2x
+    \end{align*}
+    
+    \columnbreak
+    
+    Pour $g(x) = \sin(x)$, calculons $g'(x)$ :
+    \begin{align*}
+    g'(x) &= \lim\limits_{h \to 0} \frac{\sin(x+h) - \sin(x)}{h}\\
+    &= \lim\limits_{h \to 0} \frac{\sin(x)\cos(h) + \cos(x)\sin(h) - \sin(x)}{h}\\
+    &= \sin(x)\lim\limits_{h \to 0}\frac{\cos(h)-1}{h} + \cos(x)\lim\limits_{h \to 0}\frac{\sin(h)}{h}\\
+    &= \sin(x) \cdot 0 + \cos(x) \cdot 1\\
+    &= \cos(x)
+    \end{align*}
+    \end{multicols}
+    \end{Exemple}
+ \begin{EXO}{Structure du document}{ENV-2}
+   
+    Calculer la dérivée de $f(x) = x^3 + 2x - 1$ :
+    \begin{crep}[extra lines=3]
+    $f'(x) = 3x^2 + 2$
+    \end{crep}
+\end{EXO}

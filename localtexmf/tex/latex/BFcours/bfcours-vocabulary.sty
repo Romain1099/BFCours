@@ -23,16 +23,16 @@
 \newcommand{\word}{}
 
 % Définition de la commande \voc
-\renewcommand{\voc}[1]{%
-  % Écrire dans le fichier seulement si le mot capitalisé n'est pas déjà dans la liste
-  \ifinlist{#1}{\vocwordlist}{}{%
-        \immediate\write\vocfile{\string\vocentry{#1}{\thepage}}%
-        \listadd{\vocwordlist}{\MakeLowercase{#1}}%
-        \listadd{\vocwordlist}{#1}%
-        \listadd{\vocwordlist}{\MakeUppercase{#1}}%
-        \hypertarget{voc:#1}{}
-    }%
-    \textbf{\color{\currentAccentColor}#1}%% Affichage du mot en gras dans le texte
+\newcommand{\voc}[1]{%
+% Écrire dans le fichier seulement si le mot capitalisé n'est pas déjà dans la liste
+\ifinlist{#1}{\vocwordlist}{}{%
+\immediate\write\vocfile{\string\vocentry{#1}{\thepage}}%
+\listadd{\vocwordlist}{\MakeLowercase{#1}}%
+\listadd{\vocwordlist}{#1}%
+\listadd{\vocwordlist}{\MakeUppercase{#1}}%
+\hypertarget{voc:#1}{}
+}%
+\textbf{\textcolor{\currentAccentColor}{#1}}%% Affichage du mot en gras dans le texte
 }
 
 % Fermeture du fichier .voc à la fin du document
@@ -71,12 +71,12 @@ colbacktitle=blue!50!black,
  attach boxed title to top text left=
  {yshift=-0.50mm},
  boxed title style={skin=enhancedfirst jigsaw,
- size=small,arc=1mm,bottom=-1mm,
+ size=small,arc=1mm,bottom=1.5pt,
  interior style={fill=none,
  top color=blue!50!black,
  bottom color=blue!50!black}}]
       \begin{multicols}{3} % Ajuster à deux colonnes
-        \begin{itemize}
+        \begin{itemize}[label=$\bullet$]
           \forlistloop{\printvocabularyitem}{\voclist}
         \end{itemize}
       \end{multicols}

@@ -1,0 +1,88 @@
+\begin{EXO}{Comprendre le vocabulaire}{5I10}
+\acc{Observe} bien cette capture d'écran d'une \voc{feuille de calcul} :
+\vspace{-0.25cm}\begin{center}
+    \includegraphics[width=0.9\textwidth]{images/feuille_calcul_exemple.png}
+\end{center}
+\vspace{-0.25cm}\tcbitempoint{7}[0.1] \acc{\'Ecris} dans les espaces prévus les textes qui semblent correspondre dans la liste ci-dessous.
+
+\begin{MultiColonnes}{2}[colframe=blue!75!black,boxrule=0.4pt,colback=blue!5!white,halign=center,valign=center]%
+\tcbitem \voc{Cellule} contenant le nombre 18
+\tcbitem \voc{Formule}
+\tcbitem Nom du fichier
+\tcbitem \voc{Ligne de saisie}
+\tcbitem Cellule B6
+\tcbitem Cellule active
+\tcbitem[raster multicolumn=2] Cellule contenant une \voc{chaîne de caractères}.
+\end{MultiColonnes}
+
+\exocorrection
+
+TODO: Faire la capture d'image correction.
+
+\end{EXO}
+\newpage
+\begin{Definition}[Feuille de calcul - Cellule]
+    \tcbitempoint{3} Dans un tableur on interagit avec une ( ou plusieurs ) \acc{feuille de calcul}. 
+
+    Ces feuilles de calcul sont composées de \acc{cellules} ( les cases ) dans lesquelles on peut écrire :
+    
+    \tcfillcrep{des nombres, du texte ou des formules}. 
+
+    Les \acc{cellules} sont repérées par leur\voc{adresse}. 
+    
+    L'\acc{adresse} est un \acc{code} composé de :
+            \begin{tcbenumerate}[2]
+                \tcbitem Une - ou plusieurs - \acc{lettre} qui désigne la \acc{colonne} de la cellule.
+                \tcbitem Un \acc{nombre} qui désigne la \acc{ligne} de la cellule.
+            \end{tcbenumerate}
+            
+            \tcbitempoint{4}[-0.75]Ainsi, \formuleTable{A6} est l'\repsim[3.5cm]{adresse} de la cellule située à \repsim [3.5cm]{l'intersection} de la colonne \repsim{A} et de la ligne \repsim{6}.   
+\end{Definition}
+\begin{Definition}[Formule]
+    Dans une cellule on peut écrire des \acc{formules}. 
+    
+    \tcbitempoint{4} Les \acc{formules} permettent de :
+    {
+        \setrdcrep{seyes=false}
+        \begin{crep}[extra lines=2]
+            \begin{tcbenumerate}[2]
+                \tcbitem Effectuer des opérations
+                \tcbitem Combiner les données textuelles
+            \end{tcbenumerate}
+        \end{crep}
+    }    
+
+        \tcbitempoint{1} Pour écrire une formule, il faut que le premier caractère soit un \repsim{=}
+\end{Definition}
+
+\begin{EXO}{Adresse d'une cellule}{5I10}
+\acc{Observe} bien cette capture d'écran d'une \voc{feuille de calcul} puis \acc{réponds} aux questions :
+
+\begin{MultiColonnes}{5}
+    \tcbitem[raster multicolumn=3] \begin{center}
+    \includegraphics[width=0.95\textwidth]{images/feuille_calcul_vide.png}
+\end{center}
+    \tcbitem[raster multicolumn=2] \begin{tcbenumerate}
+        \tcbitem \tcbitempoint{1}[-0.65cm] Quelle est l'adresse de la cellule active ? 
+        \begin{crep}
+            La cellule active a pour adresse \encadrer[blue]{B5}.
+        \end{crep}
+        \tcbitem Ouvre une feuille de calcul vide.
+        \tcbitem \infotcbitempoint{4}[-1.1cm] Colorie en rose la cellule \encadrer[monrose]{A1}, en bleu la cellule \encadrer[blue]{B14}, en vert la cellule \encadrer[green]{C11} et en rouge \encadrer[red]{D3}.
+    \end{tcbenumerate}
+\end{MultiColonnes}
+
+
+\begin{tcbenumerate}[2][4]
+    \tcbitem \infotcbitempoint{4}[-1.1cm] \acc{\'Ecris} les prénoms d'Amélie, Béatrice, Chloé et Dave dans les cellules dont l'adresse est donnée par : 
+    \begin{itemize}[label=\bcoeil]
+        \item La \acc{première lettre} du prénom.
+        \item Le \acc{nombre de lettres} dans le prénom. 
+    \end{itemize}
+    \tcbitem \tcbitempoint{2}[-0.8cm][0.5] Trouve un prénom masculin puis un prénom féminin qui auraient ainsi pu être écrits dans la cellule \encadrer{A5}.
+    \begin{MultiColonnes}{2}[colframe=black,boxrule=0.4pt]
+        \tcbitem[title=Prénom masculin] \tcfillcrep{André}
+        \tcbitem[title=Prénom féminin] \tcfillcrep{Alice}
+    \end{MultiColonnes}
+\end{tcbenumerate}
+\end{EXO}

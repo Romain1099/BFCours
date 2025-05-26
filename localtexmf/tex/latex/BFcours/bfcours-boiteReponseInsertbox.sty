@@ -9,9 +9,9 @@
 }
 
 \newcommand{\boitecouleur}{gray!75!black}
-\newcommand\boite[2]{
-\begin{tcolorbox}[nobeforeafter,title=#1,halign title=flush left,fonttitle=\bfseries,colbacktitle=\boitecouleur,coltitle=white,colback=\boitecouleur!5!white,colframe=\boitecouleur]%red!50!black
-#2
+\NewDocumentCommand\boite{m O{} m}{
+\begin{tcolorbox}[nobeforeafter,title=#1,halign title=flush left,fonttitle=\bfseries,colbacktitle=\boitecouleur,coltitle=white,colback=white,colframe=\boitecouleur, #2]%red!50!black
+#3
 \end{tcolorbox}
 }
 
