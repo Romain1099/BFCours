@@ -157,40 +157,6 @@
     \tcbox[sharp corners, nobeforeafter, colback=white, colframe=black, size=small, boxsep=0pt, left=4pt, right=4pt, top=4pt, bottom=4pt, halign=center, valign=center, boxrule=1.5pt]{}
 }
 
-\makeatletter
-\newcommand{\tableaucolorfract}[7]{
-    \@ifundefined{c@colored}{\newcounter{colored}}{}
-    \begin{multicols}{2}
-	\begin{spacing}{1.5}
-    \noindent \textbf{Consigne :} \\ Colorier en vert la fraction du quadrillage ci-contre correspondant à la fraction : $\frac{#5}{#6}$\\
-    \ifx\relax#7\relax
-        \textbf{Explication :} \\ Puisqu'il y a $#1 \times #2$ carreaux et qu'on en veut les $\frac{#5}{#6}$, il suffit de colorier \\
-	$\pgfmathtruncatemacro{\numtoexplain}{ #1*#2 }\numtoexplain{} 
-	 \times  #5  \div  #6 = $
-        \pgfmathtruncatemacro{\numtocolor}{#1*#2*#5/#6}\numtocolor{} carreaux.
-    \fi
-	\end{spacing}
-    \columnbreak
-    \begin{tikzpicture}
-        \pgfmathtruncatemacro{\numtocolor}{#1*#2*#5/#6}
-        \setcounter{colored}{0}
-        \foreach \i in {0,...,\numexpr#1-1\relax} {
-            \foreach \j in {0,...,\numexpr#2-1\relax} {
-                \ifx\relax#7\relax
-                    \ifnum \value{colored} < \numtocolor
-                        \fill[green] (\i*#3,\j*#3) rectangle ++(#3,#3);
-                        \addtocounter{colored}{1}
-                    \fi
-                \fi
-                \draw[#4, ultra thin] (\i*#3,\j*#3) rectangle ++(#3,#3);
-            }
-        }
-    \end{tikzpicture}
-    \end{multicols}
-	\hrule
-}
-\makeatother
-
 \newcommand{\repegal}[1]{%
   \pgfmathtruncatemacro{\numlines}{#1 - 1}
  \ifnum\numlines>0 % Si \numlines est supérieur à 0
@@ -507,6 +473,8 @@ mynewtext/.style={
     valign=center
   ]{#2}%
 }
+
+\newcommand{\formuleTable}[1]{\encadrer[red]{#1}}
 
 \newcommand{\lien}[2]{\hyperref[#1]{\bfseries\color{\lienInterneColor}#2}}
 \newcommand{\vocref}[2]{

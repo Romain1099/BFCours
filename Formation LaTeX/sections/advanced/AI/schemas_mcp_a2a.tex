@@ -1,0 +1,201 @@
+\begin{Exemple}[Architecture d'agent avec MCP]
+    \begin{tcolorbox}[
+        title=Mode agentique MCP seulement,
+        colback=blue!5!white,
+        colframe=blue!50!black,
+        width=\textwidth,
+        boxrule=0.4pt,
+        left=2pt,right=2pt,top=2pt,bottom=2pt
+    ]
+        \begin{tcbraster}[
+            raster columns=5,
+            raster equal height=rows,
+            raster column skip=1cm,
+            raster row skip=8pt
+        ]
+            % utilisateur
+            \begin{tcolorbox}[
+                blankest,
+                halign=center,
+                valign=center,
+                height=3cm
+            ]
+                \tikzmark{mcp-user}utilisateur\tikzmark{mcp-user-end}
+            \end{tcolorbox}
+            % agent
+            \begin{tcolorbox}[
+                blankest,
+                halign=center,
+                valign=center
+            ]
+                \tikzmark{mcp-agent}agent\tikzmark{mcp-agent-end}
+            \end{tcolorbox}            
+            % Colonne outil 1
+            \begin{tcolorbox}[
+                blankest
+            ]
+                \begin{tcbraster}[
+                    raster columns=1,
+                    raster row skip=3pt
+                ]
+                    \begin{tcolorbox}[
+                        blankest,
+                        halign=center,
+                        height=0.8cm
+                    ]
+                        \tikzmark{mcp-outil1-top}outil 1
+                    \end{tcolorbox}
+                    \begin{tcolorbox}[
+                        blankest,
+                        halign=center
+                    ]
+                        \parbox{3cm}{\centering \tikzmark{mcp-analyse1}analyse et\\poursuite de la\\tâche}\tikzmark{mcp-analyse1-end}
+                    \end{tcolorbox}
+                \end{tcbraster}
+            \end{tcolorbox}
+            % Colonne outil 2
+            \begin{tcolorbox}[
+                blankest
+            ]
+                \begin{tcbraster}[
+                    raster columns=1,
+                    raster row skip=3pt
+                ]
+                    \begin{tcolorbox}[
+                        blankest,
+                        halign=center,
+                        height=0.8cm
+                    ]
+                        \tikzmark{mcp-outil2-top}outil 2
+                    \end{tcolorbox}
+                    \begin{tcolorbox}[
+                        blankest,
+                        halign=center
+                    ]
+                        \parbox{3cm}{\centering \tikzmark{mcp-analyse2}analyse et\\poursuite de la\\tâche}\tikzmark{mcp-analyse2-end}
+                    \end{tcolorbox}
+                \end{tcbraster}
+            \end{tcolorbox}            
+            % fin
+            \begin{tcolorbox}[
+                blankest,
+                halign=center,
+                valign=center
+            ]
+                \tikzmark{mcp-fin}Fin de la tâche
+            \end{tcolorbox}
+        \end{tcbraster}
+        
+        % Flèches
+        \tikz[remember picture,overlay] {
+            % utilisateur → agent
+            \draw[->,thick] ([xshift=3pt]pic cs:mcp-user-end) -- ([xshift=-3pt]pic cs:mcp-agent);
+            % agent → outil 1 (haut)
+            \draw[->,thick] ([xshift=3pt]pic cs:mcp-agent-end) to[out=0,in=180] ([xshift=-3pt,yshift=3pt]pic cs:mcp-outil1-top);
+            % outil 1 (analyse) → outil 2 (haut)
+            \draw[->,thick] ([xshift=3pt]pic cs:mcp-analyse1-end) to[out=0,in=180] ([xshift=-3pt,yshift=3pt]pic cs:mcp-outil2-top);
+            % outil 2 (analyse) → fin
+            \draw[->,thick] ([xshift=3pt]pic cs:mcp-analyse2-end) -- ([xshift=-3pt]pic cs:mcp-fin);
+        }
+    \end{tcolorbox}
+\end{Exemple}
+\begin{Exemple}[Architecture d'agent avec A2A]
+    \begin{tcolorbox}[
+        title=Mode agentique A2A,
+        colback=green!5!white,
+        colframe=green!50!black,
+        width=\textwidth,
+        boxrule=0.4pt,
+        left=2pt,right=2pt,top=2pt,bottom=2pt
+    ]
+        \begin{tcbraster}[
+            raster columns=5,
+            raster equal height=rows,
+            raster column skip=1cm,
+            raster row skip=8pt
+        ]
+            % utilisateur
+            \begin{tcolorbox}[
+                blankest,
+                halign=center,
+                valign=center,
+                height=4cm
+            ]
+                \tikzmark{a2a-user}utilisateur\tikzmark{a2a-user-end}
+            \end{tcolorbox}
+            % agent
+            \begin{tcolorbox}[
+                blankest,
+                halign=center,
+                valign=center
+            ]
+                \tikzmark{a2a-agent}agent\tikzmark{a2a-agent-end}
+            \end{tcolorbox}            
+            % Colonne opérateurs
+            \begin{tcolorbox}[
+                blankest
+            ]
+                \begin{tcbraster}[
+                    raster columns=1,
+                    raster row skip=2pt
+                ]
+                    \begin{tcolorbox}[
+                        blankest,
+                        halign=center,
+                        height=1cm
+                    ]
+                        \tikzmark{a2a-op1}opérateur IA 1\tikzmark{a2a-op1-end}
+                    \end{tcolorbox}
+                    \begin{tcolorbox}[
+                        blankest,
+                        halign=center,
+                        height=1cm
+                    ]
+                        \tikzmark{a2a-op2}opérateur IA 2\tikzmark{a2a-op2-end}
+                    \end{tcolorbox}
+                    \begin{tcolorbox}[
+                        blankest,
+                        halign=center,
+                        height=1cm
+                    ]
+                        \tikzmark{a2a-op3}opérateur IA 3\tikzmark{a2a-op3-end}
+                    \end{tcolorbox}
+                \end{tcbraster}
+            \end{tcolorbox}
+            % analyse
+            \begin{tcolorbox}[
+                blankest,
+                halign=center,
+                valign=center
+            ]
+                \tikzmark{a2a-analyse}\parbox{3cm}{\centering analyse et traitement des\\réponses\\multiples}\tikzmark{a2a-analyse-end}
+            \end{tcolorbox}
+            % fin
+            \begin{tcolorbox}[
+                blankest,
+                halign=center,
+                valign=center
+            ]
+                \tikzmark{a2a-fin}Fin de la tâche
+            \end{tcolorbox}
+        \end{tcbraster}        
+        % Flèches
+        \tikz[remember picture,overlay] {
+            % utilisateur → agent
+            \draw[->,thick] ([xshift=3pt]pic cs:a2a-user-end) -- ([xshift=-3pt]pic cs:a2a-agent);
+            % agent → opérateurs (divergence)
+            \draw[->,thick] ([xshift=3pt]pic cs:a2a-agent-end) to[out=0,in=180] ([xshift=-3pt]pic cs:a2a-op1);
+            \draw[->,thick] ([xshift=3pt]pic cs:a2a-agent-end) to[out=0,in=180] ([xshift=-3pt]pic cs:a2a-op2);
+            \draw[->,thick] ([xshift=3pt]pic cs:a2a-agent-end) to[out=0,in=180] ([xshift=-3pt]pic cs:a2a-op3);
+            % opérateurs → analyse (convergence)
+            \draw[->,thick] ([xshift=6pt]pic cs:a2a-op1-end) to[out=0,in=180] ([xshift=0pt,yshift=10pt]pic cs:a2a-analyse);
+            \draw[->,thick] ([xshift=6pt]pic cs:a2a-op2-end) to[out=0,in=180] ([xshift=0pt]pic cs:a2a-analyse);
+            \draw[->,thick] ([xshift=6pt]pic cs:a2a-op3-end) to[out=0,in=180] ([xshift=0pt,yshift=-10pt]pic cs:a2a-analyse);
+            % analyse → fin
+            \draw[->,thick] ([xshift=3pt]pic cs:a2a-analyse-end) -- ([xshift=-3pt]pic cs:a2a-fin);
+        }
+        \vspace{-1.5cm}\begin{center}
+            \textit{chaque opérateur peut utiliser des MCP}
+        \end{center}
+    \end{tcolorbox}
+\end{Exemple}

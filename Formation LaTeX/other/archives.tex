@@ -1,0 +1,135 @@
+
+\section{Exemples d'environnements LaTeX}
+
+\showenv{multicols}[\{2\}][\showenv[green]{itemize}[[label=\$$\backslash$bullet\$]]]
+
+\showenv[red]{tcbtab}[\{c|c|c\}]
+
+\showenv[green]{itemize}[[label=\$$\backslash$bullet\$]]
+
+\newpage
+\begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{center}
+    \textbf{Les différents types d'alignements}
+    \end{center}
+    
+    \begin{multicols}{2}
+    \begin{flushleft}
+    Ce texte est aligné à gauche grâce à l'environnement \texttt{flushleft}.
+    \end{flushleft}
+    
+    \columnbreak
+    
+    \begin{flushright}
+    Ce texte est aligné à droite grâce à l'environnement \texttt{flushright}.
+    \end{flushright}
+    \end{multicols}
+    
+    \begin{center}
+    Ce texte est centré grâce à l'environnement \texttt{center}.
+	\begin{tcbtab}[Résumé des environnements d'alignement]{|l|c|r|}
+	    \hline
+	    \textbf{Environnement} & \textbf{Description} & \textbf{Utilisation} \\
+	    \hline
+	    flushleft & Aligne à gauche & Texte courant \\
+	    center & Centre le texte & Titres, équations \\
+	    flushright & Aligne à droite & Signature, date \\
+	    \hline	\end{tcbtab}
+    \end{center}
+    
+    
+    \end{minipage}
+    \end{center}
+
+
+\newpage
+
+\showenv{center}[][
+	 \showenv{minipage}[\{0.9$\backslash$textwidth\}][
+		 \showenv{center}[][
+		 	\showcmd{textbf}[Les différents types d'alignements]
+		]\\
+		\showenv{multicols}[\{2\}][
+			\showenv{flushleft}[][
+				Ce texte est aligné à gauche grâce à l'environnement \showcmd{texttt}[flushleft].
+			]\\
+			\showcmd{columnbreak}[]\\
+			\showenv{flushright}[][
+		 		Ce texte est aligné à droite grâce à l'environnement \showcmd{texttt}[flushright].
+			]
+		]\\
+    \showenv{center}[][
+        \showenv{tcbtab}[[Résumé des environnements d'alignement]\{|l|c|r|\}][
+            \showcmd{hline}\\
+            flushleft \& Aligne à gauche \& Texte courant $\backslash$$\backslash$\\
+            center \& Centre le texte \& Titres, équations $\backslash$$\backslash$\\
+            flushright \& Aligne à droite \& Signature, date $\backslash$$\backslash$\\
+            \showcmd{hline}
+        ]
+    ]
+	]
+]
+
+\newpage
+
+\showenv{MultiColonnes}[\{2\}[colframe=black,boxrule=0.4pt,halign=center]\textcolor{green!75!black}{\textit{\% Default [blank]}}][
+  \showcmd{tcbitem}[[valign=bottom]] Hauteur adaptée pour \acc{chaque ligne}.\\
+  \showcmd{tcbitem}[[title=La seule boite titrée,colframe=black,boxrule=0.4pt, fonttitle=$\backslash$scriptsize$\backslash$bfseries]] Bonjour !\\
+  \showcmd{tcbitem}[[raster multicolumn=2,halign=center]]Fusion facile..\\
+  \showcmd{tcbitem}[[colback=green!25!white]]Ligne 2 colonne 1\\
+  \showcmd{tcbitem}[] Utilisation basique.
+]
+
+\acc{Rendu du code : }
+\begin{MultiColonnes}{2}[colframe=black,boxrule=0.4pt,halign=center]%
+  \tcbitem[valign=bottom] Hauteur adaptée pour \acc{chaque ligne}.
+  \tcbitem[title=La seule boite titrée,colframe=black,boxrule=0.4pt, fonttitle=\scriptsize\bfseries,] Bonjour !
+    \tcbitem[raster multicolumn=2,halign=center] Fusion facile..
+  \tcbitem[colback=green!25!white] Ligne 3 colonne 1
+  \tcbitem Utilisation basique.
+\end{MultiColonnes}
+
+\acc{Version utilisant les options par défaut : } ( enlever les \acc{options})
+\begin{MultiColonnes}{2}%
+  \tcbitem[valign=bottom] Hauteur adaptée pour \acc{chaque ligne}.
+  \tcbitem[title=La seule boite titrée,colframe=black,boxrule=0.4pt, fonttitle=\scriptsize\bfseries,] Bonjour !
+    \tcbitem[raster multicolumn=2,halign=center] Fusion facile..
+  \tcbitem[colback=green!25!white] Ligne 3 colonne 1
+  \tcbitem Utilisation basique.
+\end{MultiColonnes}
+\acc{Style modifié : }
+
+\showcmd[orange]{tcbset}\{\\
+  \phantom{AA}ColonnesBaseStyle/.style=\{\\
+    \phantom{AAAA}top=0pt,\\
+    \phantom{AAAA}bottom=0pt,\\
+    \phantom{AAAA}left=0pt,\\
+    \phantom{AAAA}right=0pt,\\
+    \phantom{AAAA}colback=blue!5!white,\\
+    \phantom{AAAA}colframe=blue!75!black,\\
+    \phantom{AAAA}before title={\showcmd{dimcoloredsquare}[\{white\}\{1.5\}$\backslash$ ]},\\
+    \phantom{AAAA}after title=\{\showcmd{hfill} \showcmd{today}\},\\
+    \phantom{AAAA}boxrule=0.4pt\\
+    \phantom{AA}\}\\
+\}
+\tcbset{
+  ColonnesBaseStyle/.style={
+    top=0pt,
+    bottom=0pt,
+    left=0pt,
+    right=0pt,
+    colback=blue!5!white,
+    colframe=blue!75!black,
+    before title={\dimcoloredsquare{white}{1.5}\ },
+    after title={\hfill \today},
+    boxrule=0.4pt
+  }
+}
+\begin{MultiColonnes}{2}%
+  \tcbitem[valign=bottom] Hauteur adaptée pour \acc{chaque ligne}.
+  \tcbitem[title=La seule boite titrée,colframe=black,boxrule=0.4pt, fonttitle=\scriptsize\bfseries,] Bonjour !
+    \tcbitem[raster multicolumn=2,halign=center] Fusion facile..
+  \tcbitem[colback=green!25!white] Ligne 3 colonne 1
+  \tcbitem Utilisation basique.
+\end{MultiColonnes}

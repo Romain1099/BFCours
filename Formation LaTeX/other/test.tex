@@ -1,0 +1,201 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+
+\usepackage[left=1cm,right=1cm,top=0.5cm,bottom=2cm]{geometry}
+
+\usepackage{bfcours}
+\usepackage{bfcours-fonts}
+\usepackage{bfcours-quatrieme}
+\usepackage{verbatim}
+
+\tcbuselibrary{documentation}
+
+
+\def\rdifficulty{1}
+\setrdexo{%left skip=1cm,
+display exotitle,
+exo header = tcolorbox,
+%display tags,
+skin = bouyachakka,
+lower ={box=crep},
+display score,
+display level,
+save lower,
+score=\points,
+level=\rdifficulty,
+overlay={\node[inner sep=0pt,
+anchor=west,rotate=90, yshift=0.3cm]%,xshift=-3em], yshift=0.45cm
+at (frame.south west) {\thetags[0]} ;}
+]%obligatoire
+}
+\setrdcrep{seyes, correction=true, correction color=monrose, correction font = \large\bfseries}
+
+%\usepackage{bfcours-fonts-dys}
+\usepackage{listings} % Pour afficher le code
+\lstdefinestyle{tcblatex}{
+    language=[LaTeX]TeX,
+    basicstyle=\ttfamily\small,
+    numbers=none,
+    keywordstyle=\bfseries\color{blue!70!black},
+    morekeywords={begin,end,documentclass,usepackage,newcommand,renewcommand,section,subsection,item,maCommandeExemple,tcbitem,boite},
+    commentstyle=\itshape\color{green!60!black},
+    stringstyle=\color{purple!70!black},
+    texcsstyle=*\color{red!70!black},
+    emphstyle=\color{orange!90!black},
+    emph={figure,table,tabular,array,displaymath,equation,eqnarray,align,gather,verbatim,quote,enumerate,itemize,proof,theorem,Exercice,Methode,Definition,Theorem,EXOEVAL,Propriete,tcbenumerate,Colonnes,tcbraster,tcolorbox,None,tcbtab,tcbtabx,},
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=false,
+    keepspaces=true,
+    columns=flexible,
+    tabsize=2
+}
+
+%\tcbuselibrary{minted}
+\tcbuselibrary{listings}
+\tcbset{listing engine=listings}
+\usepackage{soul}
+\newcommand{\bfcours}{\acc{BFcours}}
+\newcommand{\mathalea}{\acc{MathAléa}}
+
+\newcommand{\maCommandeExemple}[1]{Bonjour #1 !}
+
+\NewTotalTCBox{\cmverb}{ O{blue} v !O{} }{ fontupper=\ttfamily,nobeforeafter,tcbox raise base,arc=0pt,outer arc=0pt,
+top=0pt,bottom=0pt,left=0mm,right=0mm,
+leftrule=0pt,rightrule=0pt,toprule=0.3mm,bottomrule=0.3mm,boxsep=0.5mm,
+colback=#1!10!white,colframe=#1!50!black,#3}{#2}
+
+\NewTotalTCBox{\cmbox}{ O{blue} m !O{} }{ fontupper=\ttfamily,nobeforeafter,tcbox raise base,arc=0pt,outer arc=0pt,
+top=0pt,bottom=0pt,left=0mm,right=0mm,
+leftrule=0pt,rightrule=0pt,toprule=0.3mm,bottomrule=0.3mm,boxsep=0.5mm,
+colback=#1!10!white,colframe=#1!50!black,#3}{#2}
+
+ \newcommand{\bs}{$\backslash$}
+
+\NewDocumentCommand{\showcmd}{O{blue} m O{}}{%
+  \cmbox[#1]{\bs #2#3}
+}
+
+\NewDocumentCommand{\showcmdpar}{O{purple} m O{}}{%
+  \cmbox[#1]{$\backslash$#2}\{
+	\hspace{0.5cm}\begin{minipage}{\textwidth-0.5cm}#3\end{minipage}%
+   \}
+}
+% Définition de la boîte colorée pour l'affichage de code
+\NewTotalTCBox{\envbox}{ O{red} m !O{} }{ 
+  fontupper=\ttfamily,
+  nobeforeafter,
+  tcbox raise base,
+  arc=0pt,
+  outer arc=0pt,
+  top=0pt,
+  bottom=0pt,
+  left=0mm,
+  right=0mm,
+  leftrule=0pt,
+  rightrule=0pt,
+  toprule=0.3mm,
+  bottomrule=0.3mm,
+  boxsep=0.5mm,
+  colback=#1!10!white,
+  colframe=#1!50!black,
+  #3
+}{#2}
+
+% Commande améliorée pour afficher la syntaxe d'un environnement
+\NewDocumentCommand{\showenv}{O{red} m O{} O{Contenu}}{%
+  \showcmd[#1]{begin\{#2\}#3}
+	
+	\hspace{0.5cm}\begin{minipage}{\textwidth-0.25cm}#4\end{minipage}
+
+  \showcmd[#1]{end\{#2\}}
+}
+
+% Inclure la définition de ToolBox
+\tcbset{
+  toolbox/.style={
+    enhanced,
+    colframe=blue!70!black,
+    colback=blue!20!white,
+    coltitle=white,
+    fonttitle=\bfseries\sffamily,
+    width=\textwidth,
+    top=4mm,
+    bottom=2mm,
+    left=0pt,
+    right=15pt,
+    boxsep=0pt,
+    arc=2mm,
+    borderline={0.5mm}{0mm}{blue!60!black},
+    toptitle=1mm,
+    bottomtitle=1mm,
+    attach boxed title to top left={xshift=0.5cm, yshift=-\tcboxedtitleheight/2},
+    boxed title style={
+      enhanced,
+      skin=enhancedfirst,
+      frame hidden,
+      interior style={top color=blue!70!black, bottom color=blue!70!black},
+      coltitle=white,
+      arc=1mm
+    },
+    overlay unbroken={
+      \node[anchor=north east, font=\tiny\sffamily, text=blue!70!black] 
+      at ([xshift=-2mm, yshift=-1mm]frame.north east) {Pour cet exercice};
+    }
+  },
+  tool-item/.style={
+    enhanced,
+    frame hidden,
+    colback=white,
+    boxrule=0pt,
+    left=1mm,
+    right=1mm,
+    top=1mm,
+    bottom=1mm,
+    boxsep=1mm,
+    attach boxed title to top left={xshift=-1.1pt, yshift=-0.1pt},%{xshift=-0.6pt, yshift=0.6pt},
+    boxed title style={
+      enhanced,
+      skin=enhancedfirst,
+      %colframe=black,
+      %boxrule=0.6pt,
+      frame hidden,
+      interior style={top color=blue!20!white, bottom color=white},
+      coltitle=white,
+      sharp corners
+    },
+    coltitle=blue!85!black,
+    fonttitle=\scriptsize,
+    before title={\faTools\ },
+    width=\textwidth,
+    fontupper=\normalsize,
+    fontlower=\small\itshape,
+    borderline west={1.5pt}{0pt}{blue!40!white},
+    sharp corners,
+    underlay={
+      \fill[white] (interior.north west) rectangle (interior.south east);
+    }
+  }
+}
+
+
+\NewDocumentEnvironment{ToolBox}{O{} O{3}}{%
+\begin{tcolorbox}[toolbox, #1]%
+\begin{MultiColonnes}{#2}[tool-item]
+}{%
+    \end{MultiColonnes}
+  \end{tcolorbox}
+}
+
+\begin{document}
+
+
+\begin{ToolBox}[title={Outils}]
+\tcbitem[title=Formule] $\cos(nx) = 2^{n-1}\prod_{k=0}^{n-1}\cos(x+\frac{k\pi}{n})$ pour tout $n \in \mathbb{N}^*$
+
+\tcbitem[title=Attention !] Vérifier que $n \in \mathbb{N}^*$ avant d'appliquer le théorème de Viète
+
+\tcbitem[title=Limite]  $\lim_{x \to 0} \frac{\sin(x)}{x} = 1$
+
+\end{ToolBox}
+
+\end{document}

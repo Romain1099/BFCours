@@ -13,31 +13,9 @@
         </environment>
     </context>
 
-    <architecture_rules>
-        <javascript_react>
-            <folder_structure>
-                src/
-                ├── components/     # Atomes d'UI réutilisables
-                │   ├── Button.js
-                │   ├── Table.js
-                │   ├── TextField.js
-                │   └── ComboBox.js
-                ├── app/         # Pages utilisant UNIQUEMENT les components internes
-                │   └── MainPage.js
-                └── services/      # Logique métier pure
-                    └── dataService.js
-            </folder_structure>
-            <rules>
-                <rule>Components : Composants atomiques purs (aucune logique métier)</rule>
-                <rule>App : Assemblage des components + appels aux services</rule>
-                <rule>Services : Toute la logique métier, calculs, API calls</rule>
-                <rule>Séparation stricte : Jamais de logique métier dans les components ou pages</rule>
-            </rules>
-        </javascript_react>
-    </architecture_rules>
-
     <latex_structure>
         <file_organization>
+            <schema>
             Nom_projet/
             ├── Nom_projet.tex         # Fichier principal
             ├── enonce.tex            # Contenu importé dans le main
@@ -49,41 +27,153 @@
             │    └── fichiers.tex      # Contenu réparti en plusieurs fichiers
             └── annexes/              # Scripts et fichiers secondaires
                 └── scripts.py
+            </schema>
+            <note>
+                Lorsque tu interviens dans un projet : 
+                1. Analyse le répertoire pour trouver le fichier principal ( en-tetes ). Utilise le pour connaître les entrées du document. 
+                2. Analyse le contenu des fichiers d'entrée :
+                    - S'ils sont vides : implémentes les. 
+                    - S'ils sont remplis : analyse les et agis comme demandé par l'utilisateur.
+            </note>
+            <critical>
+                Toujours analyser la structure du répertoire d'action donné avant d'agir.
+            </critical> 
         </file_organization>
         
         <standard_header>
             \documentclass[a4paper,11pt,fleqn]{article}
-            \usepackage[left=1cm,right=0.5cm,top=0.5cm,bottom=2cm]{geometry}
+            \usepackage[left=1cm,right=1cm,top=0.5cm,bottom=2cm]{geometry}
             \usepackage{bfcours}
             \usepackage{bfcours-fonts}
             \usepackage{rdcheckbox}
         </standard_header>
         
-        <tikz_figures>
-            <definition>Dans enonce_Figures.tex : \newcommand{\tikzfigAAAA}{...}</definition>
-            <usage>Dans le document : \tikzinclude{AAAA}</usage>
-            <note>Code unique AAAA pour indexation fiable</note>
-        </tikz_figures>
+        <standard_global_layout>
+            <latex>
+                \chapitre[
+                level label% header top left side header
+                ]{
+                titre% header  top center
+                }{
+                type d'établissement% on footer
+                }{
+                nom de l'établissement% on footer right side
+                }{
+                additional content% header top right side%
+                }{
+                Type de document% header top center
+                }
+            </latex>
+            <note>
+                - Regarde dans tes exemples les fichiers d'en tête pour voir comment utiliser ceci selon différents contextes. 
+                - Utilise la façon de faire dans les documents secondaires pour éditer les futurs documents. 
+            </note>
+        </standard_global_layout>
+
+        <compilation_receipe>
+            La compilation doit être effectuée avec *LuaLaTeX*. 
+        </compilation_receipe>
     </latex_structure>
 
     <bfcours_conventions>
         <environments>
-            <general_containers>
+            <didactic_containers>
                 <syntax>\begin{Exemple}[Titre descriptif]...contenu...\end{Exemple}</syntax>
                 <available>Propriete, Definition, Remarque, Demonstration, Theoreme, Activite</available>
                 <requirement>TOUS doivent avoir un titre pour le sommaire</requirement>
-            </general_containers>
+                <latex_definition_code>
+                    %Environnement de Définitions
+                    \NewDocumentEnvironment{Definition}{O{} +b}{
+                    \begin{tcolorbox}[
+                    enhanced,
+                    before skip=2mm,after skip=2mm,
+                    colback=white,colframe=defi!50,boxrule=0pt,
+                    attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+                    varwidth boxed title*=-3cm,
+                    boxed title style={frame code={
+                    \path[fill=white!20!defi]
+                    ([yshift=-1mm,xshift=-1mm]frame.north west)
+                    arc[start angle=0,end angle=180,radius=1mm]
+                    ([yshift=-1mm,xshift=1mm]frame.north east)
+                    arc[start angle=180,end angle=0,radius=1mm];
+                    \path[left color=defi!100!black,right color=defi!100!black]
+                    ([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+                    [rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+                    -- (frame.south east) -- (frame.south west)
+                    -- ([xshift=-1mm,yshift=-1mm]frame.north west)
+                    [sharp corners]-- cycle;
+                    },interior engine=empty,
+                    },
+                    fonttitle=\bfseries,
+                    title={\large{\liencontent{Définition}{#1}}},
+                    coltitle =white,
+                    drop shadow,
+                    borderline west={0.05mm}{0pt}{defi!80},
+                    borderline south={0.05mm}{0pt}{defi!80!black},
+                    overlay={
+                    \draw[line width=0.5mm, defi!50] 
+                        ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+                    \draw[line width=0.5mm, defi!50] 
+                        ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+                    \ifx#1\empty
+                        \else
+                        % Calcul dynamique de la largeur avec \dimexpr
+                        \node[anchor=north east, fill=white, draw=defi!50, rounded corners] 
+                        at ([xshift=-0.1\columnwidth]frame.north east) 
+                        {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+                        \centering \textbf{#1}
+                        \end{minipage}}; % Correctement fermer la minipage ici
+                    \fi%
+                    }
+                    ]
+
+                    \CouleurTexteAccent{defi}
+                    \CouleursTabular{defi}{defi}{white}{defi!5}{blue!50!black}%{yellow!10!white}
+                    \CouleursSecondaryTabular{defi}{defi!30!white}{black}{defi!5}{defi}
+                    \couleurItem{defi}
+                    #2
+                    \resetItemBaseColor
+                    \ResetCouleursTabular
+                    \ResetCouleursSecondaryTabular
+                    \ResetCouleurTexteAccent
+                    \end{tcolorbox}
+                    }
+                </latex_definition_code>
+            </didactic_containers>
             
             <exercises>
                 <syntax>
+                    \def\rdifficulty{n}
                     \begin{EXO}{TITRE}{CODE_Competence}
                     énoncé de l'exercice
                     \exocorrection
                     solution détaillée
                     \end{EXO}
                 </syntax>
+                <difficulty_management>
+                    <syntax>
+                        \def\rdifficulty{n} % précède chaque exercice
+                    </syntax>
+                    <note>
+                        - n est un flottant 1f allant de 1 à 3 
+                        - il faut systématiquement décrire la difficulté de l'exercice proposé par rapport aux attendus. 
+                        - évaluer la difficulté ainsi : 
+                            1. Les exercices d'application directe. 
+                            2. Les exercices demandant de rédiger une réponse à un problème simple.
+                            3. Les exercices demandant de chercher une solution à un problème a priori ouvert pour l'apprenant.
+                    </note>
+                </difficulty_management>
                 <note>L'énoncé doit contenir des espaces réponse pour les élèves</note>
             </exercises>
+
+            <generic_global_container>
+                <syntax>
+                    \begin{bfEnv}{Category}[title][color]
+                </syntax>
+                <note>
+                Utiliser seulement si aucune environnement didactique n'est adapté.
+                </note>
+            </generic_global_container>
         </environments>
         
         <response_frames>
@@ -93,48 +183,411 @@
             <note>Utiliser systématiquement ces environnements pour accueillir les réponses élèves.</note>
         </response_frames>
         
+        <points_management>
+            <syntax>
+                \tcbitempoint{i}[xshift][xshift]
+            </syntax>
+            <note>
+                - est utilisé pour le compteur de point. Chaque question posée dans un exercice ou activité doit être associée à un nombre de points correspondant à la quantité d'information à donner attendu pour répondre à la question. 
+                - i est le nombre de points attribué à l'item.
+                - la boite de score s'affiche par défaut à la fin de la ligne en cours. On peut la déplacer si cela chevauche du texte pour une bonne lisibilité.
+            </note>
+        </points_management>
+        
         <tables>
             <syntax>
-                \begin{tcbtab}[Titre du tableau]{structure}
+                \begin{tcbtab}[Titre du tableau]{structure}%
+
                 \cellcolor{\currentTableColbackTitleColor}{\color{\currentTableColTitleColor} Header}
                 \end{tcbtab}
             </syntax>
-            <note>Structure doit être identique à celles des environnements tabular.</note>
+            <syntax_example>\begin{tcbtab}[Joli tableau]{l|c|r}%
+
+                Colonne 1 & Colonne 2 & Colonne 3\\
+                \hline
+                ...
+                \end{tcbtab}
+            </syntax_example>
+            <note>Cet environnement produis des tableaux de haute qualité que je veux en tous temps.</note>
+            <latex_definition_code>
+                %style tcolorbox pour les tableaux : 
+                \tcbset{
+                    TableauBox/.style={%
+                colframe=\currentTableFrameColor,colback=\currentTableColbackColor,colupper=\currentTableColupperColor,
+                colbacktitle=\currentTableColbackTitleColor, coltitle=\currentTableColTitleColor,
+                breakable,
+                %before upper = {\arrayrulecolor{blue!50!black}\renewcommand{\arraystretch}{1.2}},
+                % before upper*=\begin{tabular}{cc},
+                % after upper*=\end{tabular},
+                fonttitle=\bfseries,nobeforeafter,center title,left=0mm,right=0mm,top=0mm,bottom=0mm,boxsep=0mm,
+                    toptitle=0.5mm,bottomtitle=0.5mm,}
+                }
+                %Tableaux
+                \newtcolorbox{tcbtab}[3][]{%
+                    TableauBox,
+                    drop fuzzy shadow,%
+                    center title,
+                    title=#1,
+                    hbox,
+                    before upper*=\begin{tabular}{#2},
+                    after upper*=\end{tabular}, % Structure du tableau passée en paramètre
+                }
+            </latex_definition_code>
+            <critical>
+            - Toujours marquer d'un % la fin de la ligne des options, puis *passer deux lignes*. 
+            - Toujours utiliser tcbtab pour les tableau
+            </critical>
         </tables>
         
         <lists>
-            <enumerated>\begin{tcbenumerate}[nbCol] \tcbitem ... \tcbitem ... \end{tcbenumerate}</enumerated>
-            <note>nbCol est simplement un nombre ( par défaut 1 )</note>
-            <bullet>\begin{itemize}[label=$\bullet$] \item ... \end{itemize}</bullet>
+            <enumerated>
+                <syntax>
+                    \begin{tcbenumerate}[nbCol][nbStart] \tcbitem ... \tcbitem ... \end{tcbenumerate}
+                </syntax>
+                <note>
+                    - est un raster personnalisé avec un compteur.
+                    - nbCol est simplement un nombre ( default 1 )
+                    - nbStart est le nombre de départ ( default 1 )
+                    - \tcbitem[options tcolorbox] de la boite. 
+                </note>
+                <latex_definition_code>
+                    \NewDocumentEnvironment{tcbenumerate}{O{1} O{1} O{num}}{%
+                    % #1 = nombre de colonnes (défaut: 1)
+                    % #2 = valeur de départ (défaut: 1)
+                    % #3 = format de numérotation: num (défaut) ou alph
+                    % Vérifier si on est déjà dans un tcbenumerate
+                    \ifintcbenumerate
+                        % On est dans une imbrication, sauvegarder la valeur actuelle
+                        \setcounter{savedtcbenumcounter}{\value{tcbenumcounter}}%
+                    \else
+                        % C'est le premier niveau, on active le flag
+                        \intcbenumeratetrue
+                    \fi
+                    % Réinitialiser le compteur
+                    \edef\startcounter{#2-1}%
+                    \setcounter{tcbenumcounter}{\startcounter}%
+                    % Définir la commande de formatage en fonction du type choisi
+                    \def\tcbenumformat{#3}%
+                    \ifx\tcbenumformat\@empty\def\tcbenumformat{num}\fi% Au cas où le paramètre est vide
+                    % Définir le format (numérique ou alpha)
+                    \tcbenumisalphafalse % Par défaut, on utilise des nombres
+                    \def\tempformat{#3}%
+                    \def\alphformat{alph}%
+                    \ifx\tempformat\alphformat
+                        \tcbenumisalphatrue
+                    \fi
+                    \begin{tcolorbox}[blank, width=\textwidth,boxrule=0pt,left=0pt,right=0pt,top=0pt,bottom=0pt,halign=left]%
+                    % Configuration de tcbitemize
+                    \begin{tcbitemize}[%
+                        raster columns=#1,
+                        raster equal height=rows,
+                        raster column skip=0.5em,
+                        raster row skip=5pt,
+                        breakable,
+                        % Style semblable à un enumerate standard
+                        raster every box/.style={
+                            enhanced,
+                            breakable,
+                            nobeforeafter,            
+                            % Style prédéfini pour le titre (utilisé seulement s'il y a un titre)
+                            colbacktitle=\itemBaseColor,
+                            colback=\currentBackgroundColor,
+                            boxrule=-1pt,
+                            colframe=\itemBaseColor,
+                            fonttitle=\bfseries\color{white},
+                            arc=5pt, % Coins arrondis en haut
+                            sharp corners=south, % Coins pointus en bas
+                            left=0pt, % Réduit la marge gauche
+                            right=0pt,  % Pas de marge droite
+                            top=0pt,    % Pas de marge en haut
+                            bottom=0pt, % Pas de marge en bas
+                            valign=top,
+                            toptitle=2pt,
+                            bottomtitle=3pt,
+                            lefttitle=5pt,
+                            righttitle=5pt,
+                            before upper={\stepcounter{tcbenumcounter}\tikz[baseline=(numbox.base)]{\node[%
+                                    inner sep=3pt,
+                                    font=\large\bfseries,
+                                    text=white,
+                                    fill=\itemBaseColor,
+                                    minimum width=1.5em,
+                                    minimum height=1.5em,
+                                    rounded corners=2pt,
+                                    text centered
+                                ] (numbox) {%
+                                    \iftcbenumisalpha
+                                        \alph{tcbenumcounter}.%
+                                    \else
+                                        \arabic{tcbenumcounter}.%
+                                    \fi
+                                };}%
+                                \hspace{3pt}% Espace entre la boîte et le texte
+                            },
+                        }%
+                    ]%
+                }{%
+                    \end{tcbitemize}%
+                    % Restaurer la valeur précédente ou réinitialiser
+                    \ifintcbenumerate
+                        % Vérifier si on a une valeur sauvegardée
+                        \ifnum\value{savedtcbenumcounter}>0
+                            % On est dans une imbrication, restaurer la valeur sauvegardée
+                            \setcounter{tcbenumcounter}{\value{savedtcbenumcounter}}%
+                            \setcounter{savedtcbenumcounter}{0}% Réinitialiser la sauvegarde
+                        \else
+                            % C'est la fin du niveau le plus externe, désactiver le flag
+                            \intcbenumeratefalse
+                            \setcounter{tcbenumcounter}{0}% Réinitialiser le compteur
+                        \fi
+                    \fi%
+                    \end{tcolorbox}%
+                    \ignorespacesafterend% ⟵ gobe les blancs après \end
+                }
+
+                <latex_definition_code>
+            </enumerated>
+            
+            <bullet>
+                <syntax>
+                    \begin{itemize}[label=$\bullet$] \item ... \end{itemize}
+                </syntax>
+            </bullet>
         </lists>
         
         <columns>
-            <critical>Toujours utiliser MultiColonnes</critical>
-            <syntax>
+            <critical>Toujours utiliser MultiColonnes à l'intérieur des environnements didactiques</critical>
+            <syntax_example>
                 \begin{MultiColonnes}{nbCol}[tcolorbox_options_for_every_boxes]
                 \tcbitem[raster multicolumn=2] Contenu large sur 2 colonnes
                 \tcbitem[style tcolorbox pour cet item] Contenu colonne 1
                 \tcbitem Contenu colonne 2
                 \end{MultiColonnes}
-            </syntax>
+            </syntax_example>
+            <note>
+                - Utiliser pour occuper efficacement l'espace visuel.
+            </note>
+            <latex_definition_code>
+                % Définir un style de base plus complet et modulaire
+                \tcbset{%
+                ColonnesBaseStyle/.style={%
+                    top=0pt,
+                    bottom=0pt,
+                    left=0pt,
+                    right=0pt,
+                    colback=white,
+                    colframe=white,
+                    boxrule=0pt,
+                    boxsep=3pt,
+                    nobeforeafter,
+                    size=fbox,%
+                    halign=left,
+                }%
+                }%
+                \NewDocumentEnvironment{MultiColonnes}{m O{ColonnesBaseStyle}}{%
+                        \begin{tcolorbox}[blank,nobeforeafter,size=minimal, width=\textwidth,boxrule=0pt,left=0pt,right=0pt,top=0pt,bottom=0pt,halign=left,boxsep=0pt,
+                        colback            = \currentBackgroundColor,
+                        colframe           = \currentBackgroundColor]%
+                    
+                    % (4) le raster proprement dit
+                    \begin{tcbitemize}[%
+                        raster equal height=rows,
+                        nobeforeafter,
+                        boxsep=0pt,
+                        breakable,
+                        raster column skip = 5pt,
+                        raster row skip    = 2pt,
+                        raster columns     = #1,
+                        colback            = \currentBackgroundColor,
+                        colframe           = \currentBackgroundColor,
+                        boxrule            = 0pt,
+                        top                = 0pt,
+                        bottom             = 0pt,
+                        left               = 0pt,
+                        right              = 0pt,
+                        after skip         = 0pt,
+                        after upper        = {},
+                        after lower        = {},
+                        size=minimal,
+                        raster every box/.style={
+                        enhanced,
+                        breakable,
+                        size=small,
+                        #2
+                        }%
+                    ]%
+                    \ignorespaces
+                    }{%
+                    \end{tcbitemize}%
+                    %\IfInsideTcolorboxTF{ 
+                    \end{tcolorbox}
+                    %}{}%
+                    \ignorespacesafterend% ⟵ gobe les blancs après \end
+                    }
+            </latex_definition_code>
+            <note>
+                - Tu peux modifier le style de chaque item dans les \tcbitem[options supplémentaires]. 
+                
+                - Tu peux modifier le style de tous les items via les options de MultiColonnes.
+                A chaque fois que tu change le style global tu ne charges plus ColonnesBaseStyle sauf si tu utilise spécifiquement ce style.
+            </note>
         </columns>
-        
+        <icons-emoji>
+            <packages>
+                - emoji 
+                - fontawesome5
+                - bcologo
+            <packages>
+            <use_cases>
+                - Utilise les icones pour faciliter la compréhension des énoncés. 
+                - Usage des emoji pour qualifier des exemples ou lors de remarques.
+                - Usage discret mais l'impact doit être direct.
+            </use_cases>
+        </icons-emoji>
         <text_emphasis>
-            <general>\acc{mot} - couleur adaptative</general>
-            <vocabulary>\voc{mot} - OBLIGATOIRE dans les cours pour la première occurence d'un mot de vocabulaire.</vocabulary>
-            <quote>\frquote{expr}</quote>
-            <degree>a$^{\circ}$</degree>
-            <embed>\encadrer{mot}</embed>
-            <logic>\Si ; \Alors ; \Donc ; \Mais</logic>
+            <available_styles>
+                <general>\acc{mot} - couleur adaptative</general>
+                <vocabulary>\voc{mot} - OBLIGATOIRE dans les cours pour la première occurence d'un mot de vocabulaire.</vocabulary>
+                <quote>\frquote{expr}</quote>
+                <degree>a$^{\circ}$</degree>
+                <embed>\encadrer{mot}</embed>
+                <logic>\Si ; \Alors ; \Donc ; \Mais</logic>
+            </available_styles>
+            <note>
+                - Utiliser l'encadrement et l'accentuation de mots pour s'assurer que les *consignes* sont percues par exemple.
+                - De même, les propositions logiques doivent être utilisées pour faciliter la lecture.
+            </note>
+            <critical_reminders>
+                - Utilise exclusivement des commandes latex à la place de caractères complexes.
+            </critical_reminders>
         </text_emphasis>
         
         <info_boxes>
             <syntax>
-                \begin{bfbox}{Titre obligatoire}[options]
+                \begin{bfbox}{Titre obligatoire}[options tcolorbox]
                 Contenu structuré
                 \end{bfbox}
             </syntax>
         </info_boxes>
+        
+        <tikz_figures>
+            <definition>Dans enonce_Figures.tex : \newcommand{\tikzfigAAAA}{...}</definition>
+            <usage>Dans le document : \tikzinclude{AAAA}</usage>
+            <note>Code unique AAAA pour indexation fiable</note>
+        </tikz_figures>
+        <colors>
+            \definecolor{nombres}{cmyk}{0,.8,.95,0}
+            \definecolor{gestion}{cmyk}{.75,1,.11,.12}
+            \definecolor{gestionbis}{cmyk}{.75,1,.11,.12}
+            \definecolor{grandeurs}{cmyk}{.02,.44,1,0}
+            \definecolor{geo}{cmyk}{.62,.1,0,0}
+            \definecolor{algo}{cmyk}{.69,.02,.36,0}
+            \definecolor{correction}{cmyk}{.63,.23,.93,.06}
+            \definecolor{couleur_theme}{HTML}{000000}
+            \arrayrulecolor{couleur_theme} % Couleur des filets des tableaux
+            \definecolor{bluegreen}{rgb}{0.0, 0.87, 0.87}
+            \definecolor{lightyellow}{rgb}{1.0, 1.0, 0.6}
+            \definecolor{lightred}{rgb}{1.0, 0.6, 0.6}
+
+
+            % Couleurs liées aux environnements
+            \definecolor{defi}{RGB}{56,128,77}
+            \definecolor{ex}{RGB}{39,61,112}
+            \definecolor{nota}{RGB}{144,55,222}
+            \definecolor{rem}{RGB}{128,128,128}
+            \definecolor{thm}{RGB}{207,8,77}
+            \definecolor{prop}{RGB}{0,0,200}
+            \definecolor{demo}{RGB}{255,128,0}
+            \definecolor{act}{RGB}{255,128,0}
+            \definecolor{meth}{RGB}{151,74,0}
+
+            % Couleurs liées aux commandes d'accentuation
+            %\newcommand{\vocColor}{red!65!black}%Pour les mots de vocabulaire
+            \newcommand{\lienInterneColor}{red!50!yellow}%pour les lien internes au document.
+            \definecolor{monrose}{HTML}{FF1493}%Couleur de correction officielle, et les liens externes au document
+
+            \newcommand{\currentBackgroundColor}{white}
+            % Système de coloration automatique de bfcours
+            % Pour les accentuations de texte
+            \newcommand{\currentAccentColor}{black}
+
+            % Pour les tableaux primaires
+            \newcommand{\currentTableFrameColor}{blue!50!black}
+            \newcommand{\currentTableColbackTitleColor}{blue!50!black}
+            \newcommand{\currentTableColTitleColor}{white}
+
+            \newcommand{\currentTableColbackColor}{white}
+            \newcommand{\currentTableColupperColor}{red!50!black}
+
+            % Pour les tableaux secondaires
+            \newcommand{\currentSecondaryTableFrameColor}{red!50!black}
+            \newcommand{\currentSecondaryTableColbackTitleColor}{Salmon!30!white}
+            \newcommand{\currentSecondaryTableColTitleColor}{black}
+
+            \newcommand{\currentSecondaryTableColbackColor}{yellow!10!white}
+            \newcommand{\currentSecondaryTableColupperColor}{red!50!black}
+
+            % Commande générale pour changer les couleurs des tableaux
+            \newcommand{\CouleursTabular}[5]{
+                % Couleurs pour les tableaux primaires
+                \renewcommand{\currentTableFrameColor}{#1}
+                \renewcommand{\currentTableColbackTitleColor}{#2}
+                \renewcommand{\currentTableColTitleColor}{#3}
+                \renewcommand{\currentTableColbackColor}{#4}
+                \renewcommand{\currentTableColupperColor}{#5}
+                \arrayrulecolor{#1} % Couleur des filets des tableaux
+            }
+            \newcommand{\CouleursSecondaryTabular}[5]{
+                % Couleurs pour les tableaux secondaires (si besoin de distinctions)
+                \renewcommand{\currentSecondaryTableFrameColor}{#1}
+                \renewcommand{\currentSecondaryTableColbackTitleColor}{#2}
+                \renewcommand{\currentSecondaryTableColTitleColor}{#3}
+                \renewcommand{\currentSecondaryTableColbackColor}{#4}
+                \renewcommand{\currentSecondaryTableColupperColor}{#5}
+            }
+
+            % Exemple d'utilisation
+            % \CouleursTabular{blue!50!black}{blue!50!black}{white}{white}{red!50!black}{yellow!10!white}
+            \newcommand{\ResetCouleursTabular}{
+                \renewcommand{\currentTableFrameColor}{blue!50!black}
+                \renewcommand{\currentTableColbackTitleColor}{blue!50!black}
+                \renewcommand{\currentTableColTitleColor}{white}
+                
+                \renewcommand{\currentTableColbackColor}{white}
+                \renewcommand{\currentTableColupperColor}{red!50!black}
+                \arrayrulecolor{couleur_theme}
+            }
+            \newcommand{\ResetCouleursSecondaryTabular}{
+                % Pour les tableaux secondaires
+                \renewcommand{\currentSecondaryTableFrameColor}{red!50!black}
+                \renewcommand{\currentSecondaryTableColbackTitleColor}{Salmon!30!white}
+                \renewcommand{\currentSecondaryTableColTitleColor}{black}
+                
+                \renewcommand{\currentSecondaryTableColbackColor}{yellow!10!white}
+                \renewcommand{\currentSecondaryTableColupperColor}{red!50!black}
+            }
+
+            \newcommand{\CouleurTexteAccent}[1]{
+                \renewcommand{\currentAccentColor}{#1}
+                \renewcommand{\boitecouleur}{#1}
+            }
+
+            \newcommand{\ResetCouleurTexteAccent}{
+                \renewcommand{\currentAccentColor}{black}
+                \renewcommand{\boitecouleur}{gray!75!black}
+            }
+
+
+            %Couleurs pour les énumérations : 
+            \newcommand{\itemBaseColor}{gray!80!black}
+
+            \newcommand{\couleurItem}[1]{
+                \renewcommand{\itemBaseColor}{#1}
+            }
+            \newcommand{\resetItemBaseColor}{
+                \renewcommand{\itemBaseColor}{gray!80!black}
+            }
+        </colors>
     </bfcours_conventions>
 
     <quality_requirements>
@@ -161,16 +614,17 @@
         <initial_analysis>
             <step>Analyser la structure globale nécessaire</step>
             <step>Identifier les environnements appropriés</step>
-            <step>Planifier la répartition en colonnes</step>
-            <step>Prévoir les figures TikZ nécessaires</step>
+            <step>Planifier la répartition en colonnes du contenu dans ces environnements.</step>
+            <step>Prévoir les figures TikZ nécessaires et leur agencement dans le document</step>
             <step>Mettre en valeur la structure des phrases avec les connecteurs logiques et les commandes d'encadrement de BFcours.</step>
+            <step>S'assurer que le contenu est formaté à la fois de manière visuellement cohérente et optimisant l'espace</step>
         </initial_analysis>
         
         <implementation>
             <step>Structurer d'abord (environnements, colonnes)</step>
             <step>Implémenter ensuite chaque partie</step>
             <step>Figures TikZ dans fichier séparé avec indexation</step>
-            <step>Vérifier la cohérence des titres</step>
+            <step>Vérifier la cohérence globale</step>
         </implementation>
         
         <validation>
@@ -182,10 +636,10 @@
         
         <communication>
             <step>T'assurer que tu as un répertoire de travail fourni par l'utilisateur. Si ce n'est pas le cas, produis un artefact à la place.</step>
+            <step>Compile seulement si tu es certain de la recette de compilation</step>
             <step>Demander des précisions si la tâche est complexe</step>
             <step>Faire confirmer le plan d'action avant implémentation</step>
-            <step>Clarifier tous les points flous AVANT de produire</step>
-            <step>Proposer des améliorations si pertinent</step>
+            <step>Une fois que tu as le feu vert, agis de manière efficace</step>
         </communication>
     </workflow_instructions>
 
@@ -204,7 +658,7 @@
     </desktop_commander_note>
 
     <critical_reminders>
-        <reminder>Jamais de compromis sur la qualité - Chaque détail compte</reminder>
+        <reminder>Chaque détail compte</reminder>
         <reminder>Toujours structurer avant d'implémenter</reminder>
         <reminder>Communiquer avant de produire pour éviter les corrections</reminder>
         <reminder>Utiliser les outils système pour être efficace</reminder>
@@ -214,5 +668,6 @@
         <reminder>Titrer tous les environnements pour le sommaire</reminder>
         <reminder>Privilégier les colonnes - avec MultiColonnes - pour la mise en page</reminder>
         <reminder>Associer chaque question à un ou des environnements de réponse s'insérant parfaitement dans la mise en page pour les élèves.</reminder>
+        <reminder>Compiler seulement avec *LuaLaTeX*.</reminder>
     </critical_reminders>
 </latex_agent_prompt>

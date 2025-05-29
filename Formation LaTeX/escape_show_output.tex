@@ -1,0 +1,34 @@
+\showenv{center}[][
+    \showenv{minipage}[\{0.9$\backslash$textwidth\}][
+    \showenv{center}[][
+    \showcmdpar{textbf}[Les différents types d'alignements]
+    ]
+    
+    \showenv{multicols}[\{2\}][
+    \showenv{flushleft}[][
+    Ce texte est aligné à gauche grâce à l'environnement \showcmd{texttt}[flushleft].
+    ]
+    
+    \showcmd{columnbreak}[]
+    
+    \showenv{flushright}[][
+    Ce texte est aligné à droite grâce à l'environnement \showcmd{texttt}[flushright].
+    ]
+    ]
+    
+    \showenv{center}[][
+    Ce texte est centré grâce à l'environnement \showcmd{texttt}[center].
+	\showenv{tcbtab}[[Résumé des environnements d'alignement]\{|l|c|r|\}][
+	    \showcmd{hline}[]
+	    \showcmd{textbf}[Environnement] \& \showcmd{textbf}[Description] \& \showcmd{textbf}[Utilisation] \\
+	    \showcmd{hline}[]
+	    flushleft \& Aligne à gauche \& Texte courant \\
+	    center \& Centre le texte \& Titres, équations \\
+	    flushright \& Aligne à droite \& Signature, date \\
+	    \showcmd{hline}[]
+	]
+    ]
+    
+    
+    ]
+    ]

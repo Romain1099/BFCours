@@ -42,37 +42,41 @@
     \end{tcbenumerate}
 \end{Methode}
 
-\begin{Exemple}[Prompt complet structuré]
-    Voici un exemple de prompt utilisant toutes les bonnes pratiques :
+\begin{Exemple}[Prompt pour agent créateur de cartes \frquote{J'ai / Qui a}]
+    Voici un exemple de prompt pour un agent spécialisé dans la création de cartes mathématiques :
 
     \begin{MultiColonnes}{2}
         \tcbitem \ttfamily\small
         \xmlbox{?xml version="1.0" encoding="UTF-8"?}\\[0.5em]
         \xmltag{agent_prompt}\\
         \hspace{1em}\xmltag{system_role}\\
-        \hspace{2em}Expert en analyse de données financières\\
+        \hspace{2em}Expert LaTeX en création de jeux\\
+        \hspace{2em}mathématiques pédagogiques\\
+        \hspace{2em}Spécialiste tcolorbox et bfcours\\
         \hspace{1em}\xmlctag{system_role}\\[0.5em]
         \hspace{1em}\xmltag{context}\\
-        \hspace{2em}\xmltag{company}Startup technologique\xmlctag{company}\\
-        \hspace{2em}\xmltag{period}Q1 2025\xmlctag{period}\\
-        \hspace{2em}\xmltag{objective}Analyse de performance\xmlctag{objective}\\
+        \hspace{2em}\xmltag{level}Collège 4ème\xmlctag{level}\\
+        \hspace{2em}\xmltag{topic}Calcul littéral\xmlctag{topic}\\
+        \hspace{2em}\xmltag{cards_count}24\xmlctag{cards_count}\\
+        \hspace{2em}\xmltag{objective}Jeu de révision\xmlctag{objective}\\
         \hspace{1em}\xmlctag{context}\\[0.5em]
         
-        \tcbitem \ttfamily\small \hspace{1em}\xmltag{instructions}\\
-        \hspace{2em}\#\# Analyser les métriques suivantes\\
-        \hspace{2em}1. Croissance du chiffre d'affaires\\
-        \hspace{2em}2. Taux de rétention clients\\
-        \hspace{2em}3. Coûts d'acquisition\\[0.5em]
-        \hspace{2em}**Produire** un rapport structuré\\
+        \tcbitem \ttfamily\small 
+        \hspace{1em}\xmltag{instructions}\\
+        \hspace{2em}\#\# Créer un jeu complet avec :\\
+        \hspace{2em}1. **Cartes bouclées** (dernière $\rightarrow$ première)\\
+        \hspace{2em}2. **Progression** de difficulté\\
+        \hspace{2em}3. **Variété** des expressions\\[0.5em]
+        \hspace{2em}\#\# Contraintes techniques :\\
+        \hspace{2em}- Utiliser \textbackslash{}definecolor\{cardcolor\}\\
+        \hspace{2em}- Format A4 avec 8 cartes/page\\
+        \hspace{2em}- Police lisible (12pt minimum)\\
         \hspace{1em}\xmlctag{instructions}\\[0.5em]
-        \hspace{1em}\xmltag{output_format}\\
-        \hspace{2em}- Executive summary\\
-        \hspace{2em}- Analyse détaillée par métrique\\
-        \hspace{2em}- Recommandations priorisées\\
-        \hspace{1em}\xmlctag{output_format}\\
-        \xmlctag{agent_prompt}
+        \hspace{1em}\xmltag{card_structure}\\
+        \hspace{2em}\xmltag{front}J'ai : [expression]\xmlctag{front}\\
+        \hspace{2em}\xmltag{back}Qui a : [question]\xmlctag{back}\\
+        \hspace{1em}\xmlctag{card_structure}
     \end{MultiColonnes}
-    
 \end{Exemple}
 \vspace{-0.5cm}\begin{Remarque}[Anti-patterns à éviter]
     \vspace{-0.5cm}\begin{Colonnes}[2]%[raster columns=2, raster equal height]

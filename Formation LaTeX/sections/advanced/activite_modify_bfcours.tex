@@ -1,13 +1,17 @@
 \subsection{Adapter bfcours à ses besoins}
 
 \begin{Methode}[Créer votre propre package]
-Il convient de créer votre propre package pour apporter vos modifications de façon globale. ( voir la section \acc{Ajouter un localtexmf})
+ \begin{MultiColonnes}{3}
+    \tcbitem[raster multicolumn=2] Il convient de créer votre propre package pour apporter vos modifications de façon globale. 
 
 Il suffira alors de l'utiliser dans vos documents : 
 
 \showcmd{usepackage}[\{bfcours\}]
 
 \showcmd{usepackage}[\{adapt-bfcours\}]\mycomment{Votre package qui modifiera bfcours}
+
+    \tcbitem \bclampe On pourra consulter l'archive suivante : \vocnoindexref{https://tuteurs.ens.fr/logiciels/latex/nouveau_package.html}{archives tuteurs ENS}.
+ \end{MultiColonnes}
 \end{Methode}
 \begin{Methode}[Personnaliser un package]
 Puisque \LaTeX\ est orienté vers la personnalisation, il est possible d'adapter n'importe quel package à vos besoins. 
@@ -15,16 +19,38 @@ Il y a plusieurs façons de procéder :
 \begin{tcbenumerate}[2]
     \tcbitem Créer vos propres commandes qui simplifient l'utilisation de celles données dans les packages utilisés. 
 
-    \showcmd{newcommand}[\{$\backslash$bonjour\}\{bonjour\}] \mycomment{définition d'origine}
+    \mycomment{définition d'origine}
 
-    \showcmd{newcommand}[\{$\backslash$mybonjour\}\{Bonjour !\}] \mycomment{définition que vous utiliserez}
+    \showcmd{newcommand}[\{$\backslash$bonjour\}[1]\{Bonjour, \#1\}] 
+
+    \mycomment{définition que vous utiliserez}
+
+    \showcmd{newcommand}[\{$\backslash$mybonjour\}[1]\{$\backslash$bonjour\{\#1\} !\}] 
 
     \tcbitem Réécrire certaines commandes pour qu'elles agissent différemment. 
 
-    C'est un peu plus compliqué, il faut retrouver le code d'origine de la commande, recopier son contenu et modifier la copie. 
+    Cela peut être une tâche ardue, parfois il faut retrouver le code d'origine de la commande, recopier son contenu et modifier la copie. 
 
-    \showcmd{newcommand}[\{$\backslash$bonjour\}\{bonjour\}] \mycomment{définition d'origine}
+    \mycomment{définition d'origine}
 
-    \showcmd{renewcommand}[\{$\backslash$bonjour\}\{Bonjour !\}] \mycomment{réécrit la définition de la commande}
+    \showcmd{newcommand}[\{$\backslash$bonjour\}\{bonjour\}] 
+
+    \mycomment{On réécrit la définition de la commande}
+
+    \showcmd{renewcommand}[\{$\backslash$bonjour\}\{Bonjour !\}] 
 \end{tcbenumerate}
+\end{Methode}
+
+\begin{Methode}[Naviguer dans un package]
+    Il est très \acc{utile} et \acc{formateur} de lire directement le code source des packages qu'on utilise. 
+
+    \bfcours\ propose un \acc{programme de recherche} de définition de commande \LaTeX\ dans un package donné ( configurable par l'utilisateur ).
+
+    Il permet de \acc{saisir le nom d'une commande}, d'\acc{environnement} ou de \acc{couleur} et s'il trouve sa définition, il \acc{ouvre} VSCode à la ligne trouvée.
+
+    Il suffit de lire le fichier suivant et d'utiliser les commandes données.
+    
+    \displayFilePath{fichiers\_de\_la\_formation/programmes/Commandes\_de\_recherche\_dans\_un\_package/README.md}
+
+    \encadrer[green]{Ce programme de recherche de code à été entièrement écrit par Claude.}
 \end{Methode}

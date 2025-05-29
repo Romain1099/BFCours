@@ -15,14 +15,14 @@ fonttitle=\bfseries\large,
 \newcommand{\liencontent}[2]{%
   \stepcounter{contentcounter}
   \hypertarget{subsec:\thecontentcounter}{}
-  \addcontentsline{toc}{subsection}{\protect\numberline{}\textbf{#1} - {\color{blue!90!black}#2}}
+  \addcontentsline{toc}{subsubsection}{\protect\numberline{}\textbf{#1} - {\textcolor{blue!90!black}{#2}}}
   \label{subsec:#1\thecontentcounter}
   \textbf{#1}
 }
 \newcommand{\liensecretcontent}[2]{%
   \stepcounter{contentcounter}
   \hypertarget{subsec:\thecontentcounter}{}
-  \addcontentsline{toc}{subsection}{\protect\numberline{}\textbf{#1} - {\color{blue!90!black}#2}}
+  \addcontentsline{toc}{subsubsection}{\protect\numberline{}\textbf{#1} - {\textcolor{blue!90!black}{#2}}}
   \label{subsec:#1\thecontentcounter}
 }
 
@@ -1155,6 +1155,66 @@ overlay={
 }
 
 
+% Contenant adaptable
+
+%Propriétés 
+
+\NewDocumentEnvironment{bfEnv}{m O{} O{prop} +b}{
+  \def\bfmaincol{#3}
+  \def\bfframecol{#3!50!white}
+  \def\bfitemacc{#3!80!black}
+\begin{tcolorbox}[
+enhanced,
+before skip=2mm,after skip=2mm,
+colback=white,colframe=\bfframecol,boxrule=0pt,
+attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
+varwidth boxed title*=-3cm,
+boxed title style={frame code={
+\path[fill=white!20!\bfmaincol]
+([yshift=-1mm,xshift=-1mm]frame.north west)
+arc[start angle=0,end angle=180,radius=1mm]
+([yshift=-1mm,xshift=1mm]frame.north east)
+arc[start angle=180,end angle=0,radius=1mm];
+\path[left color=\bfmaincol!100!black,right color=\bfmaincol!100!black]
+([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
+[rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
+-- (frame.south east) -- (frame.south west)
+-- ([xshift=-1mm,yshift=-1mm]frame.north west)
+[sharp corners]-- cycle;
+},interior engine=empty,
+},
+fonttitle=\bfseries,
+title={\large{\liencontent{#1}{#2}}},
+coltitle =white,
+drop shadow,
+borderline west={0.05mm}{0pt}{\bfitemacc},
+borderline south={0.05mm}{0pt}{\bfitemacc},
+overlay={
+  \draw[line width=0.5mm, \bfframecol] 
+    ([xshift=0mm,yshift=-0.25mm]frame.south west)--([xshift=0mm]frame.north west); % Bordure gauche
+  \draw[line width=0.5mm, \bfframecol] 
+    ([yshift=0mm]frame.south west)--([yshift=0mm]frame.south east); % Bordure du bas
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=\bfframecol, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#2}
+      \end{minipage}}; % Correctement fermer la minipage ici
+    \fi%
+}
+]
+
+\CouleurTexteAccent{\bfitemacc}
+\CouleursTabular{prop}{prop}{white}{\bfmaincol!5}{\bfmaincol!50!black}%{yellow!10!white}
+\CouleursSecondaryTabular{\bfmaincol}{\bfmaincol!30!white}{black}{\bfmaincol!5}{\bfmaincol}
+\couleurItem{\bfmaincol}
+#4
+\resetItemBaseColor
+\ResetCouleursTabular
+\ResetCouleursSecondaryTabular
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+}
 
 
 %Activités
@@ -1522,6 +1582,7 @@ overlay={
     boxsep=3pt,
     nobeforeafter,
     size=fbox,%
+    halign=left
   }%
 }%
 

@@ -1,0 +1,58 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[left=0.5cm,right=0.5cm,top=0.5cm,bottom=0.5cm]{geometry}
+\usepackage[most]{tcolorbox}
+\usepackage{amsmath,amssymb}
+
+% Configuration des couleurs
+\definecolor{cartebleu}{RGB}{0,100,200}
+\definecolor{cartevert}{RGB}{0,150,100}
+
+% Style minimal pour les cartes
+\tcbset{
+    carte/.style={
+        enhanced,
+        sharp corners,
+        width=4.75cm,
+        height=7cm,
+        boxrule=0.8pt,
+        colback=white,
+        colframe=cartebleu,
+        halign=center,
+        valign=center,
+        fontupper=\Large\bfseries,
+    }
+}
+
+\pagestyle{empty}
+
+\begin{document}
+
+% Test avec une page simple
+\begin{tcolorbox}[blanker, width=\textwidth]
+    \begin{tcbraster}[
+        raster columns=4,
+        raster rows=4,
+        raster column skip=3mm,
+        raster row skip=3mm,
+    ]
+        % Carte 1
+        \begin{tcolorbox}[carte, title=Carte 1]
+            $2x + 5 = 13$
+        \end{tcolorbox}
+        % Carte 2
+        \begin{tcolorbox}[carte, title=Carte 2]
+            $3x - 7 = 8$
+        \end{tcolorbox}
+        % Carte 3
+        \begin{tcolorbox}[carte, title=Carte 3]
+            $5x + 2 = 3x + 10$
+        \end{tcolorbox}
+        % Carte 4
+        \begin{tcolorbox}[carte, title=Carte 4]
+            $-2x + 6 = 0$
+        \end{tcolorbox}
+    \end{tcbraster}
+\end{tcolorbox}
+
+\end{document}

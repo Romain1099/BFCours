@@ -49,8 +49,41 @@ Il suffit de choisir un modèle et de l'utiliser avec cette formule.
             \item \encadrer{Structuré - XML / markdown} \hfill L'IA intègrera mieux les informations et en plus grande quantité.
         \end{itemize}
     \end{MultiColonnes}
+    \bcattention Les modèles actuels sont limités par leur\voc{fenêtre de contexte}. 
+
+    C'est la taille de leur \acc{mémoire de travail}. Actuellement elle se situe entre $\num{200000}$ et $\num{1000000}$ tokens, ce qui correspond à un livre de $500$ pages.
+
+    Cela paraît beaucoup, mais cette limite est atteinte très rapidement en réalité. 
+
+    \encadrer[green]{Une demande IA par discussion}. 
+
+    Cette limitation rendra vos interactions plus efficaces. Les prompts seront également plus simple, et vous pouvez \acc{masquer du contexte} pour que l'agent se concentre uniquement sur sa tâche. 
 \end{Methode}
 %\newpage%
+
+\subsection{Protocoles de communication}
+\begin{Definition}[Protocole MCP et A2A]
+    Un \acc{modèle de langage} produit des \acc{tokens} de texte. 
+
+    Un \acc{modèle de langage} ayant accès à des outils numériques est appelé un\voc{agent}.
+
+    Les agents produisent des tokens qui peuvent leur servir à communiquer avec : 
+
+    \begin{MultiColonnes}{2}
+        \tcbitem $\bullet$ Des applications $\rightarrow$ protocole \encadrer{MCP}. 
+        \tcbitem $\bullet$ D'autres agents IA $\rightarrow$ protocole \encadrer{A2A}. 
+    \end{MultiColonnes}
+
+    Ces deux protocoles sont basés sur des \acc{requêtes} : l'agent formule une requête et le serveur lui renvoie un signal. \\
+
+    Pour l'usage de LaTeX avec un agent IA, nous nous intéresseront à l'usage du protocole MCP.
+
+    Le protocole A2A sera utilisé dans des applications plus ambitieuses pour \acc{synchroniser des agents}. 
+
+    Ce protocole \acc{étend les possibilités du précédent} aux communications \acc{asynchrones}.
+\end{Definition}
+\input{sections/advanced/AI/schemas_mcp_a2a.tex}
+\subsection{En pratique}
 \begin{Aide}[Mettre en place Claude]
 
     \begin{MultiColonnes}{5}
@@ -84,6 +117,38 @@ Il suffit de choisir un modèle et de l'utiliser avec cette formule.
     L'intervention humaine de modification est bien sûr toujours possible. 
     
     L'agent codeur est également à même de modifier par la suite le code qu'il a créé.
+
+    \begin{tcbenumerate}[2]
+        \tcbitem Création d'un nouveau projet. Cela revient à créer un \acc{agent}. 
+
+        \vspace{-0.3cm}\begin{center}\includegraphics[width=0.75\textwidth]{images/Claude_setup_projects/new-project.png}\end{center}
+        \tcbitem Décrire l'agent ( pour l'utilisateur seulement ). 
+
+        \vspace{-0.3cm}\begin{center}\includegraphics[width=0.55\textwidth]{images/Claude_setup_projects/base-setup.png}\end{center}
+        \tcbitem Donner ses instructions. 
+
+        \vspace{-0.3cm}\begin{center}\includegraphics[width=0.95\textwidth]{images/Claude_setup_projects/complete-setup.png}\end{center}
+
+        \tcbitem Votre agent est utilisable dans une \acc{nouvelle conversation}. 
+
+        \vspace{-0.3cm}\begin{center}\includegraphics[width=0.55\textwidth]{images/Claude_setup_projects/use-setup.png}\end{center}
+    \end{tcbenumerate}
+
+    \begin{bfbox}{Mettre en place les MCP}
+    \begin{tcbenumerate}[2]
+        \tcbitem Accéder aux paramètres. 
+        
+        \vspace{-0.3cm}\begin{center}\includegraphics[width=0.55\textwidth]{images/Claude-setup-mcp/1.png}\end{center}
+        \tcbitem Activer et accéder aux paramètres développeurs. 
+        
+        \vspace{-0.3cm}\begin{center}\includegraphics[width=0.55\textwidth]{images/Claude-setup-mcp/2.png}\end{center}
+        \tcbitem Modifier le json des serveurs MCP comme donné dans les \acc{fichiers de la formation}.
+
+        \vspace{-0.3cm}\begin{center}\includegraphics[width=0.55\textwidth]{images/Claude-setup-mcp/3.png}\end{center}
+
+        \tcbitem Votre agent peut utiliser votre système de fichiers. 
+    \end{tcbenumerate}
+    \end{bfbox}
 \end{Aide}
 
 \begin{Aide}[Utiliser Windsurf ou Cursor]

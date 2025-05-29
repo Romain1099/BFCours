@@ -1,0 +1,57 @@
+% Exemples d'utilisation avancée des cartes auto-correctives
+
+% Pour utiliser ces exemples, décommentez les sections souhaitées
+% et ajoutez-les à votre fichier enonce.tex
+
+% ====================================
+% Cartes avec indices progressifs
+% ====================================
+
+% Définition d'un style pour les cartes avec indices
+\tcbset{
+    carteindice/.style={
+        enhanced,
+        width=\largeurcarte,
+        height=\hauteurcarte,
+        arc=3mm,
+        boxrule=0.8pt,
+        colback=orange!5!white,
+        colframe=carteorange,
+        halign=center,
+        valign=center,
+        fontupper=\normalsize,
+        title={\faLightbulbO\ Indice},
+        fonttitle=\bfseries\color{white},
+        colbacktitle=carteorange,
+    }
+}
+
+% Exemple de carte avec indice
+\begin{comment}
+\begin{tcbraster}[pagecarte]
+    % Recto : Question
+    \begin{tcolorbox}[carterecto]
+        \eqcarte{(x + 2)^2 - 16 = 0}
+    \end{tcolorbox}
+    
+    % Indice
+    \begin{tcolorbox}[carteindice]
+        Pense à l'identité remarquable :\\[0.3cm]
+        $a^2 - b^2 = (a-b)(a+b)$\\[0.3cm]
+        Ici : $a = x + 2$ et $b^2 = 16$
+    \end{tcolorbox}
+    
+    % Verso : Solution
+    \begin{tcolorbox}[carteverso]
+        \solcarte{
+            \begin{align*}
+                (x + 2)^2 - 16 &= 0 \\
+                (x + 2)^2 - 4^2 &= 0 \\
+                [(x+2) - 4][(x+2) + 4] &= 0 \\
+                (x - 2)(x + 6) &= 0
+            \end{align*}
+            \textbf{Solutions :} $x = 2$ ou $x = -6$
+        }
+    \end{tcolorbox}
+\end{tcbraster}
+\end{comment}

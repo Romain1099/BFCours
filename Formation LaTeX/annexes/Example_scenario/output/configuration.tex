@@ -1,0 +1,157 @@
+% Configuration des cartes auto-correctives
+
+% Dimensions des cartes (4 par page en 2x2)
+\newlength{\largeurcarte}
+\newlength{\hauteurcarte}
+\setlength{\largeurcarte}{9cm}  % Pour 2 colonnes sur A4
+\setlength{\hauteurcarte}{13cm} % Pour 2 lignes sur A4
+
+% Couleurs pour les corrections
+\definecolor{modif}{RGB}{200,0,0}     % Rouge pour les modifications
+\definecolor{reduc}{RGB}{0,150,0}     % Vert pour les réductions
+
+% Style pour les cartes énoncés
+\tcbset{
+    carteenonce/.style={
+        enhanced,
+        sharp corners,
+        width=\largeurcarte,
+        height=\hauteurcarte,
+        boxrule=3pt,
+        colback=cartebleu!10!white,
+        colframe=cartebleu,
+        boxsep=0pt,
+        top=0pt,
+        bottom=0pt,
+        left=0pt,
+        right=0pt,
+        overlay={
+            % Numéro dans un cercle
+            \node[circle, fill=white, draw=cartebleu, line width=2pt, 
+                  minimum size=1.2cm, font=\Large\bfseries] 
+                  at ([xshift=-7mm, yshift=-7mm]frame.north east) {#1};
+            % Zone blanche pour le titre
+            \fill[white, rounded corners=5pt] 
+                ([xshift=2mm, yshift=-15mm]frame.north west) rectangle 
+                ([xshift=-2mm, yshift=-25mm]frame.north east);
+            \node[font=\large\bfseries, text=cartebleu] 
+                at ([yshift=-20mm]frame.north) {Résoudre l'équation};
+            % Zone blanche pour le contenu
+            \fill[white, rounded corners=5pt] 
+                ([xshift=2mm, yshift=2mm]frame.south west) rectangle 
+                ([xshift=-2mm, yshift=-30mm]frame.north east);
+        },
+        halign=center,
+        valign=center,
+        fontupper=\Huge\bfseries,
+        top=35mm,
+        bottom=5mm,
+        left=5mm,
+        right=5mm
+    }
+}
+% Style pour les cartes solutions
+\tcbset{
+    cartesolution/.style={
+        enhanced,
+        sharp corners,
+        width=\largeurcarte,
+        height=\hauteurcarte,
+        boxrule=3pt,
+        colback=cartevert!10!white,
+        colframe=cartevert,
+        boxsep=0pt,
+        top=0pt,
+        bottom=0pt,
+        left=0pt,
+        right=0pt,
+        overlay={
+            % Numéro dans un cercle
+            \node[circle, fill=white, draw=cartevert, line width=2pt, 
+                  minimum size=1.2cm, font=\Large\bfseries] 
+                  at ([xshift=-7mm, yshift=-7mm]frame.north east) {#1};
+            % Zone blanche pour le titre
+            \fill[white, rounded corners=5pt] 
+                ([xshift=2mm, yshift=-15mm]frame.north west) rectangle 
+                ([xshift=-2mm, yshift=-25mm]frame.north east);
+            \node[font=\large\bfseries, text=cartevert] 
+                at ([yshift=-20mm]frame.north) {Solution};
+            % Zone blanche pour le contenu
+            \fill[white, rounded corners=5pt] 
+                ([xshift=2mm, yshift=2mm]frame.south west) rectangle 
+                ([xshift=-2mm, yshift=-35mm]frame.north east);
+        },
+        halign=center,
+        valign=center,
+        fontupper=\normalsize,
+        top=40mm,
+        bottom=5mm,
+        left=8mm,
+        right=8mm
+    }
+}
+
+% Configuration du raster 2x2 (4 cartes par page)
+\tcbset{
+    rastercartes/.style={
+        raster columns=2,
+        raster rows=2,
+        raster equal height,
+        raster column skip=5mm,
+        raster row skip=5mm,
+        raster height=\textheight,
+        raster width=\textwidth,
+    }
+}
+% Environnement pour une page d'énoncés
+\newenvironment{pageenonces}{%
+    \begin{tcolorbox}[
+        blanker,
+        width=\textwidth,
+        height=\textheight,
+        left=0pt,
+        right=0pt,
+        top=0pt,
+        bottom=0pt,
+    ]
+    \begin{tcbraster}[rastercartes]
+}{%
+    \end{tcbraster}
+    \end{tcolorbox}
+    \newpage
+}
+
+% Environnement pour une page de solutions
+\newenvironment{pagesolutions}{%
+    \begin{tcolorbox}[
+        blanker,
+        width=\textwidth,
+        height=\textheight,
+        left=0pt,
+        right=0pt,
+        top=0pt,
+        bottom=0pt,
+    ]
+    \begin{tcbraster}[rastercartes]
+}{%
+    \end{tcbraster}
+    \end{tcolorbox}
+    \newpage
+}
+
+% Macro pour une équation centrée et grande
+\newcommand{\eqcarte}[1]{%
+    $\displaystyle #1$
+}
+
+% Macro pour la solution détaillée
+\newcommand{\solcarte}[1]{%
+    \begin{minipage}{0.9\textwidth}
+        \centering
+        #1
+    \end{minipage}
+}
+
+% Commandes pour le code couleur dans les corrections
+\newcommand{\modif}[1]{{\color{modif}#1}}  % Rouge pour modifications
+\newcommand{\reduc}[1]{{\color{reduc}#1}}  % Vert pour réductions
