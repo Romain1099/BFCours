@@ -41,7 +41,7 @@
 }
 
 % Commande pour afficher l'index des mots de vocabulaire
-\newcommand{\printvocindex}{%
+\newcommand{\oldprintvocindex}{%
   % Afficher l'index s'il n'est pas vide
   \ifx\voclist\empty
     \begin{tcolorbox}[enhanced,
@@ -93,5 +93,115 @@ colbacktitle=blue!50!black,
 \def\splitvocitem#1#2\relax{%
   \item \textbf{#1} \hyperlink{voc:#1}{(p.~#2)}%
 }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%% Nouvelle boite pour le vocabulaire %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{RoyalRed}{RGB}{200,20,20}
+\definecolor{RoyalGreen}{RGB}{20,110,20}
+\definecolor{RoyalBlue}{RGB}{65,105,250}
+\definecolor{color2}{RGB}{0,82,155} %
+ 
+
+% niceflower
+
+
+\newcommand{\leafedge}{%
+    \foreach ~ in {0,90,180,270}
+      \shade[ball color=purple!70,rotate=~] (0,0) .. controls +(-.5,0) and +(-.1,-.1) .. (-.5,.5) .. controls +(.1,.1) and +(0,.5) .. (0,0);
+    \foreach ~ in {1,-1}
+      \shade[ball color=RoyalGreen,yscale=~,rotate=45-~*45]
+        (0,0) .. controls +(0,.55) and +(-.1,-.1) .. (-.3,.7) .. controls +(.1,.1) and +(0,.55) .. (0,0)
+        (0,0) .. controls +(0,.8) and +(-.4,.1) .. (0,1) .. controls +(.3,-.1) and +(0,.7) .. (0,0);
+   \shade[ball color=RoyalGreen]
+      (0,0) to[relative,in=190,out=0] (0,1)
+      (0,0) to[relative,in=170,out=0] (-1,0);
+    \shade[ball color=RoyalGreen, scale=0.5] (0,0) .. controls +(-.5,0) and +(-.1,-.1) .. (-.5,.5) .. controls +(.1,.1) and +(0,.5) .. (0,0);
+}
+\newtcolorbox{newniceleaft}[1][]{
+enhanced,
+colback=\currentBackgroundColor,
+colframe=\currentAccentColor,
+boxrule=0.4pt,
+enlarge top by=0mm,enlarge bottom by=2.0mm,
+top=5pt,
+bottom=5pt,
+left=10mm, 
+right=10mm, 
+attach boxed title to top left={xshift=1cm,yshift*=0pt},%1mm-\tcboxedtitleheight}, varwidth boxed title*=-3cm,
+boxed title style={skin=enhancedfirst jigsaw,
+ size=small,arc=1mm,bottom=1.5pt,
+ interior style={fill=none,
+ top color=defi,
+ bottom color=defi}},
+overlay={
+ \begin{scope}[scale=0.8,rotate=180,shift=(frame.north west)]
+  \leafedge
+\end{scope}
+%
+\begin{scope}[scale=0.8,rotate=-90,shift=(frame.south west)]
+  \leafedge
+\end{scope}
+%
+\begin{scope}[scale=0.8,rotate=0,shift=(frame.south east)]
+  \leafedge
+\end{scope}
+%
+\begin{scope}[scale=0.8,rotate=90,shift=(frame.north east)]
+  \leafedge
+\end{scope}
+\ifx#1\empty
+    \else
+      \node[anchor=north east, fill=white, draw=defi!50, rounded corners] at ([xshift=-0.1\columnwidth]frame.north east) 
+      {\begin{minipage}{\dimexpr(\columnwidth - 4cm - 0.2\columnwidth)\relax} 
+        \centering \textbf{#1}
+      \end{minipage}}; % Correctement fermer la minipage ici
+    \fi%
+},
+title={\large{Vocabulaire utilisé}},
+coltitle=white
+}
+%% SOLUTION TESTÉE ET FONCTIONNELLE
+
+% D'abord, définir les commandes de traitement EN DEHORS de toute autre commande
+\newcommand{\processvocentry}[1]{%
+    \edef\temp{#1}
+    \expandafter\splitvocentry\temp\relax
+}
+
+\def\splitvocentry#1#2\relax{%
+  $\bullet$ \textbf{#1} \hyperlink{voc:#1}{(p.~#2)}%
+}
+
+% Ensuite, la commande principale
+\newcommand{\printvocindex}[1][3]{%
+  \begin{newniceleaft}{}%
+    \begin{tcbitemize}[%
+      raster columns=#1,
+      raster equal height=rows,
+      raster column skip=5pt,
+      raster row skip=2pt,
+      nobeforeafter,
+      raster every box/.style={
+        enhanced,
+        colback=\currentBackgroundColor,
+        colframe=\currentBackgroundColor,
+        boxrule=0pt,
+        top=0pt,
+        bottom=0pt,
+        left=0pt,
+        right=0pt,
+        halign=left,
+        valign=center
+      }%
+    ]%
+      % Utiliser forlistloop avec notre commande
+      \forlistloop{\tcbitem \processvocentry}{\voclist}%
+    \end{tcbitemize}%
+  \end{newniceleaft}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \endinput

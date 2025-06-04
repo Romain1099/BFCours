@@ -179,14 +179,15 @@ before upper = {\arrayrulecolor{blue!50!black}\renewcommand{\arraystretch}{0.2}}
 %\end{tcbtab}
 
 %Tableaux classique en tabular
-\newtcolorbox{tcbtab}[3][]{%
+\newtcolorbox{tcbtab}[2][]{%
     TableauBox,
     drop fuzzy shadow,%
     center title,
     title=#1,
     hbox,
-    before upper*=\begin{tabular}{#2},
     after upper*=\end{tabular}, % Structure du tableau passée en paramètre
+    before upper=\begin{tabular}%
+      {#2}
 }
 \NewDocumentEnvironment{tcbtabc}{ O{} m O{} }{
 \begin{tcolorbox}[
