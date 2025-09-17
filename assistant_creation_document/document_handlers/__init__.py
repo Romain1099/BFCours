@@ -1,2 +1,0 @@
-from .document_handler import DocumentHandler
-from .scrollable_dropdown import CTkScrollableDropdown, CTkScrollableDropdownFrame

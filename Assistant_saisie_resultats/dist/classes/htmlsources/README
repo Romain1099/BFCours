@@ -1,9 +1,0 @@
-Pour lister facilement un nouveau groupe : 
-Se rendre sur l'espace Fiches élèves dans l'ENT. 
-Clic droit + inspecter. 
-Rechercher ensuite la div qui contient le tableau des noms d'élèves et clic droit + copier -> copier l'élément. 
-
-Ouvrir un éditeur et coller le code dans un fichier qui sera appelé code-classe.html
-
-Il suffit ensuite de run le script make_students_from_html.py et puis de sélectionner le fichier html. 
-Le logiciel produira le fichier code-classe.csv qui pourra être utilisé pour peupler les espaces des classes via la fonctionnalité "Importer une classe"
