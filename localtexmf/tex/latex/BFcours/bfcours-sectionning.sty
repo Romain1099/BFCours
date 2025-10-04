@@ -9,9 +9,9 @@
 \begin{luacode*}
 function calc_width(text)
   local char_count = string.len(text) -- Compte le nombre de caractères dans la chaîne
-  local char_width = 0.21 -- On estime qu'un caractère occupe 0.2 cm en moyenne
+  local char_width = 0.23 -- On estime qu'un caractère occupe 0.2 cm en moyenne
   local total_width = char_count * char_width + 3 -- Largeur totale en cm
-  local max_width = 0.8 * 21 -- Estimation de 0.6\textwidth en cm (exemple : 0.6 * 21 cm = 12.6 cm)
+  local max_width = 0.8 * 24 + 3 -- Estimation de 0.6\textwidth en cm (exemple : 0.6 * 21 cm = 12.6 cm)
   local final_width = math.min(total_width, max_width) -- Prendre le maximum entre la largeur calculée 
   tex.print(string.format("%.2f", final_width)) -- Affiche la largeur en cm
 end

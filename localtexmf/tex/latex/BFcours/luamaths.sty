@@ -1,0 +1,41 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{luamaths}[2025/18/09 v1.0 Local copy of bugged v1.6 of luamaths]
+
+% The luamaths package
+% version 1.6
+% Licensed under LaTeX Project Public License v1.3c or later. The complete license text is available at http://www.latex-project.org/lppl.txt.
+%Authors: Chetan Shirore and Ajit Kumar
+
+\RequirePackage{xkeyval}
+\RequirePackage{amsmath}
+\RequirePackage{luacode}
+
+\newcommand\mathOp[1]{\directlua{tex.sprint(tostring(mathop(#1)))}}
+\newcommand\mathAbs[1]{\directlua{tex.sprint(math.abs(#1))}}
+\newcommand\mathAcos[1]{\directlua{tex.sprint(math.acos(#1))}}
+\newcommand\mathAsin[1]{\directlua{tex.sprint(math.asin(#1))}}
+\newcommand\mathAtan[1]{\directlua{tex.sprint(math.atan(#1))}}
+\newcommand\mathCeil[1]{\directlua{tex.sprint(math.ceil(#1))}}
+\newcommand\mathCos[1]{\directlua{tex.sprint(math.cos(#1))}}
+\newcommand\mathExp[1]{\directlua{tex.sprint(math.exp(#1))}}
+\newcommand\mathFloor[1]{\directlua{tex.sprint(math.floor(#1))}}
+\newcommand\mathInf{\directlua{tex.sprint(math.huge)}}
+\newcommand\mathLog[1]{\directlua{tex.sprint(math.log(#1))}}
+\newcommand\mathMax[1]{\directlua{tex.sprint(math.max(#1))}}
+\newcommand\mathMin[1]{\directlua{tex.sprint(math.min(#1))}}
+\newcommand\mathPi{\directlua{tex.sprint(math.pi)}}
+\newcommand\mathRandom[1]{\directlua{tex.sprint(math.random(#1))}}
+\newcommand\mathSin[1]{\directlua{tex.sprint(tostring(math.sin(#1)))}}
+\newcommand\mathSqrt[1]{\directlua{tex.sprint(math.sqrt(#1))}}
+\newcommand\mathTan[1]{\directlua{tex.sprint(math.tan(#1))}}
+\newcommand\mathRad[1]{\directlua{tex.sprint(math.rad(#1))}}
+\newcommand\mathRound[2]{\directlua{tex.sprint(mathround(#1,#2))}}
+\newcommand{\imUnit}{\mathrm{i}}
+\newcommand\luaChkeqnum[2]{%
+\directlua{%
+tex.sprint(tostring(lnumChqEql(#1,#2)))%
+}%
+}
+
+
+\endinput

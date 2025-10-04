@@ -608,6 +608,49 @@ before upper={\vspace{0.5cm}}]
 \vspace{-0.2cm}
 }
 
+\tcbset{
+    contreexempleboxstyle/.style={
+        colback=red!2!white, % Couleur de fond de la box (blanc pour ne pas cacher les traits)
+        colframe=black,  % Couleur de la bordure
+        fonttitle=\large\bfseries,
+        boxrule=0.5mm, % Épaisseur des bordures
+        coltitle=white,
+        sharp corners=south, % Coins droits en bas
+        rounded corners=northwest, % Coin en haut à gauche arrondi
+        attach boxed title to top left={yshift=-4mm, xshift=-2mm}, % Titre décalé vers la gauche
+        boxed title style={
+            colback=red!80!black, % Fond du titre
+            colframe=red!80!black, % Bordure autour du titre
+            sharp corners,
+            boxrule=0mm, % Pas de bordure pour le titre
+            rounded corners, % Coins arrondis pour le titre
+        },
+        before upper={}, % Ajouter un espacement avant le contenu
+        frame hidden, % On masque la bordure par défaut
+    }
+}
+
+\NewDocumentEnvironment{ContreExemple}{O{} +b}{
+\begin{tcolorbox}[title=\liencontent{Contre-Exemple(s)}{#1}, contreexempleboxstyle,overlay={ % Utilisation de TikZ pour ajouter les éléments de décoration
+            % Ligne verticale sous le titre
+            \draw[red!80!black, line width = 1.5pt] (frame.north west)++(0.075,-0.2cm) -- ++(0,-2cm);
+            % Ligne horizontale à droite du titre
+            \draw[red!80!black, line width = 1.5pt] (title.east) -- ++(3cm,0);
+            % Codage d'angle en bas à droite, corrigé pour être orienté vers le bas
+            \draw[red!80!black, line width = 1.5pt] (frame.south east)++(-2cm,0.075cm) -- ++(1.925cm,0) -- ++(0,2cm);
+		\ifx#1\empty
+		    \else
+		      \node[anchor=west, fill=white, draw=red!80!black, rounded corners] at ([xshift=3cm]title.east) {\begin{minipage}{0.5\columnwidth} \centering \textbf{#1} \end{minipage}};
+		    \fi%
+        },
+before upper={\vspace{0.5cm}}]
+\CouleurTexteAccent{blue!80!black}
+#2
+\ResetCouleurTexteAccent
+\end{tcolorbox}
+\vspace{-0.2cm}
+}
+
 \NewDocumentEnvironment{OldExemple}{O{} +b}{
 \begin{tcolorbox}[enhanced,
 before skip=2mm,after skip=2mm,
@@ -1165,7 +1208,7 @@ overlay={
   \def\bfitemacc{#3!80!black}
 \begin{tcolorbox}[
 enhanced,
-before skip=2mm,after skip=2mm,
+before skip=2mm,after skip=0mm,bottom=0pt,
 colback=white,colframe=\bfframecol,boxrule=0pt,
 attach boxed title to top left={xshift=1cm,yshift*=1mm-\tcboxedtitleheight},
 varwidth boxed title*=-3cm,
@@ -1576,8 +1619,6 @@ overlay={
     bottom=0pt,
     left=0pt,
     right=0pt,
-    colback=white,
-    colframe=white,
     boxrule=0pt,
     boxsep=3pt,
     nobeforeafter,
@@ -1591,8 +1632,8 @@ overlay={
   %\IfInsideTcolorboxTF
   %{
     \begin{tcolorbox}[blank,nobeforeafter,size=minimal, width=\textwidth,boxrule=0pt,left=0pt,right=0pt,top=0pt,bottom=0pt,halign=left,boxsep=0pt,
-    colback            = \currentBackgroundColor,
-    colframe           = \currentBackgroundColor]%
+    colback            = \currentColContainerBackgroundColor,
+    colframe           = \currentColContainerFrameColor]%
     %}%
   %{}% branche VRAIE (déjà dedans) : rien à faire
   % (4) le raster proprement dit
@@ -1605,7 +1646,7 @@ overlay={
     raster row skip    = 2pt,
     raster columns     = #1,
     colback            = \currentBackgroundColor,
-    colframe           = \currentBackgroundColor,
+    colframe           = \currentFrameColor,
     boxrule            = 0pt,
     top                = 0pt,
     bottom             = 0pt,
@@ -1619,6 +1660,11 @@ overlay={
       enhanced,
       breakable,
       size=small,
+      halign=left,
+      colback=\currentBackgroundColor,
+      colframe=\currentFrameColor,
+      coltitle=\currentTitleColor,
+      fonttitle=\bfseries,
       #2
     }%
   ]%

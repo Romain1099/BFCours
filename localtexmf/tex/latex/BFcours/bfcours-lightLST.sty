@@ -1,0 +1,172 @@
+\ProvidesPackage{bfcours-lightLST}[03/10/2025 v1.0 Boites listings compatibles tcolorbox pour bfcours]
+% Définition des couleurs pour Python (style ProfLycee)
+\definecolor{CouleurVertForet}{RGB}{34,139,34}
+\definecolor{pythonkeyword}{RGB}{34,139,34}      % Vert forêt pour les mots-clés
+\definecolor{pythonstring}{RGB}{191,56,56}       % Rouge pour les chaînes
+\definecolor{pythoncomment}{RGB}{128,128,128}    % Gris pour les commentaires
+\definecolor{pythonnumber}{RGB}{64,64,64}        % Gris foncé pour les nombres
+
+% Style listings pour Python (inspiré de ProfLycee)
+\lstdefinestyle{MonPython}{%
+	language          = python,
+	inputencoding     = utf8,
+	basicstyle        = \ttfamily\footnotesize,
+	keywordstyle      = \color{pythonkeyword},
+	keywordstyle      = [2]\color{magenta},
+	commentstyle      = \color{pythoncomment}\itshape,
+	stringstyle       = \color{pythonstring},
+	numberstyle       = \scriptsize\ttfamily\color{pythonnumber},
+	aboveskip         = 0pt,
+	belowskip         = 0pt,
+	tabsize           = 4,
+	showstringspaces  = false,
+	columns           = fullflexible,
+	keepspaces        = true,
+	breaklines        = true,
+	breakatwhitespace = true
+}
+
+% Style tcolorbox pour Code Python (version 1 - style ProfLycee original)
+\tcbset{CodePythonBox/.style={%
+	enhanced,
+	boxrule=1.25pt,
+	left=0.6em,
+	sharp corners=downhill,
+	arc=12pt,
+	before skip=0.5\baselineskip,
+	after skip=0.5\baselineskip,
+	top=\baselineskip,
+	bottom=1mm,
+	right=5mm,
+	attach boxed title to top right={yshift=-\tcboxedtitleheight},
+	boxed title style={
+		size=small,
+		colback=CouleurVertForet!25,
+		boxrule=1.25pt,
+		colframe=CouleurVertForet,
+		boxsep=1.25pt,
+		sharp corners=downhill,
+		arc=12pt,
+		top=2pt,
+		bottom=1pt,
+		left=6pt,
+		right=6pt
+	},
+	colframe=CouleurVertForet,
+	colback=CouleurVertForet!5,
+	fonttitle=\color{CouleurVertForet}\itshape\ttfamily\footnotesize,
+	title={\scriptsize\faPython}\:Code Python\vphantom{p},
+	watermark text={\faPython},
+	watermark opacity=0.175,
+	watermark zoom=0.50,
+	listing only,
+	listing engine=listings,
+	listing options={style=MonPython}
+}}
+
+% Version avec numéros de lignes
+\tcbset{CodePythonBoxNum/.style={%
+	CodePythonBox,
+	listing options={
+		style=MonPython,
+		xleftmargin=14pt,
+		numbers=left,
+		numbersep=8pt
+	}
+}}
+
+% Version sans numéros de lignes
+\tcbset{CodePythonBoxNoNum/.style={%
+	CodePythonBox,
+	listing options={
+		style=MonPython,
+		xleftmargin=0pt,
+		numbers=none
+	}
+}}
+
+% Style alternatif (version 2 - plus sobre)
+\tcbset{CodePythonBoxAlt/.style={%
+	enhanced,
+	boxrule=0.75pt,
+	colframe=darkgray!50!black,
+	sharp corners,
+	top=2mm,
+	bottom=2mm,
+	left=0.4em,
+	right=5mm,
+	before skip=0.5\baselineskip,
+	after skip=0.5\baselineskip,
+	colback=white,
+	fontupper=\footnotesize,
+	fontlower=\footnotesize,
+	listing only,
+	listing engine=listings,
+	watermark text={\faPython},
+	watermark opacity=0.25,
+	watermark zoom=0.50,
+	title={{\scriptsize\faCode} Code Python},
+	lefttitle=0.4em,
+	fonttitle=\bfseries\footnotesize\sffamily,
+	colbacktitle=darkgray!50!black,
+	listing options={style=MonPython}
+}}
+
+% Versions avec et sans numéros pour le style alternatif
+\tcbset{CodePythonBoxAltNum/.style={%
+	CodePythonBoxAlt,
+	listing options={
+		style=MonPython,
+		xleftmargin=16pt,
+		numbers=left,
+		numbersep=8pt
+	},
+	underlay={%
+		\begin{tcbclipinterior}
+			\draw[draw=none,fill=lightgray!25] (interior.south west) rectangle ([xshift=1.3em]interior.north west);
+		\end{tcbclipinterior}%
+	}
+}}
+
+\tcbset{CodePythonBoxAltNoNum/.style={%
+	CodePythonBoxAlt,
+	listing options={
+		style=MonPython,
+		xleftmargin=0pt,
+		numbers=none
+	}
+}}
+
+% Environnements prêts à l'emploi
+\newtcblisting{BFCodePython}[1][]{%
+	CodePythonBoxNoNum,#1
+}
+
+\newtcblisting{BFCodePythonNum}[2][1]{%
+	CodePythonBoxNum,
+	listing options={
+		style=MonPython,
+		xleftmargin=14pt,
+		numbers=left,
+		numbersep=8pt,
+		firstnumber=#1
+	},
+	#2
+}
+
+\newtcblisting{BFCodePythonAlt}[1][]{%
+	CodePythonBoxAltNoNum,#1
+}
+
+\newtcblisting{BFCodePythonAltNum}[2][1]{%
+	CodePythonBoxAltNum,
+	listing options={
+		style=MonPython,
+		xleftmargin=16pt,
+		numbers=left,
+		numbersep=8pt,
+		firstnumber=#1
+	},
+	#2
+}
+\endinput

@@ -7,7 +7,6 @@
 \RequirePackage{amsfonts}
 %\RequirePackage{mathrsfs}
 \RequirePackage{ifthen}
-%\RequirePackage{bfcours-fonts}
 
 % Configuration hyperref
 \RequirePackage{hyperref}
@@ -41,7 +40,8 @@
 \RequirePackage{xlop}
 \RequirePackage{scratch3}
 \RequirePackage{ProfCollege}
-%\RequirePackage{ProfLycee}
+\RequirePackage{ProfLycee} % Si bug, modifier luamaths.sty pour enlever la recherche de luamaths-complex et luamaths-fractions
+% chemin complet du fichier : "C:\Users\Utilisateur\AppData\Roaming\MiKTeX\tex\latex\luamaths\luamaths.sty"
 \RequirePackage{cancel}
 \RequirePackage[tikz]{bclogo}
 \RequirePackage{multirow}
@@ -93,7 +93,7 @@
 %]
 % Inclusion des fichiers secondaires
 \RequirePackage{bfcours-colors}
-%\RequirePackage{bfcours-fonts}
+
 \RequirePackage{bfcours-competencies}
 \RequirePackage{scalerel,stackengine}
 \RequirePackage{bfcours-environments}
@@ -102,13 +102,13 @@
 
 \RequirePackage{bfcours-items}
 \RequirePackage{bfcours-entete-tableaux}
-\RequirePackage{bfcours-renardbox}
+%\RequirePackage{bfcours-renardbox}
 
-\RequirePackage{bfcours-EnteteExplications}
-\RequirePackage{bfcours-EnteteOperations}
+%\RequirePackage{bfcours-EnteteExplications}
+%\RequirePackage{bfcours-EnteteOperations}
 \RequirePackage{bfcours-boiteReponseInsertbox}
 \RequirePackage{bfcours-exoplus}
-\RequirePackage{bfcours-Impression}
+%\RequirePackage{bfcours-Impression}
 \RequirePackage{bfcours-Film}
 \RequirePackage{bfcours-useCanMathalea}
 
@@ -127,7 +127,8 @@ coltitle=black,center title}
 \RequirePackage{bfcours-sectionning}
 \RequirePackage{bfcours-vocabulary}
 
-
+\RequirePackage{bfcours-mathsCommands}
+%\RequirePackage{bfcours-lightLST}
 \usetikzlibrary{positioning}
 \usetikzlibrary{tikzmark}
 \usetikzlibrary{%
@@ -135,3 +136,4 @@ decorations.pathmorphing,shadows
 }
 
 
+\endinput

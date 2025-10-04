@@ -1,0 +1,35 @@
+% Nom du fichier : bfcours-environments.sty
+\ProvidesPackage{bfcours-mathsCommands}[02/10/2025 v1.0 Macros maths pour bfcours]
+
+\providecommand{\R}{\mathbb{R}}
+\providecommand{\N}{\mathbb{N}}
+\providecommand{\Q}{\mathbb{Q}}
+\providecommand{\Z}{\mathbb{Z}}
+\providecommand{\D}{\mathbb{D}}
+% commande \intervalle[forme]{borneInf}{borneSup}
+% forme : la structure de l'intervalle. chaine de caractères. valeurs possibles : ff,oo,fo,of,
+\newcommand{\intervalle}[3][ff]{%
+    \ifstrequal{#1}{ff}{%
+        \CrochetG\,#2\,;\,#3\,\CrochetD%
+    }{%
+        \ifstrequal{#1}{oo}{%
+            \CrochetD\,#2\,;\,#3\,\CrochetG%
+        }{%
+            \ifstrequal{#1}{fo}{%
+                \CrochetG\,#2\,;\,#3\,\CrochetG%
+            }{%
+                \ifstrequal{#1}{of}{%
+                    \CrochetD\,#2\,;\,#3\,\CrochetD%
+                }{%
+                    \PackageError{bfcours-mathsCommands}{Option invalide '#1' pour \string\intervalle - Valeurs possibles : ff, oo, fo, of}{}%
+                }%
+            }%
+        }%
+    }%
+}
+% \intervalle[of]{3}{5} -> \CrochetD 3 ; 5 \CrochetD  (]3; 5])
+% \intervalle[ff]{3}{5} -> \CrochetG 3 ; 5 \CrochetD  ([3; 5])
+% \intervalle[oo]{3}{5} -> \CrochetD 3 ; 5 \CrochetG  (]3; 5[)
+% \intervalle[fo]{3}{5} -> \CrochetG 3 ; 5 \CrochetG  ([3; 5[)
+% en effet, mes commandse Crochet sont des crochets mieux gérés en taille, et crochet d est tourné vers la gauche, crochet g est tourné vers la droite.
+\endinput
